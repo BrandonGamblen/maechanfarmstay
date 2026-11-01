@@ -9,4 +9,4 @@ Private idea-sharing site for Farmstay MaeChan. Hosted on Cloudflare Pages, depl
 
 | Page | Path |
 | --- | --- |
-| Guest building 3D model | `/zi41p7hovs/` |
+| Guest building 3D model (view only: no variables panel, no model download) | `/zi41p7hovs/` |

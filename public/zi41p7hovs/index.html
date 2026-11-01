@@ -39,7 +39,7 @@ button:hover{border-color:var(--accent)}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 button[disabled]{opacity:.5;cursor:not-allowed}
-.main{display:grid;grid-template-columns:330px minmax(0,1fr);gap:12px;flex:1;min-height:0}
+.main{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;flex:1;min-height:0}
 .rail{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:auto;max-height:calc(100vh - 90px);min-width:0}
 .rail details{border-bottom:1px solid var(--line)}
 .rail summary{list-style:none;cursor:pointer;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.02em;display:flex;justify-content:space-between;align-items:center}
@@ -108,16 +108,14 @@ td.note{color:var(--muted);font-size:12px}
   <header>
     <div>
       <h1>Farmstay MaeChan Model</h1>
-      <div class="sub">Guest room, roof deck, vine lattice and earth-tube cooling · all dimensions in cm · change any value and the model rebuilds</div>
+      <div class="sub">Guest room, roof deck, vine lattice and earth-tube cooling · all dimensions in cm</div>
     </div>
     <div class="actions">
-      <button id="btnZip" class="primary">Download model (.zip)</button>
       <button id="btnPng">Save view (.png)</button>
     </div>
   </header>
 
   <div class="main">
-    <aside class="rail" id="rail" aria-label="Model variables"></aside>
 
     <section class="stage">
       <div class="tabs" role="tablist">
@@ -761,8 +759,8 @@ function planSVG(m,which){
 
 <script>
 const LAYERS=[["structure","Building"],["roofdeck","Roof deck, stair, tank"],["cover","Shade cover"],["lattice","Vine lattice"],["site","Walkways, courtyard, walls"],["cooling","Cooling system"],["plumbing","Plumbing & septic"],["furniture","Fixtures & person"],["ground","Ground surface"]];
-const KEY="maechan-model-v7";
-let P=defaults();try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)Object.assign(P,s);}catch(e){}
+// view-only: always the published design, no saved edits
+let P=defaults();
 let model=null,layerOn={};LAYERS.forEach(([k])=>layerOn[k]=true);
 const $=s=>document.querySelector(s);
 const toast=msg=>{const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,3200);};
@@ -885,7 +883,7 @@ function renderLayers(){const box=$("#layers");box.innerHTML="";LAYERS.forEach((
 // standalone site: plain browser downloads
 const dl={save:async({filename,data})=>{const u=URL.createObjectURL(data),a=document.createElement("a");a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);}};
 const saveErr=e=>{toast("Saving failed");};
-$("#btnZip").onclick=async()=>{if(!dl)return;try{const zip=new JSZip(),on={};LAYERS.forEach(([k])=>on[k]=k==="furniture"?layerOn[k]:true);
+if(false)$("#btnZip").onclick=async()=>{if(!dl)return;try{const zip=new JSZip(),on={};LAYERS.forEach(([k])=>on[k]=k==="furniture"?layerOn[k]:true);
   zip.file("model.obj",toOBJ(model,on));zip.file("model.mtl",toMTL());zip.file("parameters.json",JSON.stringify(P,null,1));
   zip.file("quantities.csv",toCSV(takeoff(model)));const plain=x=>x.replace(/var\(--[a-z]+,(#[0-9a-fA-F]+)\)/g,"$1");zip.file("ground-plan.svg",plain(planSVG(model,"ground")));zip.file("roof-plan.svg",plain(planSVG(model,"roof")));
   zip.file("README.txt","Farmstay MaeChan parametric model\n\nmodel.obj + model.mtl: 3D model in metres, Y up, X to the right facing the front, Z toward the front. Building axes, not compass: the front faces the bearing set in parameters.json (default 152°). Origin is the front-left outer corner of the guest room at finished grade. Each element is its own named group (layer_element_n). In SketchUp, import the OBJ with Y as the up axis and units set to metres.\nparameters.json: every variable used. Paste it into the page to reload this exact model.\nquantities.csv: material takeoff computed from the geometry.\nground-plan.svg, roof-plan.svg: dimensioned plans in cm.\n\nValues marked 'assumed' in the page are placeholders. Structural sizes (roof slab, rebar, posts, cover frame) need an engineer before construction.\n");
@@ -895,7 +893,7 @@ $("#btnPng").onclick=async()=>{if(!dl)return;renderer.render(scene,cam);renderer
 new ResizeObserver(resize).observe(vp);
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",themeBg);
 new MutationObserver(themeBg).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
-renderRail();renderLayers();rebuild();themeBg();resize();setView("3d");
+renderLayers();rebuild();themeBg();resize();setView("3d");
 </script>
 </body>
 </html>
