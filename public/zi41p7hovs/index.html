@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Farmstay MaeChan Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: drafting-table tool. Parameter rail on the left, sheet area on the right with tabs for 3D, plans, quantities. */
+:root{
+  --bg:#e9ece8; --panel:#f6f7f4; --sheet:#ffffff; --fg:#1c2320; --muted:#5b6660; --line:#cfd5cf;
+  --accent:#2f6b4f; --accent-ink:#ffffff; --warn:#a85a14; --warn-bg:#fbefe1; --vp:#dde3de;
+  --pc:#38403b; --pb:#e7eae5; --pl:#8a938d; --pd:#2f6b4f; --pt:#1c2320; --pp:#c57a2a;
+  --display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141816; --panel:#1b201d; --sheet:#202622; --fg:#e2e7e3; --muted:#97a29b; --line:#323b36;
+  --accent:#72c095; --accent-ink:#0f1a14; --warn:#e7a35c; --warn-bg:#33261a; --vp:#1d2320;
+  --pc:#d9ded9; --pb:#2a312d; --pl:#6d776f; --pd:#72c095; --pt:#e2e7e3; --pp:#e39a4c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141816; --panel:#1b201d; --sheet:#202622; --fg:#e2e7e3; --muted:#97a29b; --line:#323b36;
+  --accent:#72c095; --accent-ink:#0f1a14; --warn:#e7a35c; --warn-bg:#33261a; --vp:#1d2320;
+  --pc:#d9ded9; --pb:#2a312d; --pl:#6d776f; --pd:#72c095; --pt:#e2e7e3; --pp:#e39a4c; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;line-height:1.45;margin:0}
+*{box-sizing:border-box}
+.app{min-height:100%;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 16px;gap:12px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px}
+h1{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:.01em;margin:0;line-height:1.1;text-wrap:balance}
+.sub{color:var(--muted);font-size:13px}
+.actions{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:13px;font-weight:500;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:6px;padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button[disabled]{opacity:.5;cursor:not-allowed}
+.main{display:grid;grid-template-columns:330px minmax(0,1fr);gap:12px;flex:1;min-height:0}
+.rail{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:auto;max-height:calc(100vh - 90px);min-width:0}
+.rail details{border-bottom:1px solid var(--line)}
+.rail summary{list-style:none;cursor:pointer;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.02em;display:flex;justify-content:space-between;align-items:center}
+.rail summary::-webkit-details-marker{display:none}
+.rail summary::after{content:"+";color:var(--muted);font-family:var(--mono)}
+.rail details[open] summary::after{content:"−"}
+.rows{display:grid;gap:2px;padding:0 10px 12px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 84px 34px;align-items:center;gap:6px;padding:3px 4px;border-radius:4px}
+.row:hover{background:var(--bg)}
+.row label{font-size:12.5px;color:var(--fg);min-width:0}
+.row .tag{display:inline-block;margin-left:5px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--warn);border:1px solid var(--warn);border-radius:3px;padding:0 4px;vertical-align:1px}
+.row input,.row select{width:100%;font-family:var(--mono);font-size:12.5px;padding:4px 6px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--fg);text-align:right;font-variant-numeric:tabular-nums}
+.row input.changed{border-color:var(--accent)}
+.row .u{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.railfoot{padding:12px 14px;display:grid;gap:8px}
+.railfoot textarea{width:100%;min-height:90px;font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--fg);padding:6px}
+.railfoot .btns{display:flex;flex-wrap:wrap;gap:6px}
+.stage{display:flex;flex-direction:column;gap:10px;min-width:0}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line)}
+.tab{border:none;border-bottom:2px solid transparent;border-radius:0;background:none;padding:8px 12px;font-family:var(--display);font-size:16px;font-weight:600;color:var(--muted)}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.warns{display:grid;gap:6px}
+.warn{background:var(--warn-bg);color:var(--fg);border-left:3px solid var(--warn);padding:7px 10px;border-radius:4px;font-size:13px}
+.warn b{color:var(--warn);font-weight:600}
+.pane{min-width:0}
+.vpwrap{position:relative;background:var(--vp);border:1px solid var(--line);border-radius:8px;overflow:hidden;height:min(68vh,760px);min-height:360px}
+#vp{position:absolute;inset:0}
+#vp canvas{display:block;width:100%;height:100%;touch-action:none}
+.tool{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:none;border-radius:0;border-right:1px solid var(--line);padding:6px 10px}
+.seg button:last-child{border-right:none}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--panel);cursor:pointer;user-select:none}
+.chip input{accent-color:var(--accent);margin:0}
+.cutctl{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.cutctl input[type=range]{width:160px;accent-color:var(--accent)}
+.cutctl output{font-family:var(--mono);color:var(--fg);min-width:64px}
+.hint{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:var(--muted);background:color-mix(in srgb,var(--vp) 80%,transparent);padding:2px 6px;border-radius:4px}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:8px;overflow:auto;padding:12px}
+.sheet svg{display:block;width:100%;height:auto;min-width:640px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:.03em;color:var(--muted)}
+td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.sec td{font-family:var(--display);font-weight:700;font-size:15px;padding-top:16px;color:var(--accent);border-bottom:1px solid var(--accent)}
+tr.tot td{font-weight:600}
+td.note{color:var(--muted);font-size:12px}
+.tablewrap{overflow-x:auto}
+.toast{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:6px;font-size:13px;z-index:20}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:14px;height:10px;margin-right:5px;vertical-align:-1px;border:1px solid var(--pl)}
+@media (max-width:900px){
+  .main{grid-template-columns:minmax(0,1fr)}
+  .rail{max-height:none;order:2}
+  .vpwrap{height:58vh;min-height:300px}
+  .actions{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div>
+      <h1>Farmstay MaeChan Model</h1>
+      <div class="sub">Guest room, roof deck, vine lattice and earth-tube cooling · all dimensions in cm · change any value and the model rebuilds</div>
+    </div>
+    <div class="actions">
+      <button id="btnZip" class="primary">Download model (.zip)</button>
+      <button id="btnPng">Save view (.png)</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <aside class="rail" id="rail" aria-label="Model variables"></aside>
+
+    <section class="stage">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-tab="3d" aria-selected="true">3D model</button>
+        <button class="tab" role="tab" data-tab="ground" aria-selected="false">Ground plan</button>
+        <button class="tab" role="tab" data-tab="roof" aria-selected="false">Roof plan</button>
+        <button class="tab" role="tab" data-tab="qty" aria-selected="false">Quantities</button>
+      </div>
+      <div class="warns" id="warns"></div>
+
+      <div class="pane" data-pane="3d">
+        <div class="tool" style="margin-bottom:8px">
+          <div class="seg" id="views">
+            <button data-view="3d" aria-pressed="true">3D</button>
+            <button data-view="top" aria-pressed="false">Top</button>
+            <button data-view="south" aria-pressed="false">South (front)</button>
+            <button data-view="east" aria-pressed="false">East side</button>
+          </div>
+          <div class="seg" id="cuts">
+            <button data-cut="none" aria-pressed="true">No cut</button>
+            <button data-cut="plan" aria-pressed="false">Plan cut</button>
+            <button data-cut="section" aria-pressed="false">Section</button>
+          </div>
+          <div class="cutctl" id="cutctl" hidden><label for="cutval">Cut at</label><input type="range" id="cutval"><output id="cutout"></output></div>
+        </div>
+        <div class="chips" id="layers" style="margin-bottom:8px"></div>
+        <div class="vpwrap"><div id="vp"></div><div class="hint">Drag to orbit · right-drag or two fingers to pan · scroll or pinch to zoom · ground is see-through; turn off Building to see the pipe under it</div></div>
+      </div>
+
+      <div class="pane" data-pane="ground" hidden><div class="sheet" id="groundPlan"></div></div>
+      <div class="pane" data-pane="roof" hidden><div class="sheet" id="roofPlan"></div></div>
+      <div class="pane" data-pane="qty" hidden><div class="sheet"><div class="tablewrap" id="qty"></div></div></div>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="/lib/three.min.js"></script>
+<script src="/lib/OrbitControls.js"></script>
+<script src="/lib/jszip.min.js"></script>
+
+<script id="core">
+/*CORE-START*/
+const GROUPS={b:"Building shell",o:"Doors & windows",r:"Roof deck & cover",s:"Site: walkways, courtyard, walls",l:"Vine lattice",c:"Earth-tube cooling",p:"Plumbing, septic & kitchen",q:"Estimating inputs"};
+// [group,key,label,default,unit,assumed?]
+const PDEF=[
+ ["b","frontBearing","Compass bearing the front faces (180 = south)",152,"deg"],
+ ["b","outerW","Outer width",487,"cm"],
+ ["b","sideT","Side wall thickness",15,"cm"],
+ ["b","endT","Front and back wall thickness",15,"cm"],
+ ["b","partT","Partition wall thickness",15,"cm"],
+ ["b","bedL","Bedroom inner length",579.1,"cm"],
+ ["b","bathL","Bathroom inner length",167.7,"cm"],
+ ["b","statedL","Stated total length (check value)",802.6,"cm"],
+ ["b","totalH","Grade to top of roof slab",320,"cm",1],
+ ["b","roofT","Roof slab thickness",15,"cm",1],
+ ["b","skirtH","Foundation skirt height",30.5,"cm"],
+ ["b","skirtOff","Skirt projection past wall",5,"cm",1],
+ ["b","floorT","Floor slab thickness",10,"cm",1],
+ ["b","footD","Footing depth below grade",60,"cm",1],
+ ["b","footW","Footing width",45,"cm",1],
+ ["o","winX","Front window, from left corner",75,"cm",1],
+ ["o","winW","Front window width",150,"cm",1],
+ ["o","winH","Front window height",120,"cm",1],
+ ["o","winSill","Front window sill above floor",90,"cm",1],
+ ["o","doorX","Front door, from right corner",30,"cm",1],
+ ["o","doorW","Door width",90,"cm",1],
+ ["o","doorH","Door height",210,"cm",1],
+ ["o","pdoorX","Bathroom door, from left inner wall",40,"cm",1],
+ ["o","pdoorW","Bathroom door width",75,"cm",1],
+ ["o","bwinW","Bathroom vent width",60,"cm",1],
+ ["o","bwinH","Bathroom vent height",40,"cm",1],
+ ["o","bwinSill","Bathroom vent sill above floor",170,"cm",1],
+ ["o","sideWinW","East wall window width (0 = none)",0,"cm"],
+ ["o","sideWinH","East wall window height",100,"cm"],
+ ["o","sideWinSill","East wall window sill",110,"cm"],
+ ["r","parH","Parapet guard height",110,"cm",1],
+ ["r","parT","Parapet thickness",15,"cm",1],
+ ["r","coverH","Cover underside above roof deck",250,"cm",1],
+ ["r","coverGap","Air gap between cover layers",30,"cm",1],
+ ["r","coverOver","Cover overhang past walls",60,"cm",1],
+ ["r","coverPosts","Cover posts per long side",3,"no.",1],
+ ["r","tankSide","Tank corner (0 west, 1 east)",1,"",0],
+ ["r","tankD","Tank diameter",110,"cm",1],
+ ["r","tankH","Tank height",125,"cm",1],
+ ["r","tankBase","Tank plinth height",30,"cm",1],
+ ["r","stairSide","Stair side (0 west, 1 east)",1,""],
+ ["r","stairW","Stair width",90,"cm",1],
+ ["r","riserMax","Maximum riser",18,"cm",1],
+ ["r","tread","Tread depth",25,"cm",1],
+ ["r","stairStart","Stair start, from front wall",60,"cm",1],
+ ["r","stairWallT","Stair outer wall thickness",15,"cm",1],
+ ["r","stairWallH","Stair wall height above steps",100,"cm",1],
+ ["r","storeDoorW","Storage door from bedroom, width (under landing)",90,"cm",1],
+ ["r","storeDoorH","Storage door height",200,"cm",1],
+ ["r","storeCabW","Low storage cabinet opening, width",150,"cm",1],
+ ["r","storeCabH","Low storage cabinet opening, height",90,"cm",1],
+ ["r","storeShelfH","Storage divider height (top section goes to utility)",210,"cm",1],
+ ["r","utilOn","Utility closet in rear corner (1/0)",1,""],
+ ["r","utilDoorW","Utility closet door width",75,"cm",1],
+ ["r","utilDoorH","Utility closet door height",200,"cm",1],
+ ["s","walkW","Walkway width (side without stair)",195,"cm",1],
+ ["s","courtL","Courtyard length",579.1,"cm"],
+ ["s","pavT","Paving thickness",10,"cm",1],
+ ["s","perimH","Perimeter wall height",100,"cm",1],
+ ["s","perimT","Perimeter wall thickness",15,"cm",1],
+ ["s","gateWall","Gate wall (1 North, 2 East, 3 South, 4 West)",4,""],
+ ["s","gateW","Gate opening width",150,"cm",1],
+ ["s","gateX","Gate offset from centre of its wall",0,"cm"],
+ ["s","closeBack","Close walkway ends at back (1 yes, 0 no)",1,""],
+ ["l","latOff","Lattice height above cover top",5,"cm"],
+ ["l","latOut","Lattice height outside building (0 = same, flat)",0,"cm"],
+ ["l","latGrid","Cable spacing over building and walkways",100,"cm",1],
+ ["l","latGridC","Cable spacing over courtyard (star view)",200,"cm",1],
+ ["l","postSp","Perimeter post spacing",300,"cm",1],
+ ["l","chimClear","Clearance kept around chimney",60,"cm"],
+ ["c","tubeD","Pipe diameter",200,"mm"],
+ ["c","tubeL","Total pipe length",40,"m",1],
+ ["c","tubeSp","Spacing between pipe legs",80,"cm",1],
+ ["c","tubeEdge","Pipe kept inside outer wall face by",50,"cm",1],
+ ["c","layerGap","Vertical gap between pipe layers",80,"cm",1],
+ ["c","tubeDepth","Depth to top of pipe at intake",220,"cm"],
+ ["c","tubeSlope","Fall toward sump",1.5,"%"],
+ ["c","intakeOut","Intake distance out from north wall",60,"cm",1],
+ ["c","intakeH","Intake height above grade",150,"cm"],
+ ["c","gwDepth","Groundwater depth (measure in Sept.)",400,"cm",1],
+ ["c","chimIn","Solar chimney inner size",60,"cm",1],
+ ["c","chimT","Chimney wall thickness",10,"cm",1],
+ ["c","chimH","Chimney height above roof deck",420,"cm",1],
+ ["c","chimGF","Chimney glass on front face (1/0)",1,""],
+ ["c","chimGL","Chimney glass on left face (1/0)",1,""],
+ ["c","chimGR","Chimney glass on right face (1/0)",1,""],
+ ["c","chimGB","Chimney glass on back face (1/0)",0,""],
+ ["c","panelMast","Panel mast above chimney",100,"cm"],
+ ["c","panelW","Solar panel width",100,"cm",1],
+ ["c","panelL","Solar panel length",170,"cm",1],
+ ["c","panelTilt","Panel tilt, facing south",15,"deg"],
+ ["p","sepD","Septic tank diameter",120,"cm",1],
+ ["p","sepH","Septic tank height",150,"cm",1],
+ ["p","sepOff","Septic tank, south of building front",250,"cm",1],
+ ["p","sepTop","Septic tank top below grade",30,"cm",1],
+ ["p","drainFall","Drain fall",2,"%",1],
+ ["p","leachN","Number of leach trenches",2,"no.",1],
+ ["p","leachL","Leach trench length",600,"cm",1],
+ ["p","leachW","Leach trench width",60,"cm",1],
+ ["p","leachSp","Leach trench spacing",200,"cm",1],
+ ["p","leachOff","First trench, south of south wall",260,"cm",1],
+ ["p","kitX","Kitchen counter start, from west parapet",30,"cm",1],
+ ["p","kitL","Kitchen counter length (north parapet)",230,"cm",1],
+ ["q","rebarKg","Rebar per m³ of structural concrete",90,"kg",1],
+ ["q","liveLoad","Roof deck live load",3.0,"kN/m²",1]
+];
+function defaults(){const o={};PDEF.forEach(d=>o[d[1]]=d[3]);return o;}
+const CONC={concrete:1,slab:1,paving:1};
+
+function build(P){
+ const parts=[],cables=[],warn=[],I={};
+ const BOX=(layer,group,mat,x0,y0,z0,x1,y1,z1,ex)=>{
+   if(x1<x0)[x0,x1]=[x1,x0]; if(y1<y0)[y0,y1]=[y1,y0]; if(z1<z0)[z0,z1]=[z1,z0];
+   if(x1-x0<0.05||y1-y0<0.05||z1-z0<0.05)return;
+   parts.push(Object.assign({kind:"box",layer,group,mat,x0,y0,z0,x1,y1,z1},ex||{}));};
+ const CYL=(layer,group,mat,a,b,r,ex)=>parts.push(Object.assign({kind:"cyl",layer,group,mat,a,b,r},ex||{}));
+ // wall along axis with rectangular openings {u,w,v,h} (absolute coordinates)
+ const wallRun=(layer,group,mat,axis,u0,u1,c0,c1,y0,y1,ops)=>{
+   const cl=v=>Math.max(u0,Math.min(u1,v));
+   const cuts=[u0,u1];(ops||[]).forEach(o=>cuts.push(cl(o.u),cl(o.u+o.w)));
+   const us=[...new Set(cuts.map(v=>Math.round(v*1000)/1000))].sort((a,b)=>a-b);
+   for(let i=0;i<us.length-1;i++){const a=us[i],b=us[i+1];if(b-a<0.05)continue;const m=(a+b)/2;
+     let segs=[[y0,y1]];
+     (ops||[]).filter(o=>m>o.u&&m<o.u+o.w).forEach(o=>{const lo=o.v,hi=o.v+o.h;
+       segs=segs.flatMap(([s,e])=>{const r=[];if(lo>s)r.push([s,Math.min(e,lo)]);if(hi<e)r.push([Math.max(s,hi),e]);return r.filter(q=>q[1]-q[0]>0.05);});});
+     segs.forEach(([s,e])=>{if(axis==="x")BOX(layer,group,mat,a,s,c0,b,e,c1);else BOX(layer,group,mat,c0,s,a,c1,e,b);});}
+ };
+ // horizontal sheet with a rectangular hole
+ const sheet=(layer,group,mat,x0,z0,x1,z1,y0,y1,h)=>{
+   if(!h||h.x1<=x0||h.x0>=x1||h.z1<=z0||h.z0>=z1){BOX(layer,group,mat,x0,y0,z0,x1,y1,z1);return;}
+   BOX(layer,group,mat,x0,y0,z0,x1,y1,h.z0);BOX(layer,group,mat,x0,y0,h.z1,x1,y1,z1);
+   BOX(layer,group,mat,x0,y0,h.z0,h.x0,y1,h.z1);BOX(layer,group,mat,h.x1,y0,h.z0,x1,y1,h.z1);};
+
+ const W=P.outerW,st=P.sideT,et=P.endT,pt=P.partT;
+ const iW=W-2*st,L=2*et+P.bedL+pt+P.bathL;
+ const sH=P.skirtH,top=P.totalH,wTop=top-P.roofT,off=P.skirtOff;
+ const zP0=et+P.bedL,zP1=zP0+pt,zB0=zP1+P.bathL;
+ Object.assign(I,{W,L,iW,st,et,pt,sH,top,wTop,zP0,zP1,zB0,ceil:wTop-sH});
+ if(Math.abs(L-P.statedL)>0.5)warn.push(["Length does not close.",`Walls plus rooms add up to ${L.toFixed(1)} cm; your stated total is ${P.statedL} cm, a ${(P.statedL-L).toFixed(1)} cm difference. Change a wall thickness or a room length until they match.`]);
+
+ // footings
+ const h=P.footW/2,fd=P.footD;
+ BOX("structure","Footings","concrete",st/2-h,-fd,et/2-h,st/2+h,0,L-et/2+h);
+ BOX("structure","Footings","concrete",W-st/2-h,-fd,et/2-h,W-st/2+h,0,L-et/2+h);
+ BOX("structure","Footings","concrete",st/2+h,-fd,et/2-h,W-st/2-h,0,et/2+h);
+ BOX("structure","Footings","concrete",st/2+h,-fd,L-et/2-h,W-st/2-h,0,L-et/2+h);
+ BOX("structure","Footings","concrete",st/2+h,-fd,(zP0+zP1)/2-h,W-st/2-h,0,(zP0+zP1)/2+h);
+ // skirt
+ BOX("structure","Foundation skirt","concrete",-off,0,-off,st,sH,L+off);
+ BOX("structure","Foundation skirt","concrete",W-st,0,-off,W+off,sH,L+off);
+ BOX("structure","Foundation skirt","concrete",st,0,-off,W-st,sH,et);
+ BOX("structure","Foundation skirt","concrete",st,0,L-et,W-st,sH,L+off);
+ BOX("structure","Foundation skirt","concrete",st,0,zP0,W-st,sH-P.floorT,zP1);
+ BOX("structure","Floor slab","slab",st,sH-P.floorT,et,W-st,sH,zP0);
+ BOX("structure","Floor slab","slab",st,sH-P.floorT,zP1,W-st,sH,zB0);
+
+ // walls
+ const winU=P.winX,doorU=W-P.doorX-P.doorW;
+ if(winU+P.winW>doorU)warn.push(["Front window and door overlap.","Move the window left, make it narrower, or move the door."]);
+ if(sH+P.winSill+P.winH>wTop||sH+P.doorH>wTop)warn.push(["Opening above ceiling.","A front opening reaches past the underside of the roof slab."]);
+ const frontOps=[{u:winU,w:P.winW,v:sH+P.winSill,h:P.winH},{u:doorU,w:P.doorW,v:sH,h:P.doorH}];
+ wallRun("structure","Walls","concrete","x",0,W,0,et,sH,wTop,frontOps);
+ BOX("structure","Glazing","glass",winU,sH+P.winSill,et/2-0.5,winU+P.winW,sH+P.winSill+P.winH,et/2+0.5);
+ const bwU=W/2-P.bwinW/2;
+ wallRun("structure","Walls","concrete","x",0,W,L-et,L,sH,wTop,[{u:bwU,w:P.bwinW,v:sH+P.bwinSill,h:P.bwinH}]);
+ // stair geometry first: the side-wall openings into the under-stair storage depend on it
+ const pT=P.parT,nSt=Math.max(2,Math.ceil(top/P.riserMax)),rS=top/nSt,z0=P.stairStart;
+ const zl0=z0+(nSt-1)*P.tread,zl1=zl0+100,SSd=P.stairSide;
+ const sx0=SSd?W:-P.stairW,sx1=SSd?W+P.stairW:0,sxa=Math.min(sx0,sx1),sxb=Math.max(sx0,sx1);
+ const swT=P.stairWallT,swH=P.stairWallH,wx0=SSd?sx1:sx0-swT,wx1=wx0+swT;
+ const soff=z=>z>=zl0?top-20:(Math.floor((z-z0)/P.tread))*rS-20;
+ const stOn=swT>0,utOn=stOn&&P.utilOn>0,dY=sH+P.storeShelfH;
+ const stairOps=[];
+ if(stOn){
+   if(P.storeDoorW>0){const w=Math.min(100,P.storeDoorW);stairOps.push({u:zl0+(100-w)/2,w,v:sH,h:P.storeDoorH});
+     if(sH+P.storeDoorH>top-20)warn.push(["Storage door is too tall.","It reaches past the underside of the landing. Lower the storage door."]);}
+   if(P.storeCabW>0){const zb2=zl0-10,za2=zb2-P.storeCabW;stairOps.push({u:za2,w:P.storeCabW,v:sH,h:P.storeCabH});
+     if(soff(za2)-sH<P.storeCabH)warn.push(["Storage cabinet opening is too tall.",`At its front edge the stair underside is ${(soff(za2)-sH).toFixed(0)} cm above the floor. Lower the opening or make it narrower.`]);}
+ }
+ const winOps=P.sideWinW>0?[{u:et+P.bedL/2-P.sideWinW/2,w:P.sideWinW,v:sH+P.sideWinSill,h:P.sideWinH}]:[];
+ wallRun("structure","Walls","concrete","z",et,L-et,0,st,sH,wTop,SSd?[]:stairOps);
+ wallRun("structure","Walls","concrete","z",et,L-et,W-st,W,sH,wTop,winOps.concat(SSd?stairOps:[]));
+ if(P.sideWinW>0)BOX("structure","Glazing","glass",W-st/2-0.5,sH+P.sideWinSill,winOps[0].u,W-st/2+0.5,sH+P.sideWinSill+P.sideWinH,winOps[0].u+P.sideWinW);
+ const pdU=st+P.pdoorX;
+ wallRun("structure","Partition wall","concrete","x",st,W-st,zP0,zP1,sH,wTop,[{u:pdU,w:P.pdoorW,v:sH,h:P.doorH}]);
+ I.front={winU,winW:P.winW,doorU,doorW:P.doorW};I.pdoor={u:pdU,w:P.pdoorW};I.bwin={u:bwU,w:P.bwinW};
+
+ // stair
+ for(let i=1;i<nSt;i++){const za=z0+(i-1)*P.tread;let yb=(i-1)*rS-20;if(stOn&&yb<sH+15)yb=0;BOX("roofdeck","Stair","concrete",sx0,Math.max(0,yb),za,sx1,i*rS,za+P.tread);}
+ BOX("roofdeck","Stair","concrete",sx0,top-20,zl0,sx1,top,zl1);
+ let vLo=0,vHi=0,zs=zl0;
+ if(stOn){
+   for(let i=1;i<nSt;i++){const za=z0+(i-1)*P.tread;BOX("roofdeck","Stair wall","concrete",wx0,0,za,wx1,i*rS+swH,za+P.tread);}
+   BOX("roofdeck","Stair wall","concrete",wx0,0,zl0,wx1,top+swH,zl1+swT);
+   // under-stair storage
+   BOX("roofdeck","Storage floor","slab",sxa,sH-P.floorT,z0,sxb,sH,zl1);
+   zs=z0;while(zs<zl0&&soff(zs)<dY+8)zs+=P.tread;
+   BOX("roofdeck","Storage shelf divider","concrete",sxa,dY,zs,sxb,dY+8,zl1);
+   if(utOn){BOX("roofdeck","Stair wall","concrete",sxa,0,zl1,sxb,dY+8,zl1+swT);
+     BOX("roofdeck","Utility closet roof","slab",sxa,top-20,zl1+swT,sxb,top,L);}
+   else BOX("roofdeck","Stair wall","concrete",sxa,0,zl1,sxb,top+swH,zl1+swT);
+   for(let z=z0;z<zl1;z+=5){const c=soff(z+2.5);vLo+=Math.max(0,Math.min(c,dY)-sH)*5;if(z>=zs)vHi+=Math.max(0,c-dY-8)*5;}
+   vLo*=P.stairW/1e6;vHi*=P.stairW/1e6;
+ }else{const xo=SSd?sx1-20:sx0;
+   BOX("roofdeck","Stair","concrete",xo,0,zl0,xo+20,top-20,zl0+20);
+   BOX("roofdeck","Stair","concrete",xo,0,zl1-20,xo+20,top-20,zl1);}
+ I.stair={n:nSt,r:rS,z0,zl0,zl1,sx0,sx1,run:(nSt-1)*P.tread};
+ I.store={on:stOn,vLo,vHi,dY,ut:utOn,utL:L-P.perimT-(zl1+swT),utH:top-20,zs};
+ if(zl1>L-pT)warn.push(["Stair overruns the building.",`The landing ends at ${zl1.toFixed(0)} cm from the front; the roof ends at ${L.toFixed(0)} cm. Move the stair start or shorten the tread.`]);
+
+ // roof slab, parapet
+ BOX("structure","Roof slab","slab",0,wTop,0,W,top,L);
+ const gap=[{u:zl0,w:zl1-zl0,v:top,h:P.parH+1}];
+ wallRun("roofdeck","Parapet","concrete","z",0,L,0,pT,top,top+P.parH,P.stairSide?[]:gap);
+ wallRun("roofdeck","Parapet","concrete","z",0,L,W-pT,W,top,top+P.parH,P.stairSide?gap:[]);
+ wallRun("roofdeck","Parapet","concrete","x",pT,W-pT,0,pT,top,top+P.parH,[]);
+ wallRun("roofdeck","Parapet","concrete","x",pT,W-pT,L-pT,L,top,top+P.parH,[]);
+
+ // chimney (opposite side from tank, bedroom side of partition)
+ const so=P.chimIn+2*P.chimT,ct=P.chimT;
+ const cx0=P.tankSide?pT:W-pT-so,cx1=cx0+so,cz1=zP0,cz0=cz1-so;
+ I.chim={x0:cx0,x1:cx1,z0:cz0,z1:cz1};
+
+ // cover
+ const cy0=top+P.coverH,cy1=cy0+2,uy0=cy0+P.coverGap,uy1=uy0+2,co=P.coverOver;I.coverTop=uy1;I.cover={x0:-co,x1:W+co,z0:-co,z1:L+co};
+ const nP=Math.max(2,Math.round(P.coverPosts)),cp=[];
+ for(let i=0;i<nP;i++){const z=pT+7.5+i*(L-2*pT-15)/(nP-1);cp.push([pT+7.5,z],[W-pT-7.5,z]);}
+ cp.forEach(([x,z])=>{BOX("cover","Cover posts","steel",x-7.5,top,z-7.5,x+7.5,cy0,z+7.5);BOX("cover","Cover spacers","steel",x-4,cy1,z-4,x+4,uy0,z+4);});
+ I.coverPosts=cp;
+ const hole={x0:cx0-5,x1:cx1+5,z0:cz0-5,z1:cz1+5};
+ sheet("cover","Cover lower layer","cover",-co,-co,W+co,L+co,cy0,cy1,hole);
+ sheet("cover","Cover upper layer","cover",-co,-co,W+co,L+co,uy0,uy1,hole);
+
+ // tank
+ const tr=P.tankD/2,tx=P.tankSide?W-pT-10-tr:pT+10+tr,tz=L-pT-10-tr;
+ BOX("roofdeck","Tank plinth","concrete",tx-tr-10,top,tz-tr-10,tx+tr+10,top+P.tankBase,tz+tr+10);
+ CYL("roofdeck","Water tank","tank",[tx,top+P.tankBase,tz],[tx,top+P.tankBase+P.tankH,tz],tr);
+ I.tank={x:tx,z:tz,r:tr,litres:Math.PI*tr*tr*P.tankH/1000};
+ if(tz-tr<zP0)warn.push(["Tank hangs over the bedroom.","The tank no longer sits inside the bathroom footprint. Reduce the diameter."]);
+ if(top+P.tankBase+P.tankH>cy0)warn.push(["Tank hits the cover.","Raise the cover or use a shorter tank."]);
+
+ // chimney body
+ const cyT=top+P.chimH,gY=Math.min(cyT-20,uy1+10);
+ [[cx0,cz0],[cx1-ct,cz0],[cx0,cz1-ct],[cx1-ct,cz1-ct]].forEach(([x,z])=>BOX("cooling","Solar chimney","concrete",x,top,z,x+ct,cyT,z+ct));
+ const faces=[{k:"front",g:P.chimGF,ax:"x",c0:cz0,c1:cz0+ct,inS:1},{k:"back",g:P.chimGB,ax:"x",c0:cz1-ct,c1:cz1,inS:0},{k:"left",g:P.chimGL,ax:"z",c0:cx0,c1:cx0+ct,inS:1},{k:"right",g:P.chimGR,ax:"z",c0:cx1-ct,c1:cx1,inS:0}];
+ const gl=[];
+ faces.forEach(f=>{const u0=f.ax==="x"?cx0+ct:cz0+ct,u1=f.ax==="x"?cx1-ct:cz1-ct;
+   const FB=(grp,mat,y0,y1,c0,c1)=>f.ax==="x"?BOX("cooling",grp,mat,u0,y0,c0,u1,y1,c1):BOX("cooling",grp,mat,c0,y0,u0,c1,y1,u1);
+   if(f.g){FB("Solar chimney","concrete",top,gY,f.c0,f.c1);FB("Solar chimney","concrete",cyT-10,cyT,f.c0,f.c1);const mm=(f.c0+f.c1)/2;FB("Chimney glazing","glass",gY,cyT-10,mm-0.5,mm+0.5);gl.push(f.k);}
+   else{FB("Solar chimney","concrete",top,cyT,f.c0,f.c1);const a=f.inS?[f.c1,f.c1+1]:[f.c0-1,f.c0];FB("Chimney absorber","black",top+20,cyT-10,a[0],a[1]);}});
+ if(gl.length>=3){const mzc=(cz0+cz1)/2;BOX("cooling","Chimney absorber","black",cx0+ct,gY,mzc-0.5,cx1-ct,cyT-10,mzc+0.5);}
+ if(gl.length===4)warn.push(["Chimney has no solid face.","With glass on all four faces only the centre fin absorbs heat. Keep one face solid and black inside."]);
+ [[cx0,cz0],[cx1-6,cz0],[cx0,cz1-6],[cx1-6,cz1-6]].forEach(([x,z])=>BOX("cooling","Chimney cap","steel",x,cyT,z,x+6,cyT+25,z+6));
+ BOX("cooling","Chimney cap","concrete",cx0-10,cyT+25,cz0-10,cx1+10,cyT+33,cz1+10);
+ const mx=(cx0+cx1)/2,mz=(cz0+cz1)/2;
+ CYL("cooling","Chimney fan","steel",[mx,top+30,mz],[mx,top+45,mz],P.chimIn/2-5);
+ CYL("cooling","Solar mast","steel",[mx,cyT+33,mz],[mx,cyT+33+P.panelMast,mz],3);
+ parts.push({kind:"obox",layer:"cooling",group:"Solar panel",mat:"panel",c:[mx,cyT+33+P.panelMast+5,mz],s:[P.panelW,4,P.panelL],rx:P.panelTilt});
+ I.chim.top=cyT;I.chim.glassH=cyT-10-gY;I.chim.glassW=P.chimIn;I.chim.faces=gl;I.bearing=((P.frontBearing%360)+360)%360;
+ if(cyT<uy1+50)warn.push(["Chimney glazing is shaded.",`The chimney top is only ${(cyT-uy1).toFixed(0)} cm above the cover. Raise the chimney so its glazing sees the sun.`]);
+
+ // site
+ // site: stair-side outer wall is the stair wall line; walkway only on the other side
+ const wk=P.walkW,pv=P.pavT,cl=P.courtL,pmT=P.perimT,pH=P.perimH,zf=-cl-pmT,SS=P.stairSide;
+ const swT2=P.stairWallT>0?P.stairWallT:pmT;
+ const wl=SS?wk:P.stairW,wr=SS?P.stairW:wk,sTl=SS?pmT:swT2,sTr=SS?swT2:pmT;
+ const xmin=-wl-sTl,xmax=W+wr+sTr;
+ BOX("site","Walkway paving","paving",-wl,-pv,0,0,0,L);
+ BOX("site","Walkway paving","paving",W,-pv,0,W+wr,0,L);
+ BOX("site","Courtyard paving","paving",-wl,-pv,-cl,W+wr,0,0);
+ // gate: 1 back (north) end of the walkway, 2 east and 4 west courtyard walls, 3 front (south) wall
+ const GW=[1,2,3,4].includes(Math.round(P.gateWall))?Math.round(P.gateWall):3,gw=P.gateW;
+ let gA,gB;
+ if(GW===3){gA=W/2+P.gateX-gw/2;}
+ else if(GW===2||GW===4){gA=-cl/2+P.gateX-gw/2;
+   if(gA<-cl+5||gA+gw>-5)warn.push(["Gate runs past the courtyard.","Narrow the gate or reduce its offset so it stays on the courtyard wall."]);
+   if(GW===2&&SS&&gA+gw>z0)warn.push(["Gate hits the stair.","Move the gate away from the building."]);}
+ else{const u0=SS?-wl:W+off,u1=SS?-off:W+wr;gA=(u0+u1)/2+P.gateX-gw/2;
+   if(gw>u1-u0-10)warn.push(["Gate is wider than the walkway end.",`The back wall of the walkway is ${(u1-u0).toFixed(0)} cm. Narrow the gate.`]);
+   if(!P.closeBack)warn.push(["No back wall for the gate.","Set 'Close walkway ends at back' to 1, or choose another gate wall."]);}
+ gB=gA+gw;const gOp=[{u:gA,w:gw,v:0,h:pH+1}];
+ const sideWall=(x0,x1,stairSide,ops)=>{
+   if(stairSide&&P.stairWallT>0){wallRun("site","Perimeter wall","concrete","z",zf,z0,x0,x1,0,pH,ops);if(zl1+P.stairWallT<L)wallRun("site",utOn?"Utility closet":"Perimeter wall","concrete","z",zl1+P.stairWallT,L,x0,x1,0,utOn?top+swH:pH,[]);}
+   else wallRun("site","Perimeter wall","concrete","z",zf,L,x0,x1,0,pH,ops);};
+ sideWall(-wl-sTl,-wl,!SS,GW===4?gOp:[]);sideWall(W+wr,W+wr+sTr,SS,GW===2?gOp:[]);
+ wallRun("site","Perimeter wall","concrete","x",-wl,W+wr,zf,-cl,0,pH,GW===3?gOp:[]);
+ if(utOn){const u0=SS?W+off:-wl,u1=SS?W+wr:-off,dw=Math.min(P.utilDoorW,u1-u0-10);wallRun("site","Utility closet","concrete","x",u0,u1,L-pmT,L,0,top+swH,[{u:(u0+u1)/2-dw/2,w:dw,v:0,h:P.utilDoorH}]);}
+ if(P.closeBack){const bo=GW===1?gOp:[];if(SS)wallRun("site","Perimeter wall","concrete","x",-wl,-off,L-pmT,L,0,pH,bo);else wallRun("site","Perimeter wall","concrete","x",W+off,W+wr,L-pmT,L,0,pH,bo);}
+ const pf=20;
+ BOX("site","Perimeter footing","concrete",-wl-sTl/2-pf,-40,zf,-wl-sTl/2+pf,0,L);
+ BOX("site","Perimeter footing","concrete",W+wr+sTr/2-pf,-40,zf,W+wr+sTr/2+pf,0,L);
+ BOX("site","Perimeter footing","concrete",-wl-sTl/2+pf,-40,zf,W+wr+sTr/2-pf,0,-cl);
+ I.site={wk,wl,wr,tl:sTl,tr:sTr,xmin,xmax,cl,pmT,zf,gate:{wall:GW,a:gA,b:gB}};
+
+ // lattice: flat box at cover top; optional lower outer tier
+ const xL=-wl-sTl/2,xR=W+wr+sTr/2,zF=-cl-pmT/2,zB=L,bx0=-co,bx1=W+co,bz0=-co;
+ const Hb=uy1+P.latOff,He=P.latOut>0?P.latOut:Hb;
+ const hf=(x,z)=>(x>=bx0-0.1&&x<=bx1+0.1&&z>=bz0-0.1)?Hb:He;
+ const seq=(a,b,g)=>{g=Math.max(20,g);const r=[];for(let v=a;v<b-0.5;v+=g)r.push(v);r.push(b);return r;};
+ const uniq=a=>[...new Set(a.map(v=>Math.round(v*100)/100))].sort((x,y)=>x-y);
+ const cc=P.chimClear,ch={x0:cx0-cc,x1:cx1+cc,z0:cz0-cc,z1:cz1+cc};
+ const inCh=(x,z)=>x>ch.x0&&x<ch.x1&&z>ch.z0&&z<ch.z1;
+ let cLen=0,lines=0;const segAdd=(p,q)=>{if(inCh((p[0]+q[0])/2,(p[2]+q[2])/2))return;cables.push([p,q]);cLen+=Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2]);};
+ const zone=(z0,z1,g,skipLast)=>{const xs=seq(xL,xR,g);let zs=seq(z0,z1,g);if(skipLast)zs=zs.slice(0,-1);
+   const bxs=uniq([...xs,bx0,bx1]),bzs=uniq([...seq(z0,z1,g),...(bz0>z0&&bz0<z1?[bz0]:[])]);
+   zs.forEach(z=>{lines++;for(let i=0;i<bxs.length-1;i++)segAdd([bxs[i],hf(bxs[i],z),z],[bxs[i+1],hf(bxs[i+1],z),z]);});
+   xs.forEach(x=>{lines++;for(let i=0;i<bzs.length-1;i++)segAdd([x,hf(x,bzs[i]),bzs[i]],[x,hf(x,bzs[i+1]),bzs[i+1]]);});};
+ zone(0,zB,P.latGrid,false);zone(zF,0,P.latGridC,true);
+ I.lattice={len:cLen,lines,anchors:2*lines,Hb,He};
+ // perimeter posts, carried up to lattice level
+ const posts=[],pushP=(x,z)=>{if(!posts.some(p=>Math.hypot(p[0]-x,p[1]-z)<5))posts.push([x,z]);};
+ const along=(a,b,f)=>{const n=Math.max(1,Math.ceil((b-a)/P.postSp));for(let i=0;i<=n;i++)f(a+(b-a)*i/n);};
+ const inG=v=>v>gA-5&&v<gB+5;
+ along(zF,zB,z=>{if(!(GW===4&&inG(z)))pushP(xL,z);if(!(GW===2&&inG(z)))pushP(xR,z);});
+ along(xL,xR,x=>{if(GW===3&&inG(x))return;pushP(x,zF);});
+ posts.forEach(([x,z])=>BOX("lattice","Lattice posts","steel",x-5,0,z-5,x+5,hf(x,z),z+5));
+ const mastH=Hb-uy1;if(mastH>10)cp.forEach(([x,z])=>BOX("lattice","Lattice masts on cover","steel",x-4,uy1,z-4,x+4,Hb,z+4));
+ I.posts={n:posts.length,len:posts.reduce((s,[x,z])=>s+hf(x,z),0),h:He,masts:mastH>10?cp.length:0,mastLen:mastH>10?cp.length*mastH:0};
+
+ // fixtures
+ BOX("furniture","Bed","fixture",st+40,sH,zP0-200,st+190,sH+50,zP0-8);
+ BOX("furniture","Bed","wood",st+40,sH,zP0-8,st+190,sH+100,zP0);
+ BOX("furniture","Toilet","fixture",W/2-20,sH,zB0-65,W/2+20,sH+40,zB0);
+ BOX("furniture","Basin","fixture",W-st-60,sH+80,zB0-45,W-st-10,sH+95,zB0);
+ CYL("furniture","Shower drain","steel",[st+45,sH,zP1+70],[st+45,sH+1,zP1+70],6);
+ CYL("furniture","Person 175 cm","person",[doorU+P.doorW/2,0,-90],[doorU+P.doorW/2,175,-90],22);
+
+ // earth tube: serpentine under the building footprint, intake outside north wall
+ const D=P.tubeD/10,r=D/2,target=P.tubeL*100,sp=Math.max(D+10,P.tubeSp),m=Math.max(P.tubeEdge,r+5);
+ const xa=m,xb=W-m,zl=[];for(let z=L-m;z>=m-0.01;z-=sp)zl.push(z);
+ const way=[{x:xa,z:L+P.intakeOut,k:0},{x:xa,z:zl[0],k:0}];let cx=xa;
+ for(let k=0;k<8;k++){const ord=k%2===0?zl:[...zl].reverse();
+   if(k>0)way.push({x:cx,z:ord[0],k});
+   ord.forEach((z,i)=>{cx=cx===xa?xb:xa;way.push({x:cx,z,k});if(i<ord.length-1)way.push({x:cx,z:ord[i+1],k});});}
+ const pts=[way[0]];let sHz=0,total=0;
+ for(let i=1;i<way.length;i++){const a=pts[pts.length-1],b=way[i];
+   if(b.k!==a.k){pts.push(b);continue;}
+   const sl=Math.hypot(b.x-a.x,b.z-a.z);if(sl<0.01)continue;
+   if(sHz+sl>=target){const t=(target-sHz)/sl;pts.push({x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,k:a.k});sHz=target;break;}
+   pts.push(b);sHz+=sl;}
+ let acc=0;pts.forEach((q,i)=>{if(i>0&&pts[i-1].k===q.k)acc+=Math.hypot(q.x-pts[i-1].x,q.z-pts[i-1].z);q.s=acc;q.y=-(P.tubeDepth+r+P.tubeSlope/100*acc+q.k*P.layerGap);});
+ for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i];CYL("cooling","Earth tube","pipe",[a.x,a.y,a.z],[b.x,b.y,b.z],r);}
+ pts.slice(1,-1).forEach(q=>CYL("cooling","Earth tube bend","pipe",[q.x,q.y-r,q.z],[q.x,q.y+r,q.z],r*1.02));
+ const S=pts[0],E=pts[pts.length-1];
+ pts.forEach((q,i)=>{if(i>0)total+=Math.hypot(q.x-pts[i-1].x,q.y-pts[i-1].y,q.z-pts[i-1].z);});
+ CYL("cooling","Intake riser","pipe",[S.x,S.y,S.z],[S.x,P.intakeH,S.z],r);
+ CYL("cooling","Intake screen","screen",[S.x,P.intakeH-25,S.z],[S.x,P.intakeH,S.z],r*1.08);
+ CYL("cooling","Intake cap","steel",[S.x,P.intakeH+12,S.z],[S.x,P.intakeH+16,S.z],r*2.2);
+ CYL("cooling","Room riser","pipe",[E.x,E.y,E.z],[E.x,sH+1,E.z],r);
+ BOX("cooling","Room grille","steel",E.x-r-4,sH,E.z-r-4,E.x+r+4,sH+1.5,E.z+r+4);
+ const ss=Math.max(70,D+50),sy0=E.y-r-60,sy1=E.y+r+20;
+ const shell=(ss*ss*(sy1-sy0)-(ss-20)*(ss-20)*(sy1-sy0-10));
+ BOX("cooling","Condensate sump","sump",E.x-ss/2,sy0,E.z-ss/2,E.x+ss/2,sy1,E.z+ss/2,{concVol:shell});
+ CYL("cooling","Sump cleanout","pipe",[E.x+ss/2-12,sy1,E.z],[E.x+ss/2-12,sH+1,E.z],5);
+ const yMin=Math.min(...pts.map(q=>q.y)),deep=-yMin+r,layers=Math.max(...pts.map(q=>q.k))+1;
+ const pitW=(xb-xa)+D+60,pitL=(zl[0]-Math.min(...pts.map(q=>q.z)))+D+60;
+ const pit=pitW*pitL*(deep+10)/1e6+(D+60)*(P.intakeOut+m)*(P.tubeDepth+D+10)/1e6;
+ I.tube={D,pts,S,E,ss,len:total,horiz:sHz,layers,bends:pts.length-2+2,pit,deep,riserLen:(P.intakeH-S.y)+(sH-E.y),cleanLen:sH-sy1,sp};
+ if(sHz<target-1)warn.push(["Pipe does not fit.",`Only ${(sHz/100).toFixed(1)} m of the ${P.tubeL} m fits in 8 layers. Reduce leg spacing or edge margin.`]);
+ if(E.z>zP0-r)warn.push(["Pipe ends under the bathroom.","The room outlet would rise in the bathroom. Change total length, leg spacing or edge margin so the run ends under the bedroom."]);
+ if(deep>P.gwDepth)warn.push(["Pipe below groundwater.",`Deepest pipe bottom is ${(deep/100).toFixed(2)} m; groundwater is set at ${(P.gwDepth/100).toFixed(2)} m. Reduce depth, fall or layer gap.`]);
+ // plumbing: blackwater to septic under courtyard, greywater via grease trap, leach trenches downhill (south)
+ {const fall=P.drainFall/100,PL=[],len={b:0,g:0,e:0,l:0};
+  const pipe=(k,grp,pts,rr)=>{for(let i=1;i<pts.length;i++){CYL("plumbing",grp,"pipe",pts[i-1],pts[i],rr);len[k]+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]);}PL.push({k,pts});};
+  const run=(p2,y0)=>{let y=y0;const o=[[p2[0][0],y,p2[0][1]]];for(let i=1;i<p2.length;i++){y-=Math.hypot(p2[i][0]-p2[i-1][0],p2[i][1]-p2[i-1][1])*fall;o.push([p2[i][0],y,p2[i][1]]);}return o;};
+  const qB=W/2,qG=W/2+45,yS0=-35,zfw=I.site.zf;
+  const sr=P.sepD/2,sz=-P.sepOff-sr,sTop=-P.sepTop,sBot=sTop-P.sepH;
+  // septic tank
+  CYL("plumbing","Septic tank","tank2",[qB,sBot,sz],[qB,sTop,sz],sr);
+  CYL("plumbing","Septic access riser","pipe",[qB,sTop,sz],[qB,0,sz],25);
+  // blackwater: toilet straight south under the bedroom floor
+  const bl=run([[qB,zB0-35],[qB,sz+sr]],yS0);pipe("b","Blackwater drain Ø100",[[qB,sH,zB0-35]].concat(bl),5);
+  const inY=bl[bl.length-1][1];
+  if(inY<sTop-40)warn.push(["Septic inlet too deep.",`The toilet drain reaches the tank ${(sTop-inY).toFixed(0)} cm below its top. Raise the tank or reduce the fall.`]);
+  // kitchen counter + sink on the roof, north end
+  const kx0=pT+P.kitX,kx1=kx0+P.kitL,kz0=L-pT-60,kz1=L-pT;
+  BOX("roofdeck","Kitchen counter","concrete",kx0,top,kz0,kx1,top+85,kz1);
+  BOX("roofdeck","Kitchen sink","fixture",kx1-75,top+70,kz0+8,kx1-15,top+86,kz1-8);
+  const skx=kx1-45,skz=(kz0+kz1)/2;
+  if(kx1>I.tank.x-I.tank.r-10)warn.push(["Kitchen counter hits the tank plinth.","Shorten the counter or move it west."]);
+  // greywater: sink drops through roof slab into bathroom, joins shower and basin, runs south to grease trap
+  const gz=-150,gMain=run([[skx,skz],[qG,skz],[qG,gz+20]],yS0);
+  pipe("g","Greywater drain Ø75",[[skx,top+70,skz],[skx,yS0,skz]].concat(gMain),3.75);
+  pipe("g","Greywater drain Ø75",[[st+45,sH,zP1+70]].concat(run([[st+45,zP1+70],[qG,zP1+70]],yS0+5)),3.75);
+  pipe("g","Greywater drain Ø75",[[W-st-35,sH+80,zB0-25]].concat(run([[W-st-35,zB0-25],[qG,zB0-25]],yS0+5)),3.75);
+  const gIn=gMain[gMain.length-1][1];
+  BOX("plumbing","Grease trap","sump",qG-30,gIn-40,gz-20,qG+30,-15,gz+20,{concVol:0});
+  // distribution box outside south wall, leach trenches beyond
+  const dz=zfw-Math.max(60,P.leachOff-90),eff=run([[qB,sz-sr],[qB,dz+25]],inY-7);pipe("e","Effluent pipe Ø100",eff,5);
+  const gOut=run([[qG,gz-20],[qG,dz+10],[qB+25,dz+10]],gIn-10);pipe("g","Greywater drain Ø75",gOut,3.75);
+  const dIn=Math.min(eff[eff.length-1][1],gOut[gOut.length-1][1]),dTop=-15;
+  BOX("plumbing","Distribution box","sump",qB-25,dIn-25,dz-25,qB+25,dTop,dz+25,{concVol:0});
+  const lY=dIn-10,nL=Math.max(1,Math.round(P.leachN)),tzs=[];
+  for(let k=0;k<nL;k++){const tz=zfw-P.leachOff-k*P.leachSp;tzs.push(tz);
+    BOX("plumbing","Leach trench gravel","gravel",qB-P.leachL/2,lY-40,tz-P.leachW/2,qB+P.leachL/2,lY+20,tz+P.leachW/2);
+    pipe("l","Perforated leach pipe Ø100",[[qB-P.leachL/2,lY,tz],[qB+P.leachL/2,lY,tz]],5);}
+  pipe("e","Effluent pipe Ø100",[[qB,lY,dz-25],[qB,lY,tzs[tzs.length-1]]],5);
+  const zMin=tzs[tzs.length-1]-P.leachW/2;
+  // excavation for plumbing
+  const exS=(P.sepD+60)**2*(P.sepH+P.sepTop+20)/1e6;
+  const exD=(len.b+len.g+len.e)*40*60/1e6;
+  const exL=nL*P.leachL*P.leachW*(-(lY-40))/1e6;
+  I.plumb={PL,len,sz,sr,qB,qG,gz,dz,tzs,zMin,litres:Math.PI*sr*sr*P.sepH/1000,exS,exD,exL,sep:P.sepOff};}
+ return {parts,cables,warn,I,P};
+}
+
+// ---------- geometry -> mesh (world: x east, y up, z south; builder z north is negated) ----------
+const FACES=[[0,3,2,1],[4,5,6,7],[0,1,5,4],[3,7,6,2],[0,4,7,3],[1,2,6,5]];
+function partMesh(p,seg){
+ if(p.kind==="box"){const x0=p.x0,x1=p.x1,y0=p.y0,y1=p.y1,z0=-p.z1,z1=-p.z0;
+   return {v:[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0],[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]],f:FACES};}
+ if(p.kind==="obox"){const [cx,cy,cz]=[p.c[0],p.c[1],-p.c[2]],[sx,sy,sz]=p.s.map(v=>v/2),t=p.rx*Math.PI/180,c=Math.cos(t),s=Math.sin(t);
+   const loc=[[-sx,-sy,-sz],[sx,-sy,-sz],[sx,sy,-sz],[-sx,sy,-sz],[-sx,-sy,sz],[sx,-sy,sz],[sx,sy,sz],[-sx,sy,sz]];
+   return {v:loc.map(([x,y,z])=>[cx+x,cy+y*c-z*s,cz+y*s+z*c]),f:FACES};}
+ const a=[p.a[0],p.a[1],-p.a[2]],b=[p.b[0],p.b[1],-p.b[2]],n=seg||24;
+ return cylMesh(a,b,p.r,n);
+}
+function cylMesh(a,b,r,n){
+ let d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]];const l=Math.hypot(...d)||1;d=d.map(x=>x/l);
+ const cr=(p,q)=>[p[1]*q[2]-p[2]*q[1],p[2]*q[0]-p[0]*q[2],p[0]*q[1]-p[1]*q[0]],nm=v=>{const k=Math.hypot(...v)||1;return v.map(x=>x/k);};
+ const u=nm(Math.abs(d[1])<0.9?cr(d,[0,1,0]):cr(d,[1,0,0])),w=cr(d,u);const v=[],f=[];
+ for(const base of [a,b])for(let i=0;i<n;i++){const t=i/n*Math.PI*2,c=Math.cos(t)*r,s=Math.sin(t)*r;v.push([base[0]+u[0]*c+w[0]*s,base[1]+u[1]*c+w[1]*s,base[2]+u[2]*c+w[2]*s]);}
+ for(let i=0;i<n;i++){const j=(i+1)%n;f.push([i,j,n+j,n+i]);}
+ const capA=[],capB=[];for(let i=0;i<n;i++){capA.push(n-1-i);capB.push(n+i);}f.push(capA,capB);
+ return {v,f};
+}
+function partVol(p){
+ if(p.concVol!=null)return p.concVol;
+ if(p.kind==="box")return (p.x1-p.x0)*(p.y1-p.y0)*(p.z1-p.z0);
+ if(p.kind==="obox")return p.s[0]*p.s[1]*p.s[2];
+ return Math.PI*p.r*p.r*Math.hypot(p.b[0]-p.a[0],p.b[1]-p.a[1],p.b[2]-p.a[2]);
+}
+const MTL={tank2:[.33,.45,.34],gravel:[.6,.58,.53],concrete:[.83,.82,.78],slab:[.74,.72,.68],paving:[.66,.65,.61],steel:[.30,.33,.36],cover:[.88,.90,.91],glass:[.56,.79,.91,.45],pipe:[.85,.54,.23],tank:[.62,.70,.77],sump:[.37,.76,.94],black:[.1,.1,.1],fixture:[.96,.96,.95],wood:[.6,.42,.24],person:[.23,.29,.42],panel:[.13,.23,.43],screen:[.47,.47,.47,.6],cable:[.24,.48,.21]};
+function toMTL(){return Object.entries(MTL).map(([k,c])=>`newmtl ${k}\nKd ${c[0]} ${c[1]} ${c[2]}\nd ${c[3]??1}\n`).join("\n");}
+function toOBJ(m,layers){
+ const out=["# Farmstay MaeChan parametric model","# Units: metres. Axes: X to the right facing the front, Y up, Z toward the front. Building axes, not compass: the front faces the bearing set in parameters.json (default 152°). Origin: front-left outer corner of the guest room at finished grade.","mtllib model.mtl"];
+ let vi=1;const cnt={};
+ const emit=(name,mat,mesh)=>{out.push("g "+name,"usemtl "+mat);mesh.v.forEach(q=>out.push(`v ${(q[0]/100).toFixed(4)} ${(q[1]/100).toFixed(4)} ${(q[2]/100).toFixed(4)}`));mesh.f.forEach(fc=>out.push("f "+fc.map(i=>i+vi).join(" ")));vi+=mesh.v.length;};
+ m.parts.forEach(p=>{if(layers&&!layers[p.layer])return;const base=(p.layer+"_"+p.group).replace(/[^A-Za-z0-9]+/g,"_");cnt[base]=(cnt[base]||0)+1;emit(base+"_"+cnt[base],p.mat,partMesh(p,24));});
+ if(!layers||layers.lattice)m.cables.forEach((c,i)=>emit("lattice_Cable_"+(i+1),"cable",cylMesh([c[0][0],c[0][1],-c[0][2]],[c[1][0],c[1][1],-c[1][2]],0.6,6)));
+ return out.join("\n")+"\n";
+}
+
+// ---------- quantities ----------
+function takeoff(m){
+ const P=m.P,I=m.I,rows=[],sec=t=>rows.push({sec:t}),row=(item,qty,unit,note)=>rows.push({item,qty,unit,note:note||""});
+ const conc={};let structural=0,paveArea=0;
+ m.parts.forEach(p=>{if(p.concVol===0)return;if(CONC[p.mat]||p.concVol!=null){const v=partVol(p)/1e6;conc[p.group]=(conc[p.group]||0)+v;if(p.mat!=="paving")structural+=v;else paveArea+=(p.x1-p.x0)*(p.z1-p.z0)/1e4;}});
+ sec("Concrete");let tot=0;Object.entries(conc).forEach(([g,v])=>{tot+=v;row(g,v.toFixed(2),"m³",g==="Condensate sump"?"walls and base, 10 cm":"");});
+ rows.push({item:"Total concrete",qty:tot.toFixed(2),unit:"m³",tot:1,note:"net of openings; add your own waste allowance"});
+ sec("Reinforcement");
+ row("Rebar, estimate",(structural*P.rebarKg).toFixed(0),"kg",`${P.rebarKg} kg/m³ × ${structural.toFixed(2)} m³ structural concrete. Placeholder, set by engineer.`);
+ const floorA=(I.iW*P.bedL+I.iW*P.bathL)/1e4,roofA=I.W*I.L/1e4;
+ row("Mesh for slabs and paving",(floorA+roofA+paveArea).toFixed(1),"m²","floor + roof slab + paving, before laps");
+ sec("Orientation");
+ row("Front faces",`${I.bearing.toFixed(0)}°`,"bearing",`${["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(I.bearing/22.5)%16]}; panel tilts toward the front`);
+ sec("Roof deck");
+ const deckA=(I.W-2*P.parT)*(I.L-2*P.parT)/1e4;
+ row("Usable deck area",deckA.toFixed(1),"m²","inside parapet");
+ row("Live load on deck",(deckA*P.liveLoad).toFixed(0),"kN",`${P.liveLoad} kN/m² is a placeholder. Engineer sets the value for a crowd.`);
+ row("Water tank capacity",Math.round(I.tank.litres).toLocaleString("en-US"),"L");
+ row("Full tank load",(I.tank.litres*9.81/1000).toFixed(1),"kN","water only; add tank and plinth");
+ row("Stair",`${I.stair.n} risers × ${I.stair.r.toFixed(1)}`,"cm",`tread ${P.tread} cm, flight run ${(I.stair.run/100).toFixed(2)} m, landing 1.00 m, outer wall ${P.stairWallH} cm above steps`);
+ if(I.store.on){sec("Storage and utilities");
+ row("Under-stair storage, from bedroom",I.store.vLo.toFixed(2),"m³",`below the divider at ${P.storeShelfH} cm; door ${P.storeDoorW} × ${P.storeDoorH}, low cabinet ${P.storeCabW} × ${P.storeCabH}`);
+ row("Top section above divider",I.store.vHi.toFixed(2),"m³",I.store.ut?"opens into the utility closet":"closed");
+ if(I.store.ut)row("Utility closet, inside",`${P.stairW} × ${I.store.utL.toFixed(0)} × ${I.store.utH.toFixed(0)}`,"cm",`door ${P.utilDoorW} × ${P.utilDoorH} in the back wall; roof is an extension of the stair landing. Septic tank and leach field go outside the compound, not modelled.`);}
+ {const Q=I.plumb;sec("Plumbing and septic");
+ row("Septic tank",`Ø${P.sepD} × ${P.sepH} cm, ${Math.round(Q.litres).toLocaleString("en-US")}`,"L","size assumed: take the rating for 3 people from the tank maker");
+ row("Blackwater drain Ø100 mm",(Q.len.b/100).toFixed(1),"m",`toilet to tank under the bedroom floor at ${P.drainFall}% fall; sleeve through partition and front footings`);
+ row("Greywater drain Ø75 mm",(Q.len.g/100).toFixed(1),"m","kitchen sink (through roof slab), shower, basin → grease trap → distribution box");
+ row("Effluent pipe Ø100 mm",(Q.len.e/100).toFixed(1),"m","tank → distribution box → trench header");
+ row("Perforated leach pipe Ø100 mm",(Q.len.l/100).toFixed(1),"m",`${P.leachN} trench(es) ${P.leachL} × ${P.leachW} cm in gravel, south of the south wall`);
+ row("Grease trap, distribution box","1 + 1","no.","courtyard and outside the south wall");
+ row("Excavation: septic hole",Q.exS.toFixed(1),"m³");
+ row("Excavation: drain trenches",Q.exD.toFixed(1),"m³","40 × 60 cm");
+ row("Excavation: leach trenches",Q.exL.toFixed(1),"m³");
+ row("Septic tank to earth-tube pit",Q.sep,"cm","horizontal gap; the earth tube is uphill (north) of the tank");
+ row("Kitchen counter, roof north end",`${P.kitL} × 60 × 85`,"cm","sink at the east end, drain drops into the bathroom");}
+ sec("Shade cover and lattice");
+ row("Cover posts",`${I.coverPosts.length} × ${(P.coverH/100).toFixed(2)}`,"m","15 × 15 cm steel");
+ const cA=(I.W+2*P.coverOver)*(I.L+2*P.coverOver)/1e4;
+ row("Cover sheeting",(2*cA).toFixed(1),"m²",`two layers of ${cA.toFixed(1)} m², ${P.coverGap} cm air gap`);
+ row("Lattice cable",(I.lattice.len/100).toFixed(0),"m",`${I.lattice.lines} runs; ${P.latGrid} cm grid over building and walkways, ${P.latGridC} cm over courtyard`);
+ row("Cable end anchors",I.lattice.anchors,"no.","turnbuckle or clamp per end");
+ row("Perimeter posts",`${I.posts.n} × ${(I.posts.h/100).toFixed(2)}`,"m",`10 × 10 cm steel, set in perimeter wall. At ${(I.posts.h/100).toFixed(1)} m these need bracing or guying: engineer to size.`);
+ if(I.posts.masts)row("Lattice masts on cover",`${I.posts.masts}, total ${(I.posts.mastLen/100).toFixed(1)}`,"m","8 × 8 cm steel, above cover posts");
+ sec("Earth-tube cooling");
+ const T=I.tube;
+ row(`Pipe Ø${P.tubeD} mm, serpentine under building`,(T.len/100).toFixed(1),"m",`${T.layers} layer(s), legs ${T.sp} cm apart, ${P.layerGap} cm between layers`);
+ row(`Pipe Ø${P.tubeD} mm, risers`,(T.riserLen/100).toFixed(1),"m","intake tower outside north wall + room outlet");
+ row("Pipe Ø100 mm, sump cleanout",(T.cleanLen/100).toFixed(1),"m");
+ row("Long-radius 90° bends",T.bends,"no.","each bend adds airflow resistance; size the chimney fan for the full run");
+ row("Excavation pit under building",T.pit.toFixed(1),"m³",`to ${(T.deep/100).toFixed(2)} m deep. Dig and lay pipe before footings; backfill in compacted lifts. Engineer to confirm bearing.`);
+ row("Intake screen area, minimum",(3*Math.PI*(T.D/200)**2).toFixed(3),"m²","3 × pipe cross-section, two layers: 6 mm mesh + insect screen");
+ const brg=k=>{const b=((I.bearing+{front:0,left:90,right:-90,back:180}[k])%360+360)%360;return `${k} ${b.toFixed(0)}° ${["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"][Math.round(b/22.5)%16]}`;};
+ row("Chimney glazing",(I.chim.faces.length*I.chim.glassW*I.chim.glassH/1e4).toFixed(2),"m²",I.chim.faces.length?`${I.chim.faces.map(brg).join(", ")}; above the cover. Centre fin is black sheet.`:"none");
+ const vol=I.iW*(P.bedL+P.bathL)*I.ceil/1e6,A=Math.PI*(T.D/200)**2;
+ const q1=A*1.5*3600,q2=A*2.0*3600;
+ row("Room air volume",vol.toFixed(1),"m³");
+ row("Airflow at 1.5–2.0 m/s",`${q1.toFixed(0)}–${q2.toFixed(0)}`,"m³/h",`${(q1/vol).toFixed(1)}–${(q2/vol).toFixed(1)} air changes per hour`);
+ return rows;
+}
+function toCSV(rows){const e=s=>`"${String(s??"").replace(/"/g,'""')}"`;return ["Section,Item,Quantity,Unit,Note"].concat((()=>{let s="";return rows.map(r=>{if(r.sec){s=r.sec;return null;}return [s,r.item,r.qty,r.unit,r.note].map(e).join(",");}).filter(Boolean);})()).join("\n")+"\n";}
+
+// ---------- plans (SVG, plan coordinates X = x, Y = -z so north is up) ----------
+function planSVG(m,which){
+ const P=m.P,I=m.I,o=[],f1=v=>(Math.round(v*10)/10).toString();
+ const cut=which==="ground"?90:I.top+60;
+ const xmin=I.site.xmin,xmax=I.site.xmax,zmin=which==="roof"?-P.coverOver-140:Math.min(I.site.zf,I.plumb.zMin-40),zc=I.site.zf,zmax=I.L+(which==="roof"?P.coverOver:0);
+ const M=190,vx=xmin-M,vy=-zmax-M,vw=xmax-xmin+2*M,vh=zmax-zmin+2*M+110;
+ const okG=which==="ground"?(p=>["structure","roofdeck","site","furniture","lattice"].includes(p.layer)&&!/Footing|footing|Person|masts/.test(p.group))
+                        :(p=>(["structure","roofdeck","site"].includes(p.layer)||p.group==="Cover posts"||/chimney|Chimney/.test(p.group))&&!/Footing|footing/.test(p.group));
+ const below=[],cutp=[];
+ m.parts.forEach(p=>{if(!okG(p))return;let y0,y1;
+   if(p.kind==="cyl"){if(Math.abs(p.a[0]-p.b[0])>0.1||Math.abs(p.a[2]-p.b[2])>0.1)return;y0=Math.min(p.a[1],p.b[1]);y1=Math.max(p.a[1],p.b[1]);}
+   else if(p.kind==="box"){y0=p.y0;y1=p.y1;}else return;
+   if(y0<cut&&y1>cut)cutp.push(p);else if(y1<=cut)below.push([y1,p]);});
+ below.sort((a,b)=>a[0]-b[0]);
+ const shape=(p,cls)=>p.kind==="cyl"?`<circle class="${cls}" cx="${p.a[0]}" cy="${-p.a[2]}" r="${p.r}"/>`:`<rect class="${cls}" x="${p.x0}" y="${-p.z1}" width="${p.x1-p.x0}" height="${p.z1-p.z0}"/>`;
+ o.push(`<rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="var(--psheet,#ffffff)"/>`);
+ below.forEach(([,p])=>o.push(shape(p,p.mat==="glass"?"gl":"bl")));
+ cutp.forEach(p=>o.push(shape(p,p.mat==="glass"?"gl":p.layer==="furniture"?"fx":p.mat==="tank"?"tk":"ct")));
+ if(which==="ground"){
+   const T=I.tube;
+   for(let i=1;i<T.pts.length;i++){const a=T.pts[i-1],b=T.pts[i];if(a.k!==b.k)continue;o.push(`<line class="${a.k?"pipe2":"pipe"}" x1="${a.x}" y1="${-a.z}" x2="${b.x}" y2="${-b.z}"/>`);}
+   {const Q=I.plumb;Q.PL.forEach(pl=>{for(let i=1;i<pl.pts.length;i++){const a=pl.pts[i-1],b=pl.pts[i];if(Math.hypot(a[0]-b[0],a[2]-b[2])<1)continue;o.push(`<line class="${pl.k==="g"?"pg":pl.k==="l"?"pl2":"pb"}" x1="${a[0]}" y1="${-a[2]}" x2="${b[0]}" y2="${-b[2]}"/>`);}});
+    o.push(`<circle class="sep" cx="${Q.qB}" cy="${-Q.sz}" r="${Q.sr}"/><text class="t s" x="${Q.qB-Q.sr-12}" y="${-Q.sz+6}" text-anchor="end">Septic tank</text>`);
+    o.push(`<rect class="sep" x="${Q.qG-30}" y="${-Q.gz-20}" width="60" height="40"/><text class="t s" x="${Q.qG+40}" y="${-Q.gz+6}">Grease trap</text>`);
+    o.push(`<rect class="sep" x="${Q.qB-25}" y="${-Q.dz-25}" width="50" height="50"/>`);
+    Q.tzs.forEach(tz=>o.push(`<rect class="lt" x="${Q.qB-P.leachL/2}" y="${-tz-P.leachW/2}" width="${P.leachL}" height="${P.leachW}"/>`));
+    o.push(`<text class="t s" x="${Q.qB-P.leachL/2}" y="${-Q.tzs[Q.tzs.length-1]+P.leachW/2+30}">Leach trenches, downhill (south)</text>`);}
+   o.push(`<rect class="sump" x="${T.E.x-T.ss/2}" y="${-T.E.z-T.ss/2}" width="${T.ss}" height="${T.ss}"/>`);
+   o.push(`<circle class="sump" cx="${T.S.x}" cy="${-T.S.z}" r="${T.D/2+6}"/>`);
+
+ }else{
+   const c=I.cover;o.push(`<rect class="dash" x="${c.x0}" y="${-c.z1}" width="${c.x1-c.x0}" height="${c.z1-c.z0}"/>`);
+   o.push(`<text class="t s" x="${c.x0+10}" y="${-c.z1-14}">Shade cover outline above (two layers)</text>`);
+ }
+ // dimensions
+ const dH=(xa,xb,yRef,yL,label)=>{o.push(`<line class="ex" x1="${xa}" y1="${yRef}" x2="${xa}" y2="${yL+(yL>yRef?12:-12)}"/><line class="ex" x1="${xb}" y1="${yRef}" x2="${xb}" y2="${yL+(yL>yRef?12:-12)}"/><line class="dm" x1="${xa}" y1="${yL}" x2="${xb}" y2="${yL}"/><line class="tk2" x1="${xa-7}" y1="${yL+7}" x2="${xa+7}" y2="${yL-7}"/><line class="tk2" x1="${xb-7}" y1="${yL+7}" x2="${xb+7}" y2="${yL-7}"/>`);
+   const sm=xb-xa<70;o.push(`<text class="t d${sm?" sm":""}" x="${(xa+xb)/2}" y="${yL-8}" text-anchor="middle">${label}</text>`);};
+ const dV=(za,zb,xRef,xL,label)=>{const ya=-za,yb=-zb;o.push(`<line class="ex" x1="${xRef}" y1="${ya}" x2="${xL+(xL>xRef?12:-12)}" y2="${ya}"/><line class="ex" x1="${xRef}" y1="${yb}" x2="${xL+(xL>xRef?12:-12)}" y2="${yb}"/><line class="dm" x1="${xL}" y1="${ya}" x2="${xL}" y2="${yb}"/><line class="tk2" x1="${xL-7}" y1="${ya+7}" x2="${xL+7}" y2="${ya-7}"/><line class="tk2" x1="${xL-7}" y1="${yb+7}" x2="${xL+7}" y2="${yb-7}"/>`);
+   const sm=Math.abs(zb-za)<70,cy=(ya+yb)/2;o.push(`<text class="t d${sm?" sm":""}" x="${xL-8}" y="${cy}" text-anchor="middle" transform="rotate(-90 ${xL-8} ${cy})">${label}</text>`);};
+ const chainH=(pts,yRef,yL)=>{for(let i=0;i<pts.length-1;i++)dH(pts[i],pts[i+1],yRef,yL,f1(pts[i+1]-pts[i]));};
+ const chainV=(pts,xRef,xL)=>{for(let i=0;i<pts.length-1;i++)dV(pts[i],pts[i+1],xRef,xL,f1(pts[i+1]-pts[i]));};
+ const W=I.W,L=I.L,xr=xmax;
+ if(which==="ground"){
+   chainH([0,W],-L,-L-110);chainH([I.st,W-I.st],-L+I.et,-L-55);
+   chainV([zc,-P.courtL,0,I.et,I.zP0,I.zP1,I.zB0,L],xr,xr+55);dV(0,L,xr,xr+120,f1(L)+" building");
+   chainH([xmin,-I.site.wl,0,W,W+I.site.wr,xmax],-zc,-zc+60);dH(xmin,xmax,-zc,-zc+125,f1(xmax-xmin)+" overall");
+   const F=I.front;chainH([0,F.winU,F.winU+F.winW,F.doorU,F.doorU+F.doorW,W],0,70);
+   chainH([I.st,I.pdoor.u,I.pdoor.u+I.pdoor.w],-I.zP0,-I.zP0+45);
+   const G=I.site.gate,gm=(G.a+G.b)/2;
+   if(G.wall===3)chainH([xmin+P.perimT,G.a,G.b],-zc-P.perimT,-zc-P.perimT-45);
+   if(G.wall===1)chainH([P.stairSide?xmin+P.perimT:W,G.a,G.b],-L+P.perimT,-L+P.perimT+45);
+   if(G.wall===4)chainV([-P.courtL,G.a,G.b],xmin+P.perimT,xmin+P.perimT+50);
+   if(G.wall===2)chainV([-P.courtL,G.a,G.b],xmax-I.site.tr,xmax-I.site.tr-50);
+   const lab=(x,z,a,b)=>{o.push(`<text class="t r" x="${x}" y="${-z}" text-anchor="middle">${a}</text>`);if(b)o.push(`<text class="t s" x="${x}" y="${-z+30}" text-anchor="middle">${b}</text>`);};
+   lab(W/2+60,I.et+P.bedL*0.42,"Bedroom",`${f1(I.iW)} × ${f1(P.bedL)}`);
+   lab(W/2,I.zP1+P.bathL*0.32,"Bathroom",`${f1(I.iW)} × ${f1(P.bathL)}`);
+   lab((xmin+I.plumb.qB-I.plumb.sr)/2,-P.courtL*0.55,"Courtyard",`${f1(I.site.wl+W+I.site.wr)} × ${f1(P.courtL)}`);
+   const sx=(I.stair.sx0+I.stair.sx1)/2;lab(sx,I.stair.z0-45,"Stair up");
+   o.push(`<line class="arr" x1="${sx}" y1="${-I.stair.z0-20}" x2="${sx}" y2="${-I.stair.zl0+20}" marker-end="url(#ah)"/>`);
+   if(G.wall===3)lab(gm,zc+P.perimT+110,"Gate");
+   if(G.wall===1)lab(gm,L-P.perimT-110,"Gate");
+   if(G.wall===4)o.push(`<text class="t r" x="${xmin-20}" y="${-gm+10}" text-anchor="end">Gate</text>`);
+   if(G.wall===2)o.push(`<text class="t r" x="${xmax+20}" y="${-gm+10}">Gate</text>`);
+   if(I.store.ut){o.push(`<text class="t s" x="${sx}" y="${-(I.stair.zl1+L)/2}" text-anchor="middle">Utility</text>`);}
+   if(I.store.on){const zc=(I.store.zs+I.stair.zl1)/2;o.push(`<text class="t s" x="${sx+28}" y="${-zc}" text-anchor="middle" transform="rotate(-90 ${sx+28} ${-zc})">storage under</text>`);}
+   const wx=P.stairSide?-I.site.wl/2:W+I.site.wr/2;lab(wx,L*0.55,"Walkway");
+ }else{
+   chainH([0,W],-L,-L-110-P.coverOver);
+   chainV([0,I.stair.zl0,I.stair.zl1,L],xr,xr+55);dV(0,L,xr,xr+120,f1(L));
+   const C=I.chim;chainH([0,C.x0,C.x1,W],-C.z0,-C.z0+45);
+   const t=I.tank;chainH([0,t.x-t.r,t.x+t.r,W],-L,-L-55-P.coverOver);
+   const lab=(x,z,a,b,an)=>{an=an||"middle";o.push(`<text class="t r" x="${x}" y="${-z}" text-anchor="${an}">${a}</text>`);if(b)o.push(`<text class="t s" x="${x}" y="${-z+30}" text-anchor="${an}">${b}</text>`);};
+   lab(P.tankSide?t.x+t.r:t.x-t.r,t.z-t.r-50,"Water tank",`Ø${P.tankD} · ${Math.round(t.litres).toLocaleString("en-US")} L`,P.tankSide?"end":"start");
+   lab(P.tankSide?C.x1+20:C.x0-20,(C.z0+C.z1)/2,"Solar chimney",`${f1(C.x1-C.x0)} × ${f1(C.x1-C.x0)} outside`,P.tankSide?"start":"end");
+   lab(W/2,L*0.35,"Roof deck",`parapet ${P.parH} high`);
+   lab(P.stairSide?W-P.parT-20:P.parT+20,(I.stair.zl0+I.stair.zl1)/2,"Stair landing","parapet gap 100",P.stairSide?"end":"start");
+ }
+ // north arrow
+ const nx=xmin-110,ny=-zmax-60;
+ o.push(`<g transform="translate(${nx} ${ny}) rotate(${(180-I.bearing+360)%360})"><path class="na" d="M0 -40 L18 30 L0 18 L-18 30 Z"/><text class="t r" x="0" y="-52" text-anchor="middle">N</text></g><text class="t s" x="${nx-70}" y="${ny+70}">front faces ${I.bearing.toFixed(0)}°</text>`);
+ o.push(`<text class="t ttl" x="${xmin}" y="${-zmin+215}">${which==="ground"?"Ground plan, cut at 90 cm above grade":"Roof plan, cut at 60 cm above roof deck"} · dimensions in cm</text>${which==="ground"?`<text class="t s" x="${xmin}" y="${-zmin+250}">Earth tube under the building: ${(I.tube.len/100).toFixed(1)} m in ${I.tube.layers} layer(s), intake at the back wall.</text><text class="t s" x="${xmin}" y="${-zmin+280}">Drains: solid = toilet and effluent, dashed = greywater.</text>`:""}`);
+ const css=`.ct{fill:var(--pc,#38403b)}.bl{fill:var(--pb,#e7eae5);stroke:var(--pl,#8a938d);stroke-width:1.5}.gl{fill:#8fc9e8;opacity:.7}.fx{fill:none;stroke:var(--pl,#8a938d);stroke-width:2}.tk{fill:none;stroke:var(--pd,#2f6b4f);stroke-width:4}
+.ex{stroke:var(--pl,#8a938d);stroke-width:1.2}.dm{stroke:var(--pd,#2f6b4f);stroke-width:1.6}.tk2{stroke:var(--pd,#2f6b4f);stroke-width:2.4}.pipe{stroke:var(--pp,#c57a2a);stroke-width:${Math.max(6,m.I.tube.D)};stroke-dasharray:28 16;opacity:.55}.pipe2{stroke:var(--pp,#c57a2a);stroke-width:6;stroke-dasharray:6 10;opacity:.9}
+.sump{fill:none;stroke:var(--pp,#c57a2a);stroke-width:3;stroke-dasharray:10 8}.pb{stroke:#5a4632;stroke-width:9}.pg{stroke:#7a8f9e;stroke-width:7;stroke-dasharray:14 8}.pl2{stroke:#5a4632;stroke-width:6;stroke-dasharray:4 6}.sep{fill:none;stroke:#5a4632;stroke-width:3}.lt{fill:#b9b3a6;opacity:.6;stroke:#5a4632;stroke-width:1.5}.dash{fill:none;stroke:var(--pd,#2f6b4f);stroke-width:2.5;stroke-dasharray:18 12}.arr{stroke:var(--pt,#1c2320);stroke-width:2.5}.na{fill:var(--pt,#1c2320)}
+.t{fill:var(--pt,#1c2320);font-family:'IBM Plex Sans',Arial,sans-serif}.d{font-size:21px;font-family:'IBM Plex Mono',monospace}.sm{font-size:15px}.r{font-size:30px;font-weight:600}.s{font-size:20px}.ttl{font-size:26px;font-weight:600}`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vx} ${vy} ${vw} ${vh}"><style>${css}</style><defs><marker id="ah" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--pt,#1c2320)"/></marker></defs>${o.join("")}</svg>`;
+}
+/*CORE-END*/
+</script>
+
+<script>
+const LAYERS=[["structure","Building"],["roofdeck","Roof deck, stair, tank"],["cover","Shade cover"],["lattice","Vine lattice"],["site","Walkways, courtyard, walls"],["cooling","Cooling system"],["plumbing","Plumbing & septic"],["furniture","Fixtures & person"],["ground","Ground surface"]];
+const KEY="maechan-model-v7";
+let P=defaults();try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)Object.assign(P,s);}catch(e){}
+let model=null,layerOn={};LAYERS.forEach(([k])=>layerOn[k]=true);
+const $=s=>document.querySelector(s);
+const toast=msg=>{const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,3200);};
+
+// ----- rail -----
+function renderRail(){
+ const rail=$("#rail"),D=defaults();rail.innerHTML="";
+ Object.entries(GROUPS).forEach(([g,title],gi)=>{
+  const det=document.createElement("details");if(gi<2)det.open=true;
+  det.innerHTML=`<summary>${title}</summary><div class="rows"></div>`;const rows=det.querySelector(".rows");
+  PDEF.filter(d=>d[0]===g).forEach(([,k,label,def,unit,ass])=>{
+   const r=document.createElement("div");r.className="row";
+   r.innerHTML=`<label for="p_${k}">${label}${ass?'<span class="tag" title="Assumed value. Confirm before building.">assumed</span>':""}</label><input id="p_${k}" type="number" step="any" inputmode="decimal" value="${P[k]}"><span class="u">${unit}</span>`;
+   const inp=r.querySelector("input");inp.classList.toggle("changed",P[k]!==def);
+   inp.addEventListener("input",()=>{const v=parseFloat(inp.value);if(!isFinite(v))return;P[k]=v;inp.classList.toggle("changed",v!==D[k]);schedule();});
+   rows.appendChild(r);});
+  rail.appendChild(det);});
+ const foot=document.createElement("div");foot.className="railfoot";
+ foot.innerHTML=`<div class="btns"><button id="btnReset">Reset all to defaults</button><button id="btnCopy">Copy settings</button></div>
+ <label for="pasteBox" class="sub">Paste settings to load them</label><textarea id="pasteBox" placeholder='{"outerW":487, ...}'></textarea><div class="btns"><button id="btnApply">Load pasted settings</button></div>`;
+ rail.appendChild(foot);
+ $("#btnReset").onclick=()=>{P=defaults();save();renderRail();rebuild();toast("Reset to defaults");};
+ $("#btnCopy").onclick=()=>{const s=JSON.stringify(P,null,1);navigator.clipboard?.writeText(s).then(()=>toast("Settings copied"),()=>{const b=$("#pasteBox");b.value=s;b.select();toast("Copy the selected text");});};
+ $("#btnApply").onclick=()=>{try{const o=JSON.parse($("#pasteBox").value);let n=0;Object.keys(o).forEach(k=>{if(k in P&&isFinite(o[k])){P[k]=+o[k];n++;}});save();renderRail();rebuild();toast(`Loaded ${n} values`);}catch(e){toast("That text is not a valid settings block");}};
+}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(P));}catch(e){}};
+let tmr=null;const schedule=()=>{clearTimeout(tmr);tmr=setTimeout(()=>{save();rebuild();},150);};
+
+// ----- three -----
+const vp=$("#vp");
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.localClippingEnabled=true;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+vp.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xffffff,0x8a7d66,0.72));
+const sun=new THREE.DirectionalLight(0xffffff,0.85);sun.position.set(-900,2400,1600);sun.castShadow=true;
+Object.assign(sun.shadow.camera,{left:-1800,right:1800,top:1800,bottom:-1800,near:100,far:8000});sun.shadow.mapSize.set(2048,2048);sun.shadow.bias=-0.0006;
+scene.add(sun);scene.add(sun.target);
+const persp=new THREE.PerspectiveCamera(38,1,10,200000),ortho=new THREE.OrthographicCamera(-1,1,1,-1,-50000,50000);
+const ctlP=new THREE.OrbitControls(persp,renderer.domElement),ctlO=new THREE.OrbitControls(ortho,renderer.domElement);
+ctlO.enableRotate=false;ctlO.screenSpacePanning=true;ctlO.enabled=false;
+let cam=persp,view="3d";
+[ctlP,ctlO].forEach(c=>c.addEventListener("change",()=>render()));
+const MATS={};Object.entries(MTL).forEach(([k,c])=>{const m=new THREE.MeshStandardMaterial({color:new THREE.Color(c[0],c[1],c[2]),roughness:k==="steel"||k==="panel"?.55:.92,metalness:k==="steel"?.3:0});if(c[3]!=null){m.transparent=true;m.opacity=c[3];m.side=THREE.DoubleSide;m.depthWrite=false;}MATS[k]=m;});
+const edgeMat=new THREE.LineBasicMaterial({color:0x2a2f2c,transparent:true,opacity:.5});
+const cableMat=new THREE.LineBasicMaterial({color:0x2f7a32});
+const groundMat=new THREE.MeshStandardMaterial({color:0x8f7a58,transparent:true,opacity:.42,depthWrite:false,side:THREE.DoubleSide});
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(14000,14000),groundMat);ground.rotation.x=-Math.PI/2;ground.position.y=-0.5;ground.receiveShadow=true;scene.add(ground);
+const root=new THREE.Group();scene.add(root);const layerGroups={};
+const allMats=()=>[...Object.values(MATS),edgeMat,cableMat,groundMat];
+
+function geomFrom(mesh){const pos=[];mesh.f.forEach(fc=>{for(let i=1;i<fc.length-1;i++)[fc[0],fc[i],fc[i+1]].forEach(j=>pos.push(...mesh.v[j]));});const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));g.computeVertexNormals();return g;}
+function updateScene(){
+ root.traverse(o=>{if(o.geometry)o.geometry.dispose();});root.clear();
+ LAYERS.forEach(([k])=>{if(k==="ground")return;const g=new THREE.Group();g.visible=layerOn[k];layerGroups[k]=g;root.add(g);});
+ model.parts.forEach(p=>{const geo=geomFrom(partMesh(p,p.kind==="cyl"?28:0));const mesh=new THREE.Mesh(geo,MATS[p.mat]||MATS.concrete);
+  const tr=MATS[p.mat]&&MATS[p.mat].transparent;mesh.castShadow=!tr;mesh.receiveShadow=true;layerGroups[p.layer].add(mesh);
+  if(!tr)layerGroups[p.layer].add(new THREE.LineSegments(new THREE.EdgesGeometry(geo,28),edgeMat));});
+ const pos=[];model.cables.forEach(([a,b])=>pos.push(a[0],a[1],-a[2],b[0],b[1],-b[2]));
+ const cg=new THREE.BufferGeometry();cg.setAttribute("position",new THREE.Float32BufferAttribute(pos,3));layerGroups.lattice.add(new THREE.LineSegments(cg,cableMat));
+ ground.visible=layerOn.ground;applyCut();render();
+}
+function bounds(){const I=model.I;return {x0:I.site.xmin,x1:I.site.xmax,z0:-I.L-P.intakeOut,z1:-I.plumb.zMin,y0:0,y1:Math.max(I.lattice.Hb,I.chim.top+150)};}
+function setView(v){
+ view=v;document.querySelectorAll("#views button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.view===v));
+ const B=bounds(),cx=(B.x0+B.x1)/2,cz=(B.z0+B.z1)/2,cy=(B.y0+B.y1)/3,R=Math.max(B.x1-B.x0,B.z1-B.z0);
+ if(v==="3d"){cam=persp;ctlP.enabled=true;ctlO.enabled=false;persp.position.set(cx-0.95*R,0.75*R,cz+1.25*R);ctlP.target.set(cx,cy,cz);ctlP.update();}
+ else{cam=ortho;ctlP.enabled=false;ctlO.enabled=true;ortho.zoom=1;
+  if(v==="top"){ortho.up.set(0,0,-1);ortho.position.set(cx,9000,cz);ctlO.target.set(cx,0,cz);}
+  if(v==="south"){ortho.up.set(0,1,0);ortho.position.set(cx,cy,cz+9000);ctlO.target.set(cx,cy,cz);}
+  if(v==="east"){ortho.up.set(0,1,0);ortho.position.set(B.x1+9000,cy,cz);ctlO.target.set(cx,cy,cz);}
+  ortho.lookAt(ctlO.target);fitOrtho();ctlO.update();}
+ render();
+}
+function fitOrtho(){const B=bounds(),w=vp.clientWidth||800,h=vp.clientHeight||500,a=w/h;
+ let sw,sh;if(view==="top"){sw=B.x1-B.x0;sh=B.z1-B.z0;}else if(view==="south"){sw=B.x1-B.x0;sh=B.y1+80;}else{sw=B.z1-B.z0;sh=B.y1+80;}
+ sw*=1.12;sh*=1.12;if(sw/sh<a)sw=sh*a;else sh=sw/a;
+ ortho.left=-sw/2;ortho.right=sw/2;ortho.top=sh/2;ortho.bottom=-sh/2;
+ if(view!=="top"){ortho.top=sh*0.62;ortho.bottom=-sh*0.38;}
+ ortho.updateProjectionMatrix();}
+let cutMode="none";
+function applyCut(){const ctl=$("#cutctl"),r=$("#cutval");let planes=[];
+ if(cutMode==="none"){ctl.hidden=true;}
+ else{ctl.hidden=false;const v=+r.value;
+  $("#cutout").textContent=(cutMode==="plan"?"height ":"x = ")+v.toFixed(0)+" cm";
+  planes=[cutMode==="plan"?new THREE.Plane(new THREE.Vector3(0,-1,0),v):new THREE.Plane(new THREE.Vector3(-1,0,0),v)];}
+ allMats().forEach(m=>{m.clippingPlanes=planes;m.needsUpdate=true;});ground.material.clippingPlanes=cutMode==="section"?planes:[];render();}
+function setCut(m){cutMode=m;document.querySelectorAll("#cuts button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.cut===m));
+ const r=$("#cutval"),I=model.I;
+ if(m==="plan"){r.min=-400;r.max=Math.round(model.I.lattice.Hb+50);r.step=5;r.value=120;}
+ if(m==="section"){r.min=Math.round(I.site.xmin);r.max=Math.round(I.site.xmax);r.step=5;r.value=Math.round(I.W/2);}
+ applyCut();}
+function resize(){const w=vp.clientWidth,h=vp.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);persp.aspect=w/h;persp.updateProjectionMatrix();if(cam===ortho)fitOrtho();render();}
+let raf=0;function render(){if(raf)return;raf=requestAnimationFrame(()=>{raf=0;renderer.render(scene,cam);});}
+function themeBg(){const c=getComputedStyle(document.documentElement).getPropertyValue("--vp").trim()||"#dde3de";renderer.setClearColor(new THREE.Color(c));render();}
+
+// ----- other panes -----
+function renderWarns(){const w=$("#warns");w.innerHTML=model.warn.map(([a,b])=>`<div class="warn"><b>${a}</b> ${b}</div>`).join("");}
+function renderQty(){const rows=takeoff(model);
+ $("#qty").innerHTML=`<table><thead><tr><th>Item</th><th style="text-align:right">Quantity</th><th>Unit</th><th>Note</th></tr></thead><tbody>${rows.map(r=>r.sec?`<tr class="sec"><td colspan="4">${r.sec}</td></tr>`:`<tr class="${r.tot?"tot":""}"><td>${r.item}</td><td class="n">${r.qty}</td><td>${r.unit}</td><td class="note">${r.note}</td></tr>`).join("")}</tbody></table>
+ <div class="legend" style="margin-top:12px">Quantities are computed from the model geometry. Values tagged “assumed” in the variables panel are placeholders until confirmed by you or an engineer.</div>`;}
+const legend=`<div class="legend"><span><i style="background:var(--pc)"></i>cut wall</span><span><i style="background:var(--pb)"></i>below cut (slab, paving, stair)</span><span><i style="background:var(--pp);border-color:var(--pp)"></i>earth tube, upper layer</span><span><i style="border:2px dotted var(--pp);background:none"></i>lower layer, sump, intake</span><span><i style="border:2px dashed var(--pd);background:none"></i>above cut</span></div>`;
+function renderPlans(){$("#groundPlan").innerHTML=planSVG(model,"ground")+legend;$("#roofPlan").innerHTML=planSVG(model,"roof")+legend;}
+const northArrow=new THREE.ArrowHelper(new THREE.Vector3(0,0,-1),new THREE.Vector3(),400,0xb03a2e,90,45);scene.add(northArrow);
+function orient(){const I=model.I,t=(180-I.bearing)*Math.PI/180,n=new THREE.Vector3(Math.sin(t),0,-Math.cos(t)),e=new THREE.Vector3(Math.cos(t),0,Math.sin(t));
+ const sb=240*Math.PI/180,el=55*Math.PI/180,d=e.clone().multiplyScalar(Math.sin(sb)*Math.cos(el)).add(n.clone().multiplyScalar(Math.cos(sb)*Math.cos(el))).add(new THREE.Vector3(0,Math.sin(el),0));
+ const c=new THREE.Vector3(I.W/2,0,-I.L/2);sun.position.copy(c).add(d.multiplyScalar(3500));sun.target.position.copy(c);sun.target.updateMatrixWorld();
+ northArrow.setDirection(n);northArrow.position.set(I.site.xmin-250,5,I.site.cl);}
+function rebuild(){model=build(P);renderWarns();orient();updateScene();renderQty();renderPlans();}
+
+// ----- UI wiring -----
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+ document.querySelectorAll(".pane").forEach(p=>p.hidden=p.dataset.pane!==t.dataset.tab);if(t.dataset.tab==="3d")requestAnimationFrame(resize);});
+document.querySelectorAll("#views button").forEach(b=>b.onclick=()=>setView(b.dataset.view));
+document.querySelectorAll("#cuts button").forEach(b=>b.onclick=()=>setCut(b.dataset.cut));
+$("#cutval").addEventListener("input",applyCut);
+function renderLayers(){const box=$("#layers");box.innerHTML="";LAYERS.forEach(([k,label])=>{const l=document.createElement("label");l.className="chip";l.innerHTML=`<input type="checkbox" id="ly_${k}" ${layerOn[k]?"checked":""}>${label}`;
+ l.querySelector("input").onchange=e=>{layerOn[k]=e.target.checked;if(k==="ground")ground.visible=layerOn[k];else layerGroups[k].visible=layerOn[k];render();};box.appendChild(l);});}
+
+// standalone site: plain browser downloads
+const dl={save:async({filename,data})=>{const u=URL.createObjectURL(data),a=document.createElement("a");a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);}};
+const saveErr=e=>{toast("Saving failed");};
+$("#btnZip").onclick=async()=>{if(!dl)return;try{const zip=new JSZip(),on={};LAYERS.forEach(([k])=>on[k]=k==="furniture"?layerOn[k]:true);
+  zip.file("model.obj",toOBJ(model,on));zip.file("model.mtl",toMTL());zip.file("parameters.json",JSON.stringify(P,null,1));
+  zip.file("quantities.csv",toCSV(takeoff(model)));const plain=x=>x.replace(/var\(--[a-z]+,(#[0-9a-fA-F]+)\)/g,"$1");zip.file("ground-plan.svg",plain(planSVG(model,"ground")));zip.file("roof-plan.svg",plain(planSVG(model,"roof")));
+  zip.file("README.txt","Farmstay MaeChan parametric model\n\nmodel.obj + model.mtl: 3D model in metres, Y up, X to the right facing the front, Z toward the front. Building axes, not compass: the front faces the bearing set in parameters.json (default 152°). Origin is the front-left outer corner of the guest room at finished grade. Each element is its own named group (layer_element_n). In SketchUp, import the OBJ with Y as the up axis and units set to metres.\nparameters.json: every variable used. Paste it into the page to reload this exact model.\nquantities.csv: material takeoff computed from the geometry.\nground-plan.svg, roof-plan.svg: dimensioned plans in cm.\n\nValues marked 'assumed' in the page are placeholders. Structural sizes (roof slab, rebar, posts, cover frame) need an engineer before construction.\n");
+  const blob=await zip.generateAsync({type:"blob"});await dl.save({filename:"maechan-model.zip",data:blob});toast("Model saved");}catch(e){saveErr(e);}};
+$("#btnPng").onclick=async()=>{if(!dl)return;renderer.render(scene,cam);renderer.domElement.toBlob(async b=>{try{await dl.save({filename:`maechan-${view}.png`,data:b});toast("Image saved");}catch(e){saveErr(e);}},"image/png");};
+
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",themeBg);
+new MutationObserver(themeBg).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+renderRail();renderLayers();rebuild();themeBg();resize();setView("3d");
+</script>
+</body>
+</html>
