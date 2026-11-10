@@ -774,7 +774,12 @@ view([67,750,263],[67,0,262],"T");
 window.addEventListener('resize',()=>{cam.aspect=wrap.clientWidth/wrap.clientHeight;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);});
 /* Family copy: no labels */
 const noLab=()=>scene.traverse(o=>{if(o.isSprite)o.visible=false;});noLab();{const _v=view;view=function(...a){_v(...a);noLab();};}
-(function loop(){requestAnimationFrame(loop);r.render(scene,cam);})();
+/* Theo's room: walls glow, fading in and out (family copy only) */
+const GLOW=new THREE.MeshBasicMaterial({color:0x6FD6FF,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+{const x1=30.125,E=ROOM.north,z1=296.25,z2=395.25,H=ROOM.ceiling,o=0.3,pl=(w,cx,cz,ry)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,H),GLOW);m.position.set(cx,H/2,cz);m.rotation.y=ry;scene.add(m);};
+pl(E-x1,(x1+E)/2,z1+o,0);pl(E-x1,(x1+E)/2,z2-o,0);pl(z2-z1,x1+o,(z1+z2)/2,Math.PI/2);pl(z2-z1,E-o,(z1+z2)/2,Math.PI/2);}
+const T0=performance.now();
+(function loop(){requestAnimationFrame(loop);GLOW.opacity=0.45*(0.5-0.5*Math.cos((performance.now()-T0)/1000*2*Math.PI/3));r.render(scene,cam);})();
 </script>
 </body>
 </html>
