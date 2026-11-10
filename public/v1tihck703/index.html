@@ -773,7 +773,7 @@ document.getElementById('dimb').onclick=e=>{const v=!dims[0].visible;dims.forEac
 view(...views.S);
 window.addEventListener('resize',()=>{cam.aspect=wrap.clientWidth/wrap.clientHeight;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);});
 /* Family copy: no labels */
-scene.traverse(o=>{if(o.isSprite)o.visible=false;});
+const noLab=()=>scene.traverse(o=>{if(o.isSprite)o.visible=false;});noLab();{const _v=view;view=function(...a){_v(...a);noLab();};}
 (function loop(){requestAnimationFrame(loop);r.render(scene,cam);})();
 </script>
 </body>
