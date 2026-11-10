@@ -22,17 +22,17 @@ button.on{border-color:#534AB7;color:#534AB7}
 .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid var(--border)}
 .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
 </style>
-<style>main>*:not(#wrap){display:none!important}#wrap{height:96vh!important}</style>
+<style>main>*:not(#wrap):not(.bar){display:none!important}.bar button:not([data-v="D"]):not([data-v="W"]):not([data-v="NW"]):not([data-v="EW"]){display:none!important}#wrap{height:90vh!important}</style>
 </head>
 <body>
 <main>
 <h1>Living room, 3D model</h1>
 <p class="sub">Brandon's Montreal apartment. Units: inches. Source of truth: the project doc "living-room.md". Last updated 2026-11-09.</p>
 <div class="bar">
-<button data-v="D">South wall lattice</button>
-<button data-v="W">West wall lattice</button>
-<button data-v="NW">North wall lattice</button>
-<button data-v="EW">East wall lattice</button>
+<button data-v="D">South wall</button>
+<button data-v="W">West wall</button>
+<button data-v="NW">North wall</button>
+<button data-v="EW">East wall</button>
 <button data-v="S">View from south</button>
 <button data-v="N">View balcony</button>
 <button data-v="T">Top down</button>
