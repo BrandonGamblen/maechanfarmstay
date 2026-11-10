@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apartment 3D Model</title>
+<style>
+:root{--bg:#F7F6F2;--card:#FFFFFF;--text:#2C2C2A;--muted:#5F5E5A;--border:#D3D1C7;}
+@media (prefers-color-scheme:dark){:root{--bg:#1E1E1C;--card:#2A2A28;--text:#F1EFE8;--muted:#B4B2A9;--border:#444441;}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);}
+main{max-width:1100px;margin:0 auto;padding:16px;}
+h1{font-size:20px;font-weight:500;margin:0 0 4px}
+.sub{font-size:13px;color:var(--muted);margin:0 0 12px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+button{font:inherit;font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--muted)}
+button.on{border-color:#534AB7;color:#534AB7}
+#wrap{width:100%;height:68vh;min-height:420px;border-radius:12px;background:var(--card);border:1px solid var(--border);overflow:hidden}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-top:10px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid var(--border)}
+.note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+</style>
+</head>
+<body>
+<main>
+<h1>Living room, 3D model</h1>
+<p class="sub">Brandon's Montreal apartment. Units: inches. Source of truth: the project doc "living-room.md". Last updated 2026-11-09.</p>
+<div class="bar">
+<button data-v="D">South wall lattice</button>
+<button data-v="W">West wall lattice</button>
+<button data-v="NW">North wall lattice</button>
+<button data-v="EW">East wall lattice</button>
+<button data-v="S">View from south</button>
+<button data-v="N">View balcony</button>
+<button data-v="T">Top down</button>
+<button data-v="F">Fridge close-up</button>
+<button data-v="H">Heater close-up</button>
+<button data-v="JT">Trim / pilaster joint</button>
+<button data-v="JF">Frieze / cap joint</button>
+<button data-v="DK">Desk</button>
+<button data-v="DS">Desk side</button>
+<button id="cur">Hide curtains</button>
+<button id="wp">Wallpaper: emerald velvet</button>
+<button id="led">LEDs on</button>
+<button id="ceil">Show ceiling</button>
+<button id="dimb" class="on">Hide names + dimensions</button>
+<button data-v="EL">Electricity view</button>
+<button id="elec" class="on">Hide electricity</button>
+</div>
+<div id="wrap"></div>
+<div id="jleg" class="legend" style="display:none"><span><span class="sw" style="background:#A8E6BC"></span>Casing faces (pilaster face, trim face, frieze)</span><span><span class="sw" style="background:#16301F"></span>Hidden backing (pilaster body, cleats)</span><span><span class="sw" style="background:#4F9E6E"></span>Plinth and cap</span><span>Lattice faded. Trim face: cut to the bay, ends tuck ⅜" under the pilaster face. Pilaster face: 2 mirrored casings, 4¼", butts into plinth and cap. Frieze: runs unbroken over the caps.</span></div>
+<div class="legend">
+<span><span class="sw" style="background:#2F6B47"></span>Lattice, pilasters, trim (green)</span>
+<span><span class="sw" style="background:#F8F8F5"></span>Walls (white)</span>
+<span><span class="sw" style="background:#FFE7A8"></span>LED strips</span>
+<span><span class="sw" style="background:#CFD8DC"></span>Mirror (40"×28")</span>
+<span><span class="sw" style="background:#355E3B"></span>Baseboard and north door/window trim (hunter green)</span>
+<span><span class="sw" style="background:#FFFFFF"></span>Door, door head frame, window centre frame, heater, west switch and thermostat (white)</span>
+<span><span class="sw" style="background:#85B7EB"></span>Window</span>
+<span><span class="sw" style="background:#2B2E33"></span>Curtains: white sheers, dark panel at the east end; black rod with scroll finials</span>
+<span><span class="sw" style="background:#C9A86A"></span>Exterior brick: buff on the north (street) facade, red on the east end wall; white balcony railing (street photos 2026-11-09)</span>
+<span><span class="sw" style="background:#B4B2A9"></span>Balcony</span>
+<span><span class="sw" style="background:#C99A63"></span>Floor: strip hardwood (bois franc), appears red oak</span>
+<span><span class="sw" style="background:#D32F2F"></span>Mini fridge</span>
+<span><span class="sw" style="background:#355E3B"></span>Workstation desk (plywood, painted hunter green)</span>
+<span><span class="sw" style="background:#111418"></span>Monitors and 40" screen</span>
+<span><span class="sw" style="background:#2C2C2A"></span>Outlets</span>
+<span><span class="sw" style="background:#1E1E1E"></span>Cage sconces (west) and candle sconces (south and north, in framed openings)</span>
+<span><span class="sw" style="background:#F8F8F5"></span>A/C port (white, outlined)</span>
+<span><span class="sw" style="background:#7F77DD"></span>Entry header, fridge door swing, 44" art line; hatched = flagged north wall spaces (treatment open)</span>
+</div>
+<p class="note">Drag to orbit, right-drag to pan, scroll to zoom. Walls are see-through from behind. Dimensions are visible sizes to the nearest 1/16"; lattice cut sizes, materials, prices and every measurement and placeholder are in the project doc "living-room.md". Joint close-ups colour the parts: casing faces light, hidden backing dark, plinths and caps mid green. Desk placeholders: monitor heights (drawn 12" and 11"), stud location for the wall anchors.</p>
+<style>.el{margin-top:18px}.el h2{font-size:16px;font-weight:500;margin:0 0 6px}.el table{border-collapse:collapse;font-size:13px;width:100%}.el th,.el td{border-bottom:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}.el td.n{text-align:right;white-space:nowrap}.el tr.t td{font-weight:500}</style>
+<section class="el"><h2>Electricity use: Hydro-Québec bill issued 2026-10-19 (whole apartment, one meter)</h2>
+<p class="note">Sept 15 to Oct 16, 2026 (32 days): <b>454 kWh</b> (14.2 kWh/day), <b>$53.86</b>. Revised 2026-11-09 from the Hydro-Québec Espace client charts: October totalled 585 kWh; the daily bars for Oct 17–31 add to about 281 kWh, so Oct 1–16 used about 304 kWh (19/day) and Sept 15–30 about 150 kWh (9.4/day, no heating). 9.4 kWh/day is the non-heating base. Derived from the bill: system access $14.77 ÷ $0.46154/day = 32 days; consumption $32.08 ÷ 7.065¢/kWh (Rate D first tier, April 1, 2026) = 454 kWh. The meter gives one total; the split below is estimated. Costs include GST + QST (14.975%).</p>
+<table><tr><th>Use</th><th>kWh / 32 days</th><th>Cost</th><th>Basis</th></tr>
+<tr><td>Hot water (tank in Theo's closet)</td><td class="n">≈170</td><td class="n">$13.80</td><td>Hydro-Québec's breakdown for this bill: $12 before tax</td></tr>
+<tr><td>Appliances (Hydro category; includes the fridge, washer and dryer below)</td><td class="n">≈113</td><td class="n">$9.20</td><td>Hydro: $8 before tax</td></tr>
+<tr><td>Heating (living room at 19 °C; maybe one bedroom heater at 18–19 °C)</td><td class="n">≈28</td><td class="n">$2.30</td><td>Hydro: $2 before tax. The bar-chart method gave ≈154: early October ran about twice late September's 9.4 kWh/day, and Hydro does not put that rise down to heating</td></tr>
+<tr><td>Other (Hydro category; includes the lights below, electronics)</td><td class="n">≈142</td><td class="n">$11.50</td><td>Hydro: $10 before tax. Hydro's dollar figures are rounded, so each kWh figure is ±7</td></tr>
+<tr><td> of Appliances: Hisense fridge (kitchen)</td><td class="n">29</td><td class="n">$2.34</td><td>329 kWh/yr, Hisense 4.4 cu ft HRT044 (closest match to the size; model not confirmed: check the label inside the door)</td></tr>
+<tr><td> of Appliances: dryer (Theo's room)</td><td class="n">18</td><td class="n">$1.45</td><td>2 loads/week = 9.1 loads × 1.95 kWh/load (average dryer)</td></tr>
+<tr><td> of Appliances: washer (Theo's room)</td><td class="n">3</td><td class="n">$0.22</td><td>9.1 loads × 0.3 kWh (motor only, assumed); warm or hot washes draw on the water heater</td></tr>
+<tr><td> of Other: lights</td><td class="n">7</td><td class="n">$0.58</td><td>Assumed: 5 LED bulbs × 9 W × 5 h/day</td></tr>
+
+<tr><td>Galanz fridge (living room)</td><td class="n">0</td><td class="n">$0</td><td>Not running</td></tr>
+<tr><td>System access charge</td><td class="n">—</td><td class="n">$16.98</td><td>$0.46154/day × 32, fixed</td></tr>
+<tr class="t"><td>Total</td><td class="n">454</td><td class="n">$53.86</td><td></td></tr></table>
+<p class="note"><b>Current period</b> (Oct 17 to Dec 14, 59 days): $47.14 by Nov 8 (day 23), about 425 kWh from the daily bars (18.5 kWh/day); Hydro projects <b>$131.31</b>. Weekends run 22–28 kWh, weekdays 9.5–22. The jump follows the days of the week, not the weather: Fri Nov 6 used 9.5 kWh and Sun Nov 8 used 28.5 kWh at about the same 7 °C average. Nov 8 by hour: 0.8–1.0 kWh every hour overnight (heaters cycling), peaks of 1.7 at 9 h, 2.1 at 16 h, 2.0 at 20 and 21 h, and 3.97 at 22 h (dryer or water heater recovery), low 0.60 at 19 h.</p></section>
+</main>
+<script src="/lib/three.min.js"></script>
+<script src="/lib/OrbitControls.js"></script>
+<script>
+/* Coordinates: x = east from the west wall, z = south from the north wall, y = up from the floor. */
+const ROOM={north:165,east:164,south:140.125,west:136.75,ceiling:98,baseboard:4.75,extWall:11,entryHeader:9.75};
+const wrap=document.getElementById('wrap');
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(45,wrap.clientWidth/wrap.clientHeight,1,4000);
+const r=new THREE.WebGLRenderer({antialias:true,alpha:true});
+r.setPixelRatio(window.devicePixelRatio);r.setSize(wrap.clientWidth,wrap.clientHeight);wrap.appendChild(r.domElement);
+const ctl=new THREE.OrbitControls(cam,r.domElement);
+const hide=[];
+function capture(fn){const n=scene.children.length;fn();hide.push(...scene.children.slice(n));}
+function view(p,t,k){cam.position.set(...p);ctl.target.set(...t);ctl.update();hide.forEach(o=>o.visible=k!=='D');if(typeof partColours==='function'){partColours(k==='JT'||k==='JF');const jl=document.getElementById('jleg');if(jl)jl.style.display=(k==='JT'||k==='JF')?'flex':'none';}}
+const views={S:[[-170,260,380],[82,35,82]],N:[[300,230,-330],[82,30,0]],T:[[82,520,40],[82,0,40]],F:[[118,50,75],[152,15,14]],H:[[106,45,90],[106,10,0]]};
+function northView(){const t=Math.tan(cam.fov*Math.PI/360);const d=Math.min(150,Math.max(56/t,88/(t*cam.aspect)));return [[82.5,50,d],[82.5,50,0]];}
+function eastView(){const t=Math.tan(cam.fov*Math.PI/360);const d=Math.min(150,Math.max(56/t,88/(t*cam.aspect)));return [[165-d,50,82],[165,50,82]];}
+function westView(){const t=Math.tan(cam.fov*Math.PI/360);const d=Math.min(150,Math.max(56/t,74/(t*cam.aspect)));return [[d,50,68.4],[0,50,68.4]];}
+function southView(){const t=Math.tan(cam.fov*Math.PI/360);const d=Math.min(150,Math.max(56/t,78/(t*cam.aspect)));return [[95,50,164-d],[95,50,164]];}
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{const k=b.dataset.v;const v=k==='D'?southView():k==='W'?westView():k==='NW'?northView():k==='EW'?eastView():views[k];view(v[0],v[1],k==='NW'?'D':k);});
+scene.add(new THREE.AmbientLight(0xffffff,0.7));
+const dl=new THREE.DirectionalLight(0xffffff,0.5);dl.position.set(200,400,150);scene.add(dl);
+const V=(x,y,z)=>new THREE.Vector3(x,y,z);
+const CX=ROOM.north-ROOM.south, CZ=ROOM.east-ROOM.west, L=Math.hypot(CX,CZ);
+const EDGE=new THREE.LineBasicMaterial({color:0x888780});
+const walls={
+N:{o:V(0,0,0),u:V(1,0,0),n:V(0,0,1),len:ROOM.north},
+X:{o:V(ROOM.north+11,0,-11),u:V(-1,0,0),n:V(0,0,-1),len:ROOM.north+22},
+E:{o:V(ROOM.north,0,0),u:V(0,0,1),n:V(-1,0,0),len:ROOM.east},
+S:{o:V(ROOM.north,0,ROOM.east),u:V(-1,0,0),n:V(0,0,-1),len:ROOM.south},
+W:{o:V(0,0,ROOM.west),u:V(0,0,-1),n:V(1,0,0),len:ROOM.west},
+C:{o:V(0,0,ROOM.west),u:V(CX/L,0,CZ/L),n:V(CZ/L,0,-CX/L),len:L}
+};
+function place(me,w,a1,a2,y1,y2,off){const wl=walls[w];const c=wl.o.clone().add(wl.u.clone().multiplyScalar((a1+a2)/2)).add(wl.n.clone().multiplyScalar(off));c.y=(y1+y2)/2;me.position.copy(c);me.lookAt(c.clone().add(wl.n));scene.add(me);return me;}
+function panel(w,a1,a2,y1,y2,color,off,ghost,edge){
+const g=new THREE.PlaneGeometry(a2-a1,y2-y1);
+const me=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color,transparent:!!ghost,opacity:ghost?0.55:1}));
+place(me,w,a1,a2,y1,y2,off||0.2);
+if(edge)me.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),EDGE));return me;}
+function box(w,a1,a2,y1,y2,d,color,edge){
+const g=new THREE.BoxGeometry(a2-a1,y2-y1,d);
+const me=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color}));
+place(me,w,a1,a2,y1,y2,d/2);
+if(edge)me.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),EDGE));return me;}
+/* Box against a wall: a1-a2 along the wall, y1-y2 up, o1-o2 out from the wall face */
+function wb(w,a1,a2,y1,y2,o1,o2,mat){const g=new THREE.BoxGeometry(a2-a1,y2-y1,o2-o1),me=new THREE.Mesh(g,mat);if(mat===GF||mat===GB||mat===GC)me.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),OUT));place(me,w,a1,a2,y1,y2,(o1+o2)/2);return me;}
+function abox(x1,x2,y1,y2,z1,z2,color,mat){
+const me=new THREE.Mesh(new THREE.BoxGeometry(x2-x1,y2-y1,z2-z1),mat||new THREE.MeshLambertMaterial({color}));
+me.position.set((x1+x2)/2,(y1+y2)/2,(z1+z2)/2);scene.add(me);return me;}
+const X=(x1,x2,y1,y2,c,o,gh,e)=>panel('X',ROOM.north+11-x2,ROOM.north+11-x1,y1,y2,c,o,gh,e);
+
+/* Floor and ceiling */
+const fl=new THREE.Shape();
+[[0,0],[ROOM.north,0],[ROOM.north,-ROOM.east],[CX,-ROOM.east],[0,-ROOM.west]].forEach((p,i)=>i?fl.lineTo(p[0],p[1]):fl.moveTo(p[0],p[1]));
+/* Floor: existing strip hardwood (bois franc), from Brandon's photo 2026-11-08: appears to be red oak, natural/honey finish.
+   Placeholders: 2 1/4" strips, random-length staggered joints, strips drawn running north-south (direction not confirmed). */
+function floorTex(){const s=8,W=36*s,H=96*s,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
+const tones=['#C99A63','#D2A56E','#BF8F58','#D8AE7A','#C4945C','#CDA068','#B88752'];let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+for(let i=0;i<16;i++){const x=i*2.25*s;let y=-rnd()*40*s;while(y<H){const L=(14+rnd()*40)*s;g.fillStyle=tones[Math.floor(rnd()*tones.length)];g.fillRect(x,y,2.25*s,L);
+g.strokeStyle='rgba(120,75,35,0.18)';g.lineWidth=1;for(let k=0;k<5;k++){const gx=x+3+rnd()*(2.25*s-6);g.beginPath();g.moveTo(gx,y);g.bezierCurveTo(gx+rnd()*6-3,y+L/3,gx+rnd()*6-3,y+2*L/3,gx,y+L);g.stroke();}
+g.fillStyle='rgba(70,45,20,0.55)';g.fillRect(x,y+L-1,2.25*s,1.5);y+=L;}
+g.fillStyle='rgba(70,45,20,0.45)';g.fillRect(x,0,1,H);}
+const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1/36,1/96);t.anisotropy=r.capabilities.getMaxAnisotropy();return t;}
+const floor=new THREE.Mesh(new THREE.ShapeGeometry(fl),new THREE.MeshLambertMaterial({map:floorTex()}));
+floor.rotation.x=-Math.PI/2;scene.add(floor);
+const ceil=new THREE.Mesh(new THREE.ShapeGeometry(fl),new THREE.MeshLambertMaterial({color:0xF1EFE8,side:THREE.BackSide}));
+ceil.rotation.x=-Math.PI/2;ceil.position.y=ROOM.ceiling;ceil.visible=false;scene.add(ceil);
+document.getElementById('ceil').onclick=e=>{ceil.visible=!ceil.visible;e.target.textContent=ceil.visible?'Hide ceiling':'Show ceiling';e.target.classList.toggle('on',ceil.visible);};
+
+/* Walls and baseboards */
+/* Baseboard painted hunter green on all walls (decided 2026-11-08) */
+const HUNTER=0x355E3B;
+/* Walls painted white (stated 2026-11-08); the A/C exhaust port is the same white */
+const WALL=0xF8F8F5,WALLEM=0x404040;/* emissive lift so the white reads as white under the scene lights */
+['N','E','S','W'].forEach(w=>{panel(w,0,walls[w].len,0,ROOM.ceiling,WALL,0).material.emissive.setHex(WALLEM);panel(w,0,walls[w].len,0,ROOM.baseboard,HUNTER,0.3);});
+panel('C',0,L,ROOM.ceiling-ROOM.entryHeader,ROOM.ceiling,0x7F77DD,0);
+
+/* North wall exterior: brick face, wall top */
+capture(()=>{
+abox(-11,ROOM.north+11,ROOM.ceiling,ROOM.ceiling+1,-11,0,0x5F5E5A);
+X(-11,ROOM.north+11,-6,ROOM.ceiling,0xC9A86A,0);
+X(34.5,64.5,3,82.75,0xFFFFFF,0.3,false,true);
+X(67.375,127.5,21,84.625,0x85B7EB,0.3,true);
+});
+
+/* North wall interior (corrected 2026-11-08). One 2 3/4" trim style throughout:
+   - door left trim 31 3/4"-34 1/2"; door base trim 0-3"; door head frame 82 3/4"-84 5/8" over the door
+   - head trim 84 5/8"-87 3/8" runs straight across from the door's left trim (31 3/4") to the window's right trim (130 1/4")
+   - window right trim 127 1/2"-130 1/4"; sill trim along the bottom of the window, its bottom 5 1/2" above the heater top
+   - heater height not measured: HEATER_TOP is a placeholder (12 3/4" AFF), so the sill trim and glass bottom move with it */
+const WH=0xFFFFFF,DARK=0x2C2C2A,GLASS=0x85B7EB;
+const HEATER_TOP=12.75,SILL_B=HEATER_TOP+5.5,SILL_T=SILL_B+2.75;
+/* Existing door and window trim painted hunter green (decided 2026-11-08); it is the frame edge for the north lattice sections */
+panel('N',31.75,34.5,0,84.625,HUNTER,0.6,false,true);
+panel('N',34.5,64,3,82.75,WH,0.4,false,true);panel('N',64,64.5,3,82.75,0xD3D1C7,0.35);
+{const ST=new THREE.MeshPhongMaterial({color:0xBFC3C7,shininess:90,specular:0xcccccc}),hx=62.1,cyl=(r,d,y,z)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d,28),ST);m.rotation.x=Math.PI/2;m.position.set(hx,y,z);scene.add(m);return m;};
+const ly=82.75-39.25-1.375;cyl(1.375,0.3,ly,0.55);cyl(1.15,0.2,ly,0.8);{const t=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.45,0.45),ST);t.position.set(hx,ly,1.1);scene.add(t);}
+const ky=82.75-47.25+1.15;cyl(1.3,0.3,ky,0.55);cyl(0.45,1.0,ky,1.1);{const b=new THREE.Mesh(new THREE.SphereGeometry(1.15,20,14),ST);b.position.set(hx,ky,2.2);scene.add(b);}
+{const sp=new THREE.Mesh(new THREE.BoxGeometry(0.4,2.75,0.15),ST);sp.position.set(64.25,ky,0.45);scene.add(sp);}}
+{const a1=34.5+3.75,a2=a1+22,y2=82.75-3.75,y1=y2-50,t=1.5,ym=(y1+y2)/2;[[a1,a1+t,y1,y2],[a2-t,a2,y1,y2],[a1,a2,y2-t,y2],[a1,a2,y1,y1+t],[a1+t,a2-t,ym-0.7,ym+0.7]].forEach(([b1,b2,c1,c2])=>panel('N',b1,b2,c1,c2,WH,0.75,false,true));panel('N',a1+t,a2-t,y1+t,y2-t,GLASS,0.6,true);
+{const SL=new THREE.MeshLambertMaterial({color:0xF7F7F3,emissive:0x2A2A2A}),RL=new THREE.MeshLambertMaterial({color:0xEDEDE8,emissive:0x2A2A2A});abox(a1,a2,y2+0.25,y2+1.75,0.9,2.6,0,RL);for(let y=y1;y<y2;y+=1)abox(a1+0.1,a2-0.1,y,y+0.12,1.1,2.3,0,SL);abox(a1+0.1,a2-0.1,y1-0.6,y1,1.0,2.4,0,RL);}}
+panel('N',34.5,64.5,82.75,84.625,WH,0.5,false,true);
+panel('N',31.75,130.25,84.625,87.375,HUNTER,0.6,false,true);
+panel('N',31.75,64.5,0,3,HUNTER,0.6,false,true);
+panel('N',64.5,67.375,3,84.625,0xD3D1C7,0.4);
+panel('N',67.375,127.5,SILL_T,84.625,GLASS,0.4,true);
+/* Window glass in three sections (stated 2026-11-08): a frame splits the window down the middle; left = vertically sliding window
+   (two sashes, lower and upper); right = one fixed pane top to bottom, no horizontal divider.
+   Placeholders until measured: centre frame 2" wide, centred; meeting rail 1 1/2" at the left half's mid-height. */
+const WMID=(67.375+127.5)/2,WMH=(SILL_T+84.625)/2;
+panel('N',WMID-1,WMID+1,SILL_T,84.625,WH,0.5,false,true);
+panel('N',67.375,WMID-1,WMH-0.75,WMH+0.75,WH,0.5,false,true);
+panel('N',127.5,130.25,SILL_T,84.625,HUNTER,0.6,false,true);
+panel('N',67.375,130.25,SILL_B,SILL_T,HUNTER,0.6,false,true);
+capture(()=>{
+box('N',64.5,148.5,4.75,HEATER_TOP,3.25,WH,true);
+for(let x=66.5;x<147;x+=1.5)panel('N',x,x+0.6,6,11.5,0xD3D1C7,3.3);
+});
+panel('N',157.75,160.5,16.75,21.25,DARK,0.5);
+
+/* East wall */
+panel('E',5,7.75,16.75,21.25,0x5F5E5A,0.5);
+panel('E',9.5,36.5,15,33,WALL,0.5,false,true).material.emissive.setHex(WALLEM);
+
+/* South wall: Socket 1, 28.25-31 from the SE corner */
+panel('S',28.25,31,11.75,16.25,DARK,0.5);
+
+/* West wall (positions measured from the south end) */
+panel('W',7.375,9.875,52.625,57,WH,0.5,false,true).material.emissive.setHex(WALLEM);
+panel('W',11.75,16.25,57.75,62.5,WH,0.5,false,true).material.emissive.setHex(WALLEM);
+panel('W',42.25,46.25,64,68,0xEF9F27,0.5);
+panel('W',93.75,97.75,64,68,0xEF9F27,0.5);
+panel('W',ROOM.west-43-2.75,ROOM.west-43,11.25,15.75,DARK,0.5);
+
+/* ===== South wall design: green lattice on a white field, LED trim =====
+   Positions along the wall are measured from the SE corner (a = 0 at the east end). */
+const GREEN=0x2F6B47;
+const GM=new THREE.MeshLambertMaterial({color:GREEN});
+/* trim parts get their own materials so the joint close-ups can colour them apart; edges outlined */
+const GF=new THREE.MeshLambertMaterial({color:GREEN}),GB=new THREE.MeshLambertMaterial({color:GREEN}),GC=new THREE.MeshLambertMaterial({color:GREEN});
+const OUT=new THREE.LineBasicMaterial({color:0x10261A});
+const LATM=[];
+function partColours(on){GF.color.setHex(on?0xA8E6BC:GREEN);GB.color.setHex(on?0x16301F:GREEN);GC.color.setHex(on?0x4F9E6E:GREEN);OUT.color.setHex(on?0x000000:0x10261A);LATM.forEach(m=>{m.opacity=on?0.2:1;m.alphaTest=on?0.05:0.5;m.needsUpdate=true;});if(typeof dims!=='undefined')dims.forEach(d=>d.visible=!on&&document.getElementById('dimb').classList.contains('on'));}
+const LEDM=new THREE.MeshBasicMaterial({color:0x8A8A86});
+/* Room standards: divider (trim) top 40" AFF; bottom line of paintings, mirrors and screens 44" AFF */
+const TRIM_TOP=40,ART_LINE=44;
+/* Trim face (revised 2026-11-08): Alexandria 3/8" x 2 1/8" x 84" colonial MDF casing (HD 1000105044), 37 7/8"-40"; cleat = SPF 1x2 on edge (3/4" tall x 1 1/2" deep, decided 2026-11-08), centred behind it, so the face overhangs 11/16" top and bottom and hides the LED strips on the cleat's 1 1/2" edges. No chair rail. */
+/* Frieze bottom 86 3/4" (lowered 2026-11-08): upper lattice cuts 47 3/4". */
+const SWD={pil:3.5,low:[4.75,TRIM_TOP-2.125],up:[TRIM_TOP,86.75],trim:[TRIM_TOP-2.125,TRIM_TOP],cleat:[TRIM_TOP-1.0625-0.375,TRIM_TOP-1.0625+0.375],frieze:86.75,latOff:1.25};
+const REVEAL=2,FRAME=2;
+const SEAM=new THREE.MeshLambertMaterial({color:0x1F4A31});
+const fields=[];
+function latTex(w,h,type,holes){
+const s=8,c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(h*s);const g=c.getContext('2d');
+g.strokeStyle='#2F6B47';g.lineWidth=1.25*s;g.beginPath();
+if(type==='diag'){const p=5*s;for(let k=-c.height;k<c.width+c.height;k+=p){g.moveTo(k,0);g.lineTo(k+c.height,c.height);g.moveTo(k,c.height);g.lineTo(k+c.height,0);}}
+else if(type==='hs'||type==='vs'){/* Suntrellis Contemporary: 1 1/2" slats, 3/4" gaps */const P=2.25*s,S=1.5*s;g.fillStyle='#2F6B47';if(type==='hs'){for(let y=0.375*s;y<c.height;y+=P)g.fillRect(0,y,c.width,S);}else{for(let x=0.375*s;x<c.width;x+=P)g.fillRect(x,0,S,c.height);}}
+else{const p=4*s;for(let x=p/2;x<c.width;x+=p){g.moveTo(x,0);g.lineTo(x,c.height);}for(let y=p/2;y<c.height;y+=p){g.moveTo(0,y);g.lineTo(c.width,y);}}
+g.stroke();
+g.lineWidth=3*s;g.strokeRect(0,0,c.width,c.height);
+holes.forEach(o=>g.clearRect(o.x1*s,o.y1*s,(o.x2-o.x1)*s,(o.y2-o.y1)*s));
+const t=new THREE.CanvasTexture(c);t.anisotropy=r.capabilities.getMaxAnisotropy();return t;}
+function latPanel(w,a1,a2,y1,y2,type,holes){
+const tex=latTex(a2-a1,y2-y1,type,holes.map(o=>({x1:o.a1-a1,x2:o.a2-a1,y1:y2-o.y2,y2:y2-o.y1})));
+const lm=new THREE.MeshLambertMaterial({map:tex,transparent:true,alphaTest:0.5,side:THREE.DoubleSide});LATM.push(lm);const m=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),lm);
+place(m,w,a1,a2,y1,y2,SWD.latOff);
+/* standoff frame rails, top and bottom (pilasters cover the sides) */
+wb(w,a1,a2,y2-1.5,y2,0,SWD.latOff,GM);wb(w,a1,a2,y1,y1+1.5,0,SWD.latOff,GM);
+/* hidden LED strip inside the standoff, under the top rail */
+wb(w,a1+1,a2-1,y2-1.9,y2-1.5,0.2,1.0,LEDM);
+return m;}
+const wpt=(w,a,y,off)=>{const wl=walls[w];const p=wl.o.clone().add(wl.u.clone().multiplyScalar(a)).add(wl.n.clone().multiplyScalar(off));p.y=y;return p;};
+const PAINT=new THREE.MeshLambertMaterial({color:0x6B4A2E});
+const CANVAS=new THREE.MeshLambertMaterial({color:0xB9A27E});
+const MIRROR=new THREE.MeshPhongMaterial({color:0xCFD8DC,shininess:150,specular:0xffffff});
+const BRASS=new THREE.MeshPhongMaterial({color:0xC9A227,shininess:80});
+/* Dark brown wood grain for the living room mirror frame (2026-11-09) */
+const WOODF=(()=>{const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');g.fillStyle='#3B2416';g.fillRect(0,0,256,64);for(let i=0;i<70;i++){const y=Math.random()*64,a=0.05+Math.random()*0.18;g.strokeStyle=(i%3?'rgba(20,10,5,':'rgba(110,70,40,')+a+')';g.lineWidth=0.6+Math.random()*1.6;g.beginPath();g.moveTo(0,y);for(let x=0;x<=256;x+=16)g.lineTo(x,y+Math.sin(x/40+i)*1.8);g.stroke();}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,1);return new THREE.MeshLambertMaterial({map:t});})();
+function frame(w,h,f,d,m){m=m||GM;wb(w,h.a1-f,h.a2+f,h.y2,h.y2+f,0,d,m);wb(w,h.a1-f,h.a2+f,h.y1-f,h.y1,0,d,m);wb(w,h.a1-f,h.a1,h.y1,h.y2,0,d,m);wb(w,h.a2,h.a2+f,h.y1,h.y2,0,d,m);}
+/* Dimension labels (visible sizes, inches, to 1/16) */
+const dims=[];
+function fmt(x){const n=Math.round(x*16);let w=Math.floor(n/16),f=n%16;if(!f)return w+'"';let d=16;while(f%2===0){f/=2;d/=2;}return (w?w+' ':'')+f+'/'+d+'"';}
+function dim(w,a,y,t){const p=wpt(w,a,y,3);label(t,p.x,p.y,p.z,0.18);}
+/* One lattice wall. pils = left edge of each 4" pilaster (a along the wall); items = one per bay or null; cuts = outlets/controls to leave open */
+function buildWall(w,cfg){
+const len=walls[w].len,P=SWD.pil;
+{const f=panel(w,0,len,ROOM.baseboard,SWD.frieze,WALL,0.15);f.material.emissive.setHex(WALLEM);fields.push(f);}
+const bays=cfg.bays||[];if(!cfg.bays)for(let i=0;i<cfg.pils.length-1;i++)bays.push([cfg.pils[i]+P,cfg.pils[i+1]]);
+const skipUp=cfg.skipUp||[],skipLow=cfg.skipLow||[],half=cfg.half||[];
+bays.forEach(([b1,b2],i)=>{
+const it=cfg.items[i],ac=(b1+b2)/2;let ia1,ia2,iy1,iy2,hole=null;
+if(it){ia1=ac-it.w/2;ia2=ac+it.w/2;iy1=it.y;iy2=it.y+it.h;hole={a1:ia1-REVEAL,a2:ia2+REVEAL,y1:iy1-REVEAL,y2:iy2+REVEAL};}
+const upH=hole?[hole]:[],loH=[];
+cfg.cuts.filter(o=>o.a2>b1&&o.a1<b2).forEach(o=>{const h={a1:Math.max(b1,o.a1-1),a2:Math.min(b2,o.a2+1),y1:o.y1-1,y2:o.y2+1};(o.y1>=SWD.up[0]?upH:loH).push(h);if(o.y1>=SWD.up[0])frame(w,h,1,2);});
+if(!skipUp.includes(i))latPanel(w,b1,b2,SWD.up[0],SWD.up[1],'diag',upH);
+if(!skipLow.includes(i))latPanel(w,b1,b2,SWD.low[0],SWD.low[1],'hs',loH);
+const bw=b2-b1;
+if(!skipUp.includes(i)){if(hole&&it.kind!=='c'){const ft=hole.y2+FRAME;dim(w,ac,(ft+SWD.up[1])/2,fmt(bw)+' × '+fmt(SWD.up[1]-ft));}else dim(w,ac,hole?SWD.up[1]-7:(SWD.up[0]+SWD.up[1])/2,fmt(bw)+' × '+fmt(SWD.up[1]-SWD.up[0]));}
+if(!skipLow.includes(i))dim(w,ac,(SWD.low[0]+SWD.low[1])/2,fmt(bw)+' × '+fmt(SWD.low[1]-SWD.low[0]));
+if(hole){dim(w,ac,(hole.y1+hole.y2)/2+(it.kind==='c'?-9:0),'opening '+fmt(hole.a2-hole.a1)+' × '+fmt(hole.y2-hole.y1)+' ('+fmt(hole.y1)+'–'+fmt(hole.y2)+' AFF)');
+dim(w,ac,hole.y1-FRAME-1.6,'frame outside '+fmt(hole.a2-hole.a1+2*FRAME)+' × '+fmt(hole.y2-hole.y1+2*FRAME));}
+if(it){frame(w,hole,FRAME,2,it.kind==='m'?WOODF:null);
+if(it.kind==='m')wb(w,ia1,ia2,iy1,iy2,0.3,0.9,MIRROR);else if(it.kind==='c'){/* candle sconce drawn separately */}else if(it.img){wb(w,ia1,ia2,iy1,iy2,0.3,1.5,PAINT);const tx=new THREE.TextureLoader().load(it.img);tx.anisotropy=r.capabilities.getMaxAnisotropy();place(new THREE.Mesh(new THREE.PlaneGeometry(it.w,it.h),new THREE.MeshBasicMaterial({map:tx})),w,ia1,ia2,iy1,iy2,1.52);}else{wb(w,ia1,ia2,iy1,iy2,0.3,1.5,PAINT);wb(w,ia1+2,ia2-2,iy1+2,iy2-2,1.5,1.6,CANVAS);}
+const lp=it.kind==='c'?wpt(w,ac,iy2+REVEAL+FRAME+2.5,4):wpt(w,ac,iy2-3,4);label(it.name,lp.x,lp.y,lp.z,0.3);}
+/* trim: cleat, face, LED strips on the cleat's top and bottom edges */
+wb(w,b1,b2,SWD.cleat[0],SWD.cleat[1],0,1.5,GB);
+wb(w,b1,b2,SWD.trim[0],SWD.trim[1],1.5,1.875,GF);
+wb(w,b1+0.5,b2-0.5,SWD.cleat[1],SWD.cleat[1]+0.12,0.3,1.2,LEDM);
+wb(w,b1+0.5,b2-0.5,SWD.cleat[0]-0.12,SWD.cleat[0],0.3,1.2,LEDM);
+});
+/* Pilaster: 3 1/2" body; face = 2 mirrored 3/8x2 1/8 casings (4 1/4", 3/8" overhang each side, flush at wall ends), plinth top to cap bottom. */
+cfg.pils.forEach(a1=>{const a2=a1+P,h=half.includes(a1),end0=a1<=0.01,end1=a2>=len-0.01;
+const f1=end0?0:end1?len-4.25:a1-0.375,f2=f1+4.25,p1=end0?0:end1?len-4.5:a1-0.5,p2=p1+4.5,fy1=h?SWD.trim[0]:8,fy2=SWD.frieze-4;
+/* half pilaster: starts on the trim (used over the baseboard heater) */
+wb(w,a1,a2,h?SWD.trim[0]:0,SWD.frieze,0,2.5,GB);
+const fm=(f2-f1)/2;[[f1,f1+fm,0],[f1+fm,f2,1]].forEach(([c1,c2,side])=>{
+ /* casing: thin inner edge 1/4" proud, thick outer 3/4" strip 3/8" proud */
+ const th1=side?c2-0.75:c1,th2=side?c2:c1+0.75;
+ wb(w,c1,c2,fy1,fy2,2.5,2.75,GF);wb(w,th1,th2,fy1,fy2,2.75,2.875,GF);});
+wb(w,f1+fm-0.04,f1+fm+0.04,fy1,fy2,2.75,2.8,SEAM);
+if(!h)wb(w,p1,p2,0,8,0,3,GC);wb(w,p1,p2,fy2,SWD.frieze,0,3,GC);});
+/* frieze (revised 2026-11-08): the trim face casing (3/8 x 2 1/8) on a 1x2 cleat, 86 3/4"-88 7/8", like the mid trim; wall painted above */
+wb(w,0,len,SWD.frieze+1.0625-0.375,SWD.frieze+1.0625+0.375,0,1.5,GB);
+wb(w,0,len,SWD.frieze,SWD.frieze+2.125,1.5,1.875,GF);
+wb(w,0,len,ROOM.ceiling-1.5,ROOM.ceiling,0,3.5,GM);
+return bays;}
+
+/* SOUTH WALL (a from the SE corner). The mirror (40" W x 28" H, centered) is the only item; side bays are plain lattice.
+   Center bay 51" (mirror 40 + 2x2 reveal + 2x2 moulding + 2x1.5 lattice); side bays share the rest. */
+const SB=(ROOM.south-SWD.pil*4-51)/2;
+const bays=buildWall('S',{pils:[0,SWD.pil+SB,2*SWD.pil+SB+51,ROOM.south-SWD.pil],
+ items:[{name:'Candle sconce',w:6,h:10,y:53,kind:'c'},{name:'Mirror',w:40,h:28,y:ART_LINE,kind:'m'},{name:'Candle sconce',w:6,h:10,y:53,kind:'c'}],
+ skipLow:[0],cuts:[{a1:28.25,a2:31,y1:11.75,y2:16.25}]});
+/* Part names on the south wall */
+{const P1=bays[0][1]+SWD.pil/2,P2=bays[1][1]+SWD.pil/2,mid=(bays[1][0]+bays[1][1])/2,w3=(bays[2][0]+bays[2][1])/2,b1=(bays[0][0]+bays[0][1])/2;
+[['Pilaster',P1,62,4],['Plinth',P2,4,5],['Cap',P2,84.75,5],['Cornice',b1,99.5,5],['Frieze (casing on cleat)',w3,87.8,4],
+ ['Trim face (⅜×2⅛ casing)',b1,38.9,4],['Cleat (behind trim)',w3,38.9,4],['LED strips (top + bottom of cleat)',mid,33.5,4],
+ ['Lattice frame rail',w3,5.5,3],['Lattice frame rail',w3,85.3,3],['Diagonal lattice',b1,75,3],['Slat lattice (Suntrellis)',w3,24,3],
+ ['Opening moulding',mid,40.8,4],
+ ['Pilaster face: 2 mirrored casings, 4¼"',P1,55,5],['Trim face ends tuck ⅜" under the pilaster face',P1,30.5,5],['Frieze runs over the caps',P1,90.2,5]
+].forEach(([t,a,y,o])=>{const p=wpt('S',a,y,o);label(t,p.x,p.y,p.z,0.24);});}
+
+/* NORTH WALL (a from the NW corner), revised 2026-11-08. The existing door + window trim (31 3/4"-130 1/4"), painted hunter green,
+   is the frame edge: no pilasters next to it, and the trim faces run to it. Pilasters only at the corners (0" and 161 1/2").
+   West section 3 1/2"-31 3/4" (28 1/4"), east section 130 1/4"-161 1/2" (31 1/4"). Each is styled like the south wall side bays:
+   a framed 10" x 14" opening with wallpaper and a black metal candle sconce (53"-63"). East section has no lower lattice (heater below).
+   Frieze and cornice run the full 165". */
+buildWall('N',{pils:[0,161.5],bays:[[3.5,31.75],[130.25,161.5]],items:[{name:'Candle sconce',w:6,h:10,y:53,kind:'c'},{name:'Candle sconce',w:6,h:10,y:53,kind:'c'}],skipLow:[1],cuts:[{a1:157.75,a2:160.5,y1:16.75,y2:21.25}]});
+/* EAST WALL (a from the NE corner, running south). Electronics wall. Bay 1 (4"-40") lattice above and below with an opening for the A/C port.
+   Bay 2 (44"-120") screen zone: open above the trim (no lattice), lattice below. Bay 3 (124"-160") desk zone: no lattice; the trim face runs behind the workstation desk. */
+buildWall('E',{pils:[0,40,120,160.5],items:[null,null,null],skipUp:[1,2],skipLow:[0,1,2],cuts:[{a1:9.5,a2:36.5,y1:15,y2:33}]});
+/* East bay 2 lower (decided 2026-11-08): three parts from one Suntrellis sheet: 16" horizontal-slat end pieces (one sheet rectangle each,
+   cut at a batten) and a 44 1/2" centre piece turned so its slats run vertical; slat ends sit on the top and bottom frame rails. */
+latPanel('E',43.5,59.5,SWD.low[0],SWD.low[1],'hs',[]);latPanel('E',59.5,104,SWD.low[0],SWD.low[1],'vs',[]);latPanel('E',104,120,SWD.low[0],SWD.low[1],'hs',[]);
+dim('E',51.5,21,'16"');dim('E',81.75,21,'44 1/2" (slats vertical)');dim('E',112,21,'16"');
+{const a1=81.75-46.75/2,a2=81.75+46.75/2,y1=50,y2=50+30.75;wb('E',a1,a2,y1,y2,0.3,1.5,PAINT);const tx=new THREE.TextureLoader().load('painting-east.jpg');tx.anisotropy=r.capabilities.getMaxAnisotropy();place(new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),new THREE.MeshBasicMaterial({map:tx})),'E',a1,a2,y1,y2,1.52);dim('E',81.75,y2+3,'Painting 46 3/4" × 30 3/4" (50"–80 3/4" AFF)');}
+[['A/C port: no lower lattice','E',23,36,4],
+ ['Door/window trim painted hunter green','N',48,76,6]].forEach(([t,w,a,y,o])=>{const p=wpt(w,a,y,o);label(t,p.x,p.y,p.z,0.24);});
+
+/* WEST WALL (a from the south/entry end). Interior pilasters centered on the two sconce boxes (44.25 and 95.75);
+   sconces remount on the pilaster faces. Cutouts: switch + thermostat (one opening), Socket 3. No items yet. */
+buildWall('W',{pils:[0,44.25-1.75,95.75-1.75,ROOM.west-SWD.pil],items:[null,{name:'Painting (from photo; about 28¼" × 19⅜", to measure)',w:28.25,h:19.375,y:50,kind:'p',img:'painting-west.jpg'},null],skipLow:[0,1,2],half:[95.75-1.75],
+ cuts:[{a1:7.375,a2:16.25,y1:52.625,y2:62.5},{a1:ROOM.west-43-2.75,a2:ROOM.west-43,y1:11.25,y2:15.75}]});
+/* BANGANMA cage wall sconces (Amazon.ca B0CNHC68WC): 4.72" round black backplate, 0.8" deep; cage head 3.9" wide x 5.5" long;
+   8.7" overall height. Each mounts on a 5.5" square block (1x6 offcut) on the pilaster face. Box center drawn at 66" AFF (placeholder). */
+const BLK=new THREE.MeshPhongMaterial({color:0x1E1E1E,shininess:40});
+const WIRE=new THREE.MeshBasicMaterial({color:0x1E1E1E,wireframe:true});
+const BULB=new THREE.MeshBasicMaterial({color:0xFFE7A8});
+function sconce(a,yc){
+wb('W',a-2.75,a+2.75,yc-2.75,yc+2.75,2.5,3.25,GM);
+const wl=walls.W,at=(off,y)=>wpt('W',a,y,off);
+const plate=new THREE.Mesh(new THREE.CylinderGeometry(2.36,2.36,0.8,32),BLK);plate.rotation.z=Math.PI/2;plate.position.copy(at(3.65,yc));scene.add(plate);
+const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,1.6,12),BLK);arm.rotation.z=Math.PI/2;arm.position.copy(at(4.85,yc-0.3));scene.add(arm);
+const yTop=yc+2.36,yBot=yTop-8.7,cageC=(yc-0.8+yBot)/2;
+const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.75,0.75,1.4,16),BLK);cap.position.copy(at(5.6,yc-1.4));scene.add(cap);
+const cage=new THREE.Mesh(new THREE.CylinderGeometry(1.95,1.0,5.5,6,3,true),WIRE);cage.position.copy(at(5.6,cageC));scene.add(cage);
+const bulb=new THREE.Mesh(new THREE.SphereGeometry(1.05,16,12),BULB);bulb.position.copy(at(5.6,cageC+0.3));scene.add(bulb);}
+sconce(44.25,66);sconce(95.75,66);
+/* Remenna candle sconces (Amazon.ca B09YC4JNDL), 6" x 10", 53"-63" AFF, in a 10" x 14" opening with a 2" moulding. */
+function scrollTex(){
+const c=document.createElement('canvas');c.width=300;c.height=500;const g=c.getContext('2d');
+g.strokeStyle='#1E1E1E';g.lineWidth=11;g.lineCap='round';
+const half=(f)=>{g.save();f();g.restore();g.save();g.translate(300,0);g.scale(-1,1);f();g.restore();};
+g.beginPath();g.moveTo(150,140);g.bezierCurveTo(95,95,110,15,150,15);g.bezierCurveTo(190,15,205,95,150,140);g.stroke();
+g.fillStyle='#1E1E1E';g.fillRect(126,132,48,16);
+half(()=>{
+/* heart scroll: from collar out and down to the tray */
+g.beginPath();g.moveTo(140,150);g.bezierCurveTo(60,110,10,170,30,230);g.bezierCurveTo(45,275,110,285,145,300);g.stroke();
+/* inner curl of the heart */
+g.beginPath();g.moveTo(140,165);g.bezierCurveTo(95,150,70,185,85,210);g.bezierCurveTo(100,232,128,218,118,200);g.stroke();
+/* small outer curl at the top shoulder */
+g.beginPath();g.moveTo(30,230);g.bezierCurveTo(12,205,35,185,52,200);g.stroke();
+/* lower scroll under the tray */
+g.beginPath();g.moveTo(145,320);g.bezierCurveTo(70,320,25,360,45,405);g.bezierCurveTo(60,440,105,425,98,395);g.bezierCurveTo(92,375,70,380,72,395);g.stroke();
+});
+g.beginPath();g.moveTo(150,148);g.lineTo(150,300);g.stroke();
+g.beginPath();g.moveTo(150,320);g.bezierCurveTo(115,380,120,470,150,485);g.bezierCurveTo(180,470,185,380,150,320);g.stroke();
+return new THREE.CanvasTexture(c);}
+/* Peel-and-stick wallpaper rectangle behind each candle sconce: fills the 10" x 14" opening (inside the moulding), 51"-65" AFF.
+   Five candidates from Brandon's Amazon screenshots (2026-11-08); the button cycles them until he picks one. */
+function wpTex(k){const c=document.createElement('canvas');c.width=200;c.height=280;const g=c.getContext('2d');
+if(k===0){g.fillStyle='#1E5A3A';g.fillRect(0,0,200,280);for(let i=0;i<60;i++){g.fillStyle='rgba('+(i%2?'255,255,255,0.06':'0,0,0,0.12')+')';g.beginPath();g.ellipse(Math.random()*200,Math.random()*280,30,8,Math.random()*3,0,7);g.fill();}}
+else if(k===1){g.fillStyle='#16140F';g.fillRect(0,0,200,280);const cs=['#5E8C3A','#8DAA5B','#3F6B3A','#A9B57A'];for(let i=0;i<26;i++){const x=Math.random()*200,y=Math.random()*280,a=Math.random()*6.3,L=25+Math.random()*25;g.strokeStyle=cs[i%4];g.lineWidth=2;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(a)*L,y+Math.sin(a)*L);g.stroke();for(let t=0.15;t<1;t+=0.12){const px=x+Math.cos(a)*L*t,py=y+Math.sin(a)*L*t;g.lineWidth=1.5;g.beginPath();g.moveTo(px,py);g.lineTo(px+Math.cos(a+1)*8*(1-t),py+Math.sin(a+1)*8*(1-t));g.moveTo(px,py);g.lineTo(px+Math.cos(a-1)*8*(1-t),py+Math.sin(a-1)*8*(1-t));g.stroke();}}g.fillStyle='#8E2B2B';for(let i=0;i<8;i++){g.beginPath();g.arc(Math.random()*200,Math.random()*280,3,0,7);g.fill();}}
+else if(k===3){g.fillStyle='#EEEBDD';g.fillRect(0,0,200,280);g.strokeStyle='#7E8F5E';g.lineWidth=1.5;for(let i=0;i<9;i++){const x=(i%3)*70+20+(i%2)*15,y=Math.floor(i/3)*95+20;g.beginPath();g.moveTo(x,y+70);g.bezierCurveTo(x+10,y+40,x+30,y+30,x+35,y);g.stroke();for(let j=0;j<6;j++){g.beginPath();g.arc(x+8+j*5,y+60-j*10,5,0,6.3);g.stroke();}g.beginPath();g.arc(x+35,y+5,9,0,6.3);g.stroke();g.beginPath();g.arc(x+35,y+5,4,0,6.3);g.stroke();}}
+else if(k===4){g.fillStyle='#C9CDB4';g.fillRect(0,0,200,280);g.strokeStyle='#E9EADB';g.lineWidth=2;[[50,70],[150,70],[100,175],[50,280],[150,280],[0,175],[200,175]].forEach(([x,y])=>{g.beginPath();g.ellipse(x,y,28,45,0,0,6.3);g.stroke();g.beginPath();g.ellipse(x,y,14,24,0,0,6.3);g.stroke();for(let t=0;t<6.28;t+=0.8){g.beginPath();g.moveTo(x+Math.cos(t)*14,y+Math.sin(t)*24);g.lineTo(x+Math.cos(t)*28,y+Math.sin(t)*45);g.stroke();}});}
+else{const gr=g.createLinearGradient(0,0,0,280);gr.addColorStop(0,'#E4E6DC');gr.addColorStop(1,'#C9CDBE');g.fillStyle=gr;g.fillRect(0,0,200,280);[[30,'#9AA796'],[70,'#55664F'],[120,'#7E8C78'],[165,'#3E4E3A']].forEach(([x,c])=>{g.fillStyle=c;for(let y=20;y<260;y+=22){const w=8+(y-20)*0.12;g.beginPath();g.moveTo(x,y);g.lineTo(x-w,y+30);g.lineTo(x+w,y+30);g.fill();}g.fillRect(x-2,250,4,30);});}
+return new THREE.CanvasTexture(c);}
+const WPT=[wpTex(0),wpTex(1),wpTex(2),wpTex(3),wpTex(4)],WPN=['emerald velvet','fern on black','misty forest','green floral toile','sage damask'];let wpk=0;
+const WPM=new THREE.MeshLambertMaterial({map:WPT[0]});
+/* candle-sconce positions: south side bays and north side sections */
+const CANDLES=[['S',(bays[0][0]+bays[0][1])/2],['S',(bays[2][0]+bays[2][1])/2],['N',(3.5+31.75)/2],['N',(130.25+161.5)/2]];
+CANDLES.forEach(([w,a])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(10,14),WPM);place(m,w,a-5,a+5,51,65,0.25);});
+{const m=new THREE.Mesh(new THREE.PlaneGeometry(10.875,11.875),WPM);place(m,'W',6.375,17.25,51.625,63.5,0.25);}
+document.getElementById('wp').onclick=e=>{wpk=(wpk+1)%5;WPM.map=WPT[wpk];WPM.needsUpdate=true;e.target.textContent='Wallpaper: '+WPN[wpk];};
+const SCROLL=new THREE.MeshBasicMaterial({map:scrollTex(),transparent:true,alphaTest:0.4,side:THREE.DoubleSide});
+CANDLES.forEach(([w,a])=>{
+const y0=53;/* bottom of the 10" sconce */
+const sc=new THREE.Mesh(new THREE.PlaneGeometry(6,10),SCROLL);place(sc,w,a-3,a+3,y0,y0+10,0.4);
+/* round shallow tray projecting from the frame, 4" up from the bottom */
+const tray=new THREE.Mesh(new THREE.CylinderGeometry(2.5,2.3,0.35,32),BLK);tray.position.copy(wpt(w,a,y0+4,0.4+2.5));scene.add(tray);
+const rim=new THREE.Mesh(new THREE.TorusGeometry(2.45,0.12,8,32),BLK);rim.rotation.x=Math.PI/2;rim.position.copy(wpt(w,a,y0+4.2,0.4+2.5));scene.add(rim);
+/* LED pillar candle on the tray */
+const cnd=new THREE.Mesh(new THREE.CylinderGeometry(0.9,0.9,2.8,20),new THREE.MeshLambertMaterial({color:0xF4EFE2}));cnd.position.copy(wpt(w,a,y0+5.6,0.4+2.5));scene.add(cnd);
+const fl=new THREE.Mesh(new THREE.SphereGeometry(0.22,10,8),BULB);fl.scale.y=1.8;fl.position.copy(wpt(w,a,y0+7.3,0.4+2.5));scene.add(fl);});
+[['Cage sconce on 5½" block',44.25,80,6],['Cage sconce on 5½" block',95.75,80,6],['Switch + thermostat opening (wallpaper)',11.8,67,4],['Socket 3 (check vs pilaster)',92,20,4],['Balcony door opens 90°, clear of the sofa',122,30,52],['No lower lattice on this wall',70,25,4],['Pilaster stops at the trim (hidden by the sofa)',95.75,35,4],['No lower lattice: behind sofa and chair',90,20,3]].forEach(([t,a,y,o])=>{const p=wpt('W',a,y,o);label(t,p.x,p.y,p.z,0.24);});
+
+/* Existing curtain set on the north wall, above the door/window head trim (from Brandon's photos, 2026-11-08).
+   Black metal rod with flat heart-scroll finials (fleur tip), on two wall brackets. The west bracket sits above the 2 7/8" strip between
+   the door and the window, so the west finial reaches back over the door head; the east bracket is past the window's right trim.
+   Curtains: white sheer rod-pocket panels across the window, one dark (charcoal) panel gathered at the east end.
+   ALL placeholders estimated from the photos until measured: rod centre 92" AFF; brackets at 65" and 133" from the NW corner, 3 1/2" projection;
+   finials 6" long; curtain bottoms at the sill trim bottom. */
+const ROD_Y=92,ROD_OFF=3.5,ROD_A1=65,ROD_A2=133,FIN=6;
+const curtains=[];
+function finTex(){const c=document.createElement('canvas');c.width=360;c.height=270;const g=c.getContext('2d');
+g.strokeStyle='#1E1E1E';g.fillStyle='#1E1E1E';g.lineWidth=14;g.lineCap='round';
+/* collar at the rod end (right edge), heart of two S-scrolls pointing left, fleur tip at the far left */
+g.fillRect(300,110,60,50);g.fillRect(280,100,22,70);
+g.beginPath();g.moveTo(280,135);g.bezierCurveTo(250,40,150,20,110,70);g.bezierCurveTo(80,110,60,130,40,135);g.stroke();
+g.beginPath();g.moveTo(280,135);g.bezierCurveTo(250,230,150,250,110,200);g.bezierCurveTo(80,160,60,140,40,135);g.stroke();
+g.lineWidth=10;g.beginPath();g.arc(140,95,22,0.5,5.2);g.stroke();g.beginPath();g.arc(140,175,22,-5.2,-0.5,true);g.stroke();
+g.beginPath();g.moveTo(40,135);g.lineTo(10,135);g.stroke();g.beginPath();g.moveTo(22,135);g.lineTo(8,115);g.moveTo(22,135);g.lineTo(8,155);g.stroke();
+return new THREE.CanvasTexture(c);}
+const FINM=new THREE.MeshBasicMaterial({map:finTex(),transparent:true,alphaTest:0.4,side:THREE.DoubleSide});
+function sheerTex(){const c=document.createElement('canvas');c.width=256;c.height=64;const g=c.getContext('2d');
+for(let x=0;x<256;x++){const v=Math.round(235+18*Math.sin(x/256*Math.PI*14));g.fillStyle='rgb('+v+','+v+','+v+')';g.fillRect(x,0,1,64);}
+const t=new THREE.CanvasTexture(c);return t;}
+{const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,ROD_A2-ROD_A1+2*1.5,16),BLK);rod.rotation.z=Math.PI/2;rod.position.copy(wpt('N',(ROD_A1+ROD_A2)/2,ROD_Y,ROD_OFF));scene.add(rod);curtains.push(rod);
+[ROD_A1,ROD_A2].forEach(a=>{curtains.push(wb('N',a-0.4,a+0.4,ROD_Y-1.5,ROD_Y+0.4,0,ROD_OFF,BLK));});
+/* finials: west one mirrored so the fleur points away from the window */
+[[ROD_A1-1.5-FIN,ROD_A1-1.5,1],[ROD_A2+1.5,ROD_A2+1.5+FIN,-1]].forEach(([a1,a2,f])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(FIN,FIN*0.75),FINM);place(m,'N',a1,a2,ROD_Y-FIN*0.375,ROD_Y+FIN*0.375,ROD_OFF);m.scale.x=f;curtains.push(m);});
+const SH=new THREE.MeshLambertMaterial({map:sheerTex(),transparent:true,opacity:0.55,side:THREE.DoubleSide,depthWrite:false});
+curtains.push(place(new THREE.Mesh(new THREE.PlaneGeometry(118-66,ROD_Y-SILL_B),SH),'N',66,118,SILL_B,ROD_Y,ROD_OFF-0.3));
+const DK=new THREE.MeshLambertMaterial({color:0x2B2E33,side:THREE.DoubleSide});
+curtains.push(place(new THREE.Mesh(new THREE.PlaneGeometry(132.5-118,ROD_Y+0.5-SILL_B),DK),'N',118,132.5,SILL_B,ROD_Y+0.5,ROD_OFF+0.3));
+[['Curtain rod + finials (height estimated)',99,ROD_Y+5,6]].forEach(([t,a,y,o])=>{const p=wpt('N',a,y,o);const n=scene.children.length;label(t,p.x,p.y,p.z,0.24);curtains.push(scene.children[n]);});}
+document.getElementById('cur').onclick=e=>{const on=e.target.textContent.startsWith('Show');curtains.forEach(o=>o.visible=on);e.target.textContent=on?'Hide curtains':'Show curtains';};
+
+/* Flagged spaces on the north wall (stated 2026-11-08): plain wall left outside the lattice pattern, kept as a unique spot.
+   Treatment open: hunter green paint (easiest), wallpaper or fabric. Drawn hatched until decided.
+   B = strip under the window; C = lower right corner (A was covered by the lowered frieze). */
+function hatchTex(){const c=document.createElement('canvas');c.width=64;c.height=64;const g=c.getContext('2d');
+g.fillStyle='rgba(127,119,221,0.18)';g.fillRect(0,0,64,64);g.strokeStyle='rgba(83,74,183,0.7)';g.lineWidth=3;
+for(let k=-64;k<128;k+=16){g.beginPath();g.moveTo(k,64);g.lineTo(k+64,0);g.stroke();}
+const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;}
+const HT=hatchTex();
+[['B','Flagged B: under window',64.5,130.25,HEATER_TOP,SILL_B],['C','Flagged C: lower right corner',130.25,161.5,ROOM.baseboard,SWD.trim[0]]].forEach(([k,t,a1,a2,y1,y2])=>{
+const tx=HT.clone();tx.needsUpdate=true;tx.repeat.set((a2-a1)/6,(y2-y1)/6);
+const m=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),new THREE.MeshBasicMaterial({map:tx,transparent:true,depthWrite:false}));
+place(m,'N',a1,a2,y1,y2,0.45);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x534AB7})));
+const p=k==='A'?wpt('N',48,(y1+y2)/2,5):wpt('N',(a1+a2)/2,k==='B'?y1-3:(y1+y2)/2+6,5);label(t,p.x,p.y,p.z,0.22);});
+
+let ledOn=false;
+document.getElementById('led').onclick=e=>{ledOn=!ledOn;LEDM.color.setHex(ledOn?0xFFE7A8:0x8A8A86);fields.forEach(f=>f.material.emissive.setHex(ledOn?0x5A4E36:WALLEM));e.target.textContent=ledOn?'LEDs off':'LEDs on';e.target.classList.toggle('on',ledOn);};
+
+/* Galanz mini fridge: 19.25 W x 20.5 D x 35.5 H (corrected 2026-11-08), 5.5 from north wall, facing east, hinged north */
+const RED=new THREE.MeshPhongMaterial({color:0xD32F2F,shininess:90,specular:0x666666});
+const CHROME=new THREE.MeshPhongMaterial({color:0xDADADA,shininess:120,specular:0xffffff});
+const FX1=0.5,FX2=21,FZ1=5.5,FZ2=24.75,R=1.6,DW=FZ2-FZ1,FH=35.5;
+const FRN0=scene.children.length;
+abox(FX1,FX2,1,FH-R,FZ1,FZ2,0,RED);
+abox(FX1+R,FX2-R,FH-R,FH,FZ1,FZ2,0,RED);
+[FX1+R,FX2-R].forEach(x=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(R,R,DW,24),RED);c.rotation.x=Math.PI/2;c.position.set(x,FH-R,(FZ1+FZ2)/2);scene.add(c);});
+abox(FX2-0.05,FX2+0.15,FH-2.4,FH-2.1,FZ1+0.2,FZ2-0.2,0,CHROME);
+abox(FX2-0.05,FX2+0.15,1,1.4,FZ1+0.2,FZ2-0.2,0,CHROME);
+abox(FX2+0.15,FX2+0.9,FH-7.4,FH-6.4,FZ2-6,FZ2-1.2,0,CHROME);
+[[FX1+1.5,FZ1+1.5],[FX1+1.5,FZ2-1.5],[FX2-1.5,FZ1+1.5],[FX2-1.5,FZ2-1.5]].forEach(p=>abox(p[0]-0.6,p[0]+0.6,0,1,p[1]-0.6,p[1]+0.6,0x2C2C2A));
+const MAX=Math.PI/2+Math.asin(3/DW);
+const arc=[];for(let i=0;i<=24;i++){const t=MAX*i/24;arc.push(V(FX2+Math.sin(t)*DW,0.3,FZ1+Math.cos(t)*DW));}
+const al=new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(FX2,0.3,FZ1),...arc,V(FX2,0.3,FZ1)]),new THREE.LineDashedMaterial({color:0x534AB7,dashSize:1.5,gapSize:1}));
+al.computeLineDistances();scene.add(al);
+{const fg=new THREE.Group();scene.children.slice(FRN0).forEach(o=>fg.add(o));fg.rotation.y=-Math.PI/2;fg.position.set(167.5,0,3);scene.add(fg);}
+/* Furniture (stated 2026-11-08). Sofa: black IKEA futon, 33 3/4" deep, seat top 14 1/2", folded backrest top 31 3/4"; width and position
+   not measured (drawn 72", centred 70" from the south end). Sofa stands flat against the west wall (Brandon's photo 2026-11-08): the pilaster behind it stops at the trim, so no plinth; front edge 33 3/4" off the wall, 3/4" inside the door hinge line (34 1/2"). */
+const FURN=new THREE.MeshLambertMaterial({color:0x222222}),DM=new THREE.MeshLambertMaterial({color:0x8A6A4A}),LZ=new THREE.MeshLambertMaterial({color:0x3A312E});
+abox(0,33.75,0,14.5,11.125,83.125,0,FURN);abox(0,6,14.5,31.75,11.125,83.125,0,FURN);
+{const P=[];for(let i=0;i<=20;i++){const t=90*Math.PI/180*i/20;P.push(V(34.5+30*Math.cos(t),0.3,30*Math.sin(t)));}const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(34.5,0.3,0),...P,V(34.5,0.3,0)]),new THREE.LineDashedMaterial({color:0x534AB7,dashSize:1.5,gapSize:1}));l.computeLineDistances();scene.add(l);}
+/* Workstation desk (revised 2026-11-08), east wall bay 3, centred 141" from the NE corner. T spine of two perpendicular 1 1/2" plywood pieces
+   (two 3/4" layers): a back plate parallel to the wall, 2"-3 1/2" off it (clears the trim face), 30" wide at the floor, swooping in to an 8" spine
+   by 30" AFF and running to 80" (top screwed to a stud); and a front leg on the centre line, foot to 20" off the wall, waist at 17" AFF, flaring
+   back out under the desk top. Desk top 30" W x 22" D, top 30" AFF, 1 1/2" thick (two 3/4" layers), carried by the front leg, the spine and two steel L wall brackets into studs (rear skirt and end brackets dropped); carries 3 screens: monitors 20 1/4" + 18"
+   wide on a VESA rail, centred on eye level 48 1/2" (stated 2026-11-08), screens 20" from the desk front; 40" screen above. Nook box cancelled.
+   40" screen: Hisense 40H55G, 35.2" x 20.2" x 3.4" (89.4 x 51.3 x 8.6 cm), 5.49 kg, VESA 100 x 200. Placeholders: monitor heights 12" and 11". */
+const PLY=new THREE.MeshLambertMaterial({color:0x355E3B,side:THREE.DoubleSide}),SCR=new THREE.MeshPhongMaterial({color:0x111418,shininess:90,specular:0x444444}),BEZ=new THREE.MeshLambertMaterial({color:0x2A2A2A});
+const DK={c:141,w:30,s0:2,sd:1.5,top:30,t:0.75,tt:1.5,dep:22,eye:48.5};DK.sf=DK.s0+DK.sd;DK.front=DK.sf+DK.dep;
+function dbx(a1,a2,y1,y2,o1,o2,mat){const m=wb('E',a1,a2,y1,y2,o1,o2,mat||PLY);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),EDGE));return m;}
+{const c=DK.c,z1=c-DK.w/2,z2=c+DK.w/2,sf=DK.sf,t=DK.t,EYE=DK.eye,Xo=o=>ROOM.north-o;
+const ext=(s,d)=>new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:false,curveSegments:24});
+const addM=(g,f)=>{const m=new THREE.Mesh(g,PLY);f(m);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g,30),EDGE));scene.add(m);return m;};
+{const s=new THREE.Shape();s.moveTo(z1,0);s.lineTo(z2,0);s.bezierCurveTo(c+5,1,c+4,12,c+4,30);s.lineTo(c+4,80);s.lineTo(c-4,80);s.lineTo(c-4,30);s.bezierCurveTo(c-4,12,c-5,1,z1,0);
+addM(ext(s,DK.sd),m=>{m.rotation.y=-Math.PI/2;m.position.x=ROOM.north-DK.s0;});}
+{const s=new THREE.Shape();s.moveTo(Xo(sf),0);s.lineTo(Xo(DK.front),0);s.lineTo(Xo(DK.front),3);s.absellipse(Xo(DK.front),14.25,16,11.25,-Math.PI/2,Math.PI/2,false);s.lineTo(Xo(DK.front),DK.top-DK.tt);s.lineTo(Xo(sf),DK.top-DK.tt);s.lineTo(Xo(sf),0);
+addM(ext(s,1.5),m=>{m.position.z=c-0.75;});}
+{const s=new THREE.Shape(),fx=Xo(DK.front);s.moveTo(c-11.25,fx);s.lineTo(c+11.25,fx);s.absellipse(c,fx,11.25,16,0,Math.PI,false);addM(ext(s,DK.tt),m=>{m.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(V(0,0,1),V(1,0,0),V(0,1,0)));m.position.y=DK.top-DK.tt;});}
+{const T=DK.top-DK.tt;[c+0.75,c-2.25].forEach(z=>{
+const s=new THREE.Shape();s.moveTo(Xo(3.5),0);s.lineTo(Xo(3.5),T);s.lineTo(Xo(14.5),T);s.bezierCurveTo(Xo(14.5),11.4,Xo(13.5),0.95,Xo(3.5),0);
+addM(ext(s,1.5),m=>{m.position.z=z;});});}
+/* PC tower (revised 2026-11-08): between the desk top and the bottom of the monitors, against the spine, clear cover facing the room.
+   Drawn as the largest box that fits: 18" along the wall x 11 3/4" tall x 8 1/2" deep (desk top 30" + 1/4" tray, to 1/2" under the lowest monitor bottom, 42 1/2").
+   On a steel tray with two straps bolted to the spine. Real case size not given. */
+{const TB=DK.top+0.25,TH=EYE-6-0.5-TB,TL=18,TW=8.5,za=c-TL/2,zb=c+TL/2,o1=sf,o2=sf+TW,TOW=new THREE.MeshLambertMaterial({color:0x3A3D42}),
+GL=new THREE.MeshPhongMaterial({color:0xBFD9E6,transparent:true,opacity:0.3,shininess:120,specular:0xffffff,depthWrite:false});
+wb('E',za-0.25,zb+0.25,DK.top,TB,o1,o2+0.25,BLK);
+dbx(za,zb,TB,TB+TH,o1,o1+0.6,TOW);dbx(za,zb,TB,TB+0.6,o1,o2,TOW);dbx(za,zb,TB+TH-0.6,TB+TH,o1,o2,TOW);dbx(za,za+0.6,TB,TB+TH,o1,o2,TOW);dbx(zb-0.6,zb,TB,TB+TH,o1,o2,TOW);
+wb('E',za+1.5,zb-6,TB+1.2,TB+TH-1.2,o1+0.6,o1+0.8,new THREE.MeshLambertMaterial({color:0x2E5A3C}));
+wb('E',za+2.5,za+11,TB+2.5,TB+5,o1+0.8,o1+5.5,new THREE.MeshLambertMaterial({color:0x111111}));
+wb('E',zb-5.5,zb-0.8,TB+0.8,TB+4.5,o1+0.6,o2-0.8,new THREE.MeshLambertMaterial({color:0x555555}));
+wb('E',za+3,za+5.5,TB+7,TB+9.5,o1+0.8,o1+3,BULB);
+wb('E',za,zb,TB,TB+TH,o2-0.15,o2,GL);
+[za+2,zb-3.5].forEach(z=>wb('E',z,z+1.5,TB+TH,TB+TH+0.2,o1,o2+0.2,BLK));
+[['PC tower space: 18 × 11¾ × 8½, clear cover',c,36,o2+4],['Steel tray + straps, bolted to the spine',c-13,33,o2+2]].forEach(([tx,aa,y,o])=>{const p=wpt('E',aa,y,o);label(tx,p.x,p.y,p.z,0.24);});}
+const MON=[[20.25,12,'Monitor 20¼"'],[18,11,'Monitor 18"']],GAP=0.5;
+dbx(c-19,c+19,EYE-1,EYE+1,sf,sf+0.5,BLK);
+let a=c-(MON[0][0]+MON[1][0]+GAP)/2;
+MON.forEach(([mw,mh,n])=>{dbx(a,a+mw,EYE-mh/2,EYE+mh/2,sf+0.5,sf+1.9,BEZ);wb('E',a+0.4,a+mw-0.4,EYE-mh/2+0.6,EYE+mh/2-0.4,sf+1.9,sf+2,SCR);const p=wpt('E',a+mw/2,EYE-2,sf+4);label(n,p.x,p.y,p.z,0.24);a+=mw+GAP;});
+const TVW=35.2,TVH=20.2,TVD=3.4,TV0=EYE+Math.max(MON[0][1],MON[1][1])/2+2;
+/* 40" Hisense on Brandon's USX MOUNT tilt mount (26-60", 1.3" deep, tilts down 9 deg), drawn at full tilt, pivoting at the bottom back edge */
+dbx(c-8,c+8,TV0+4,TV0+16,sf,sf+1.3,BLK);
+{const TM=1.3,g=new THREE.Group(),bz=new THREE.Mesh(new THREE.BoxGeometry(TVD,TVH,TVW),BEZ);bz.position.set(-TVD/2,TVH/2,0);bz.add(new THREE.LineSegments(new THREE.EdgesGeometry(bz.geometry),EDGE));g.add(bz);
+const sc=new THREE.Mesh(new THREE.BoxGeometry(0.1,TVH-0.8,TVW-0.8),SCR);sc.position.set(-TVD-0.05,TVH/2,0);g.add(sc);
+g.position.set(Xo(sf+TM),TV0,c);g.rotation.z=9*Math.PI/180;scene.add(g);}
+{const e=new THREE.Mesh(new THREE.SphereGeometry(0.8,12,8),new THREE.MeshBasicMaterial({color:0x534AB7}));e.position.copy(wpt('E',c,EYE,DK.front));scene.add(e);
+const ln=new THREE.Line(new THREE.BufferGeometry().setFromPoints([wpt('E',c,EYE,DK.front),wpt('E',c,EYE,sf+2)]),new THREE.LineDashedMaterial({color:0x534AB7,dashSize:1,gapSize:0.6}));ln.computeLineDistances();scene.add(ln);}
+[['Spine top 80": screw to a stud',c,82.5,sf+1],['Hisense 40H55G on USX tilt mount, 9° down',c,TV0+TVH/2,sf+9],['Steel plates: monitor rail, TV mount, tower cradle',c,39.5,sf+2],['Desk top: the leg cut-off, D 22½ × 16',c,31.6,22],['Eye 48½", 20" to screens',c,EYE+2,DK.front+3],['Back plate: 30" at floor to 8" spine',c+9,5,sf+2],['Front leg: elliptical cut, 3" arms, 6" web',c,6,20],['Curved fins (back plate offcuts)',c+7,20,9]].forEach(([tx,aa,y,o])=>{const p=wpt('E',aa,y,o);label(tx,p.x,p.y,p.z,0.24);});}
+/* Swivel chair (size not measured) */
+{const s=new THREE.Mesh(new THREE.CylinderGeometry(10,10,3,24),FURN);s.position.set(129.5,19.5,141);scene.add(s);
+const p=new THREE.Mesh(new THREE.CylinderGeometry(1,1,18,12),FURN);p.position.set(129.5,9,141);scene.add(p);abox(117.5,119.5,21,38,133,149,0,FURN);}
+/* La-Z-Boy in the NE corner (size not measured; drawn 36" x 36" x 40"), facing south */
+abox(3,41,0,18,97,130.5,0,LZ);abox(3,11,18,40,97,130.5,0,LZ);abox(11,41,18,26,97,102,0,LZ);abox(11,41,18,26,125.5,130.5,0,LZ);
+[['Futon sofa (width not measured)',18,36,47.125],['Swivel chair',129.5,42,141],['La-Z-Boy 33½ × 38',22,46,113.75]].forEach(([t,x,y,z])=>label(t,x,y,z,0.24));
+
+/* Balcony: 31.75 to 130.25 from NW corner, 47 deep to outer railing edge, 2 wide railing, slab 3 past railing */
+capture(()=>{
+const BX1=31.75,BX2=130.25,ZW=-11,ZR=-58,RH=42,RC=0xE8E8E4;
+abox(BX1-3,BX2+3,-6,0,ZR-3,ZW,0xB4B2A9);
+abox(BX1,BX2,RH-2,RH,ZR,ZR+2,RC);abox(BX1,BX2,2,4,ZR,ZR+2,RC);
+abox(BX1,BX1+2,RH-2,RH,ZR,ZW,RC);abox(BX2-2,BX2,RH-2,RH,ZR,ZW,RC);
+abox(BX1,BX1+2,2,4,ZR,ZW,RC);abox(BX2-2,BX2,2,4,ZR,ZW,RC);
+for(let x=BX1;x<=BX2-1;x+=5)abox(x,x+0.75,0,RH,ZR+0.6,ZR+1.4,RC);
+for(let z=ZR+5;z<ZW;z+=5){abox(BX1+0.6,BX1+1.4,0,RH,z,z+0.75,RC);abox(BX2-1.4,BX2-0.6,0,RH,z,z+0.75,RC);}
+});
+
+/* Electricity labels (2026-11-09), toggled by the Hide electricity button */
+function elabel(t,x,y,z){const c=document.createElement('canvas');const F='500 40px sans-serif';let g=c.getContext('2d');g.font=F;const w=Math.ceil(g.measureText(t).width)+36;c.width=w;c.height=64;g=c.getContext('2d');g.fillStyle='rgba(255,236,170,0.95)';g.fillRect(2,4,w-4,56);g.strokeStyle='#B07A00';g.lineWidth=3;g.strokeRect(2,4,w-4,56);g.fillStyle='#3A2A00';g.font=F;g.textAlign='center';g.textBaseline='middle';g.fillText(t,w/2,32);
+const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,depthWrite:false,transparent:true}));sp.renderOrder=999;sp.position.set(x,y,z);const k=0.2;sp.scale.set(42*k*w/192,14*k,1);scene.add(sp);(window.ELAB=window.ELAB||[]).push(sp);return sp;}
+/* Text panel lying flat along a wall-mounted unit (heaters): a1-a2 along the wall, y1-y2 up, off = distance out from the wall */
+function htext(t,w,a1,a2,y1,y2,off){const s=24,c=document.createElement('canvas');c.width=Math.round((a2-a1)*s);c.height=Math.round((y2-y1)*s);const g=c.getContext('2d');g.fillStyle='rgba(255,236,170,0.95)';g.fillRect(0,0,c.width,c.height);g.strokeStyle='#B07A00';g.lineWidth=4;g.strokeRect(2,2,c.width-4,c.height-4);let fs=Math.round(c.height*0.5);g.font='500 '+fs+'px sans-serif';while(g.measureText(t).width>c.width*0.94&&fs>8){fs--;g.font='500 '+fs+'px sans-serif';}g.fillStyle='#3A2A00';g.textAlign='center';g.textBaseline='middle';g.fillText(t,c.width/2,c.height/2);
+const tx=new THREE.CanvasTexture(c);tx.anisotropy=r.capabilities.getMaxAnisotropy();const m=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),new THREE.MeshBasicMaterial({map:tx,transparent:true}));place(m,w,a1,a2,y1,y2,off);(window.ELAB=window.ELAB||[]).push(m);return m;}
+htext('Heater on, 19 °C · all heating, Sept 15–Oct 16 (Hydro): ≈28 kWh, $2.30','N',64.5,142.5,5.5,12,3.35);
+elabel('Galanz fridge: not running (0 kWh)',152.4,FH+15,14);
+elabel('Lights, whole apartment: est. 7 kWh ($0.58) per 32 days',82,90,82);
+/* Labels */
+function label(t,x,y,z,s){
+const c=document.createElement('canvas');const F='500 40px sans-serif';let g=c.getContext('2d');g.font=F;
+const w=Math.max(192,Math.ceil(g.measureText(t).width)+28);c.width=w;c.height=64;g=c.getContext('2d');
+if(s&&s<0.35){g.fillStyle='rgba(255,255,255,0.85)';g.fillRect(4,6,w-8,52);}
+g.fillStyle='#444441';g.font=F;g.textAlign='center';g.textBaseline='middle';g.fillText(t,w/2,32);
+const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));
+/* part names (scale 0.15-0.3) render at the dimension size and toggle with the dimensions */
+const small=s&&s>=0.15&&s<=0.3;if(small)s=0.18;
+sp.position.set(x,y,z);const k=s||1;sp.scale.set(42*k*w/192,14*k,1);scene.add(sp);if(small)dims.push(sp);}
+const HB0=scene.children.length;
+const FR=(x1,x2,z1,z2,y)=>{const s=new THREE.Shape();s.moveTo(x1,-z1);s.lineTo(x2,-z1);s.lineTo(x2,-z2);s.lineTo(x1,-z2);const m=new THREE.Mesh(new THREE.ShapeGeometry(s),floor.material);m.rotation.x=-Math.PI/2;m.position.y=y;scene.add(m);return m;};
+{const WM=new THREE.MeshLambertMaterial({color:WALL,emissive:WALLEM}),BM=new THREE.MeshLambertMaterial({color:0xF2F2EE,emissive:0x303030}),DM2=new THREE.MeshLambertMaterial({color:0xFFFFFF,emissive:0x202020});
+const HW=(x1,z1,x2,z2,nx,nz,mat,y1,y2,o)=>{const L=Math.hypot(x2-x1,z2-z1),cx=(x1+x2)/2,cz=(z1+z2)/2,h=y2-y1;const m=new THREE.Mesh(new THREE.PlaneGeometry(L,h),mat);m.position.set(cx+nx*o,(y1+y2)/2,cz+nz*o);m.lookAt(cx+nx*(o+1),(y1+y2)/2,cz+nz*(o+1));scene.add(m);return m;};
+const wall=(x1,z1,x2,z2,nx,nz)=>{HW(x1,z1,x2,z2,nx,nz,WM,0,ROOM.ceiling,0);HW(x1,z1,x2,z2,nx,nz,BM,0,ROOM.baseboard,0.5);};
+const HE=24.875,HWX=HE-66,HX=HWX+41.25,dx=HWX,dz=Math.sqrt(50.5*50.5-dx*dx),JZ=ROOM.west+dz,ST=ROOM.east+42.25,BD2=ST-1.5-2.25,BD1=ST-1.5-35.5+2.25,EE=ST+151.5,WE=EE+65;
+wall(HE,ROOM.east,HE,BD1,-1,0);HW(HE,BD1,HE,BD2,-1,0,WM,82,ROOM.ceiling,0);wall(HE,BD2,HE,ST,-1,0);
+wall(HE,ST,HX,ST,0,-1);wall(HX,ST,HX,EE,-1,0);
+const ux=dx/50.5,uz=dz/50.5;wall(0,ROOM.west,HWX,JZ,uz,-ux);
+/* Front door (2026-11-09): standard 36" x 80" slab, no window, peephole; 2 1/4" casing; 2" from the west end of the wall (position estimated); knob side away from the corner (assumed) */
+{const G=new THREE.Group();G.position.set(0,0,ROOM.west);G.rotation.y=Math.atan2(-uz,ux);scene.add(G);const ad=(w,h,d,x,y,z,m)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);b.position.set(x,y,-z);G.add(b);return b;};
+const TRf=new THREE.MeshLambertMaterial({color:0xFFFFFF,emissive:0x202020}),ST2=new THREE.MeshPhongMaterial({color:0xBFC3C7,shininess:90,specular:0xcccccc}),d2=50.5-2-2.25,d1=d2-36,dc=(d1+d2)/2,tw=2.25;
+const sl=ad(36,80,1,dc,40,0.5,DM2);sl.add(new THREE.LineSegments(new THREE.EdgesGeometry(sl.geometry),new THREE.LineBasicMaterial({color:0x8C8A84})));
+[[d1-tw/2,tw,80+tw,(80+tw)/2],[d2+tw/2,tw,80+tw,(80+tw)/2],[dc,36+2*tw,tw,80+tw/2]].forEach(([x,w,h,y])=>{const t=ad(w,h,0.75,x,y,0.375,TRf);t.add(new THREE.LineSegments(new THREE.EdgesGeometry(t.geometry),new THREE.LineBasicMaterial({color:0x8C8A84})));});
+{const p=new THREE.Mesh(new THREE.CylinderGeometry(0.35,0.35,0.3,16),ST2);p.rotation.x=Math.PI/2;p.position.set(dc,60,-1.15);G.add(p);}
+{const r1=new THREE.Mesh(new THREE.CylinderGeometry(1.3,1.3,0.3,24),ST2);r1.rotation.x=Math.PI/2;r1.position.set(d1+2.75,36,-1.15);G.add(r1);const s=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.45,1.0,12),ST2);s.rotation.x=Math.PI/2;s.position.set(d1+2.75,36,-1.7);G.add(s);const k=new THREE.Mesh(new THREE.SphereGeometry(1.15,20,14),ST2);k.position.set(d1+2.75,36,-2.8);G.add(k);}
+const lp=new THREE.Vector3(dc,88,-4).applyMatrix4(G.matrixWorld.compose(G.position,G.quaternion,G.scale));label('Front door 36" × 80", no window, peephole (position on the wall and knob side estimated)',lp.x,lp.y,lp.z,0.24);}
+wall(HWX,JZ,HWX,WE,1,0);const KE=WE+132;wall(HWX,WE,HWX,KE,1,0);
+{const c=document.createElement('canvas');c.width=c.height=240;const g2=c.getContext('2d');g2.fillStyle='#BDBAB4';g2.fillRect(0,0,240,240);const tc=['#E4E3DE','#DCDBD6','#E9E8E3','#D6D5D0'];let k=0;for(let r=0;r<4;r++)for(let i=-1;i<3;i++){const x=i*120+(r%2)*60,y=r*60;g2.fillStyle=tc[(k++)%4];g2.fillRect(x+1,y+1,118,58);}
+const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set((ROOM.north-HWX)/48,132/48);
+{const im=new Image();im.onload=()=>{let k2=0;for(let r2=0;r2<4;r2++)for(let i=-1;i<3;i++){const x=i*120+(r2%2)*60,y=r2*60;g2.save();g2.translate(x+60,y+30);if(k2%2)g2.scale(-1,1);if(k2%3===2)g2.scale(1,-1);g2.drawImage(im,-59,-29,118,58);g2.restore();k2++;}t.needsUpdate=true;};im.src='kitchen-tile.jpg';}t.anisotropy=r.capabilities.getMaxAnisotropy();
+const kf=new THREE.Mesh(new THREE.PlaneGeometry(ROOM.north-HWX,132),new THREE.MeshLambertMaterial({map:t}));kf.rotation.x=-Math.PI/2;kf.position.set((HWX+ROOM.north)/2,0.06,WE+66);scene.add(kf);
+label('Kitchen: 12 × 24" grey-white tile, offset rows (132" long; tile direction assumed)',(HWX+ROOM.north)/2,30,WE+66,0.3);}
+{const BS=ST+85.5;abox(HX,ROOM.north,0,ROOM.ceiling,BS,BS+4.5,0,new THREE.MeshLambertMaterial({color:WALL,emissive:WALLEM}));label('Bedroom south wall: 85½" from the doorframe (wall 4½" assumed)',90,104,BS+2,0.24);label('Bedroom',95,40,(ROOM.east+BS)/2,0.4);
+const T=4.5,BW=HE+T,BN=ROOM.east+T;
+wall(BW,BN,ROOM.north,BN,0,1);
+wall(BW,BN,BW,BD1,1,0);HW(BW,BD1,BW,BD2,1,0,WM,82,ROOM.ceiling,0);
+wall(BW,BD2,BW,BS,1,0);
+/* Solid 4 1/2" walls (inset 0.05" behind the face planes) so wall tops and the doorway header show from any angle; wall planes drawn both sides */
+WM.side=THREE.DoubleSide;WM.needsUpdate=true;
+{const e=0.05;abox(HE+e,ROOM.north-e,0,ROOM.ceiling,ROOM.east+e,BN-e,0,WM);abox(HE+e,BW-e,0,ROOM.ceiling,BN-e,BD1,0,WM);abox(HE+e,BW-e,0,ROOM.ceiling,BD2,ST,0,WM);const hd=abox(HE+e,BW-e,82.25,ROOM.ceiling,BD1,BD2,0,WM);const p=[HE,ROOM.ceiling,BD1,BW,ROOM.ceiling,BD1,HE,ROOM.ceiling,BD2,BW,ROOM.ceiling,BD2];}
+const CM=(ST+BS)/2;abox(HX,HE,0,ROOM.ceiling,CM-1,CM+1,0,WM);abox(HE,BW,0,ROOM.ceiling,ST,BS,0,WM);
+{FR(HX,HE,ST,BS,0.05);}
+label('Hallway closet (opens to the hallway; split point assumed)',(HX+HE)/2,50,(ST+CM)/2,0.24);label('Bedroom closet (opens to the bedroom)',(HX+HE)/2,50,(CM+BS)/2,0.24);
+{const TR=new THREE.MeshLambertMaterial({color:0xFFFFFF,emissive:0x202020}),DP=new THREE.MeshLambertMaterial({color:0xF4F4F0,emissive:0x262626}),H=80,tw=2.25;
+const DR=(x,n,t1,t2,pan)=>{const xa=Math.min(x,x+n*0.75),xb=Math.max(x,x+n*0.75),o1=t1+tw,o2=t2-tw;abox(xa,xb,0,H+tw,t1,o1,0,TR);abox(xa,xb,0,H+tw,o2,t2,0,TR);abox(xa,xb,H,H+tw,o1,o2,0,TR);if(pan){const pa=Math.min(x,x+n*0.4),pb=Math.max(x,x+n*0.4);abox(pa,pb,0,H,o1,o2,0,DP);const k=Math.min(x,x+n*2.6),kb=Math.max(x,x+n*2.6);const kn=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),BRASS);kn.position.set((k+kb)/2,36,o2-3);scene.add(kn);}};
+DR(HE,-1,BD1-tw,BD2+tw,false);DR(BW,1,BD1-tw,BD2+tw,false);
+DR(BW,1,BS-3.625-29.75,BS-3.625,true);
+{const c=(ST+CM)/2;DR(HX,-1,c-29.5/2,c+29.5/2,true);}
+label('Bedroom doorway 35½" outside the trim',HE-4,90,(BD1+BD2)/2,0.24);label('Bedroom closet door 29¾" trim to trim',BW+4,88,BS-3.625-29.75/2,0.24);label('Hallway closet door 29½" (position assumed)',HX-4,88,(ST+CM)/2,0.24);
+{const X2=ROOM.north,X1=X2-0.75,w1=ROOM.east+T+22.25,w2=BS-36,tt=2.75,yb=31.75,yt=31.75+55;
+abox(X1,X2,yb,yt,w1,w1+tt,0,TR);abox(X1,X2,yb,yt,w2-tt,w2,0,TR);abox(X1,X2,yt-tt,yt,w1,w2,0,TR);abox(X1,X2,yb,yb+tt,w1,w2,0,TR);
+const g=new THREE.Mesh(new THREE.PlaneGeometry(w2-w1-2*tt,yt-yb-2*tt),new THREE.MeshLambertMaterial({color:GLASS,transparent:true,opacity:0.55}));g.position.set(X2-0.3,(yb+yt)/2,(w1+w2)/2);g.rotation.y=-Math.PI/2;scene.add(g);
+{const zm=(w1+w2)/2,ya=yb+tt,yc=yt-tt,s=1.25;[[w1+tt,zm+0.75,X2-0.9,X2-0.5],[zm-0.75,w2-tt,X2-0.5,X2-0.1]].forEach(([za,zb,xa,xb])=>{abox(xa,xb,ya,yc,za,za+s,0,TR);abox(xa,xb,ya,yc,zb-s,zb,0,TR);abox(xa,xb,yc-s,yc,za,zb,0,TR);abox(xa,xb,ya,ya+s,za,zb,0,TR);});abox(X2-0.95,X2-0.85,ya+16,ya+20,zm+0.75-s-1,zm+0.75-s-0.4,0,BRASS);}
+label('Bedroom window (horizontal slider, 2 tall panes): trim '+fmt(w2-w1)+' wide (22¼" from NE corner, 36" to S wall); 31¾"–86¾" AFF, 55" high',X2-6,yt+4,(w1+w2)/2,0.24);
+/* Baseboard heater under the bedroom window, same as Theo's: 4 3/4"-12 3/4" AFF, 3 1/4" deep, window trim width + 3 1/4", centred (length assumed) */
+{const zc=(w1+w2)/2,L=w2-w1+3.25,hz1=zc-L/2,hz2=zc+L/2,hd=3.25,HM=new THREE.MeshLambertMaterial({color:0xFFFFFF,emissive:0x202020}),SL=new THREE.MeshLambertMaterial({color:0xD3D1C7});const hb=abox(X2-hd,X2,4.75,12.75,hz1,hz2,0,HM);hb.add(new THREE.LineSegments(new THREE.EdgesGeometry(hb.geometry),new THREE.LineBasicMaterial({color:0x8C8A84})));for(let z=hz1+2;z<hz2-1.5;z+=1.5)abox(X2-hd-0.05,X2-hd,6,11.5,z,z+0.6,0,SL);label('Baseboard heater '+fmt(L)+' (length assumed), like the living room one',X2-8,16,zc,0.24);htext('Maybe on at 18–19 °C (may not have woken up)','E',hz1,hz2,5.5,12,3.35);}}
+{const MET=new THREE.MeshPhongMaterial({color:0x2B2B2B,shininess:50}),MAT=new THREE.MeshLambertMaterial({color:0xEDEAE2}),BL=new THREE.MeshLambertMaterial({color:0x8E8F93}),RP=new THREE.MeshLambertMaterial({color:0xA8232A});
+const cx=(BW+ROOM.north)/2,x1=cx-30,x2=cx+30,z2=BS,z1=BS-80,FT=14,MT=FT+8;
+[[x1,z1],[x2-1.5,z1],[x1,z2-1.5],[x2-1.5,z2-1.5],[cx-0.75,(z1+z2)/2]].forEach(([x,z])=>abox(x,x+1.5,0,FT,z,z+1.5,0,MET));
+abox(x1,x1+1.5,FT-2,FT,z1,z2,0,MET);abox(x2-1.5,x2,FT-2,FT,z1,z2,0,MET);abox(x1,x2,FT-2,FT,z1,z1+1.5,0,MET);abox(x1,x2,FT-2,FT,z2-1.5,z2,0,MET);
+abox(x1,x2,FT,MT,z1,z2,0,MAT);
+abox(x1-0.5,x2+0.5,MT,MT+1,z1-0.5,z2-24,0,BL);abox(x1-0.5,x1,MT-6,MT+1,z1-0.5,z2-24,0,BL);abox(x2,x2+0.5,MT-6,MT+1,z1-0.5,z2-24,0,BL);abox(x1-0.5,x2+0.5,MT-6,MT+1,z1-0.5,z1,0,BL);
+[[x1+1,cx-1],[cx+1,x2-1]].forEach(([a,b])=>{const p=abox(a,b,MT,MT+6,z2-22,z2-2,0,RP);p.scale.y=1;});
+label('Queen bed 60 × 80, metal frame, 8" foam mattress (top 22" AFF)',cx,MT+14,(z1+z2)/2,0.24);
+/* IKEA LACK side tables 13 3/4" x 13 3/4" x 17 3/4" H, white, either side of the head of the bed (1" gap assumed) */
+{const LK=new THREE.MeshLambertMaterial({color:0xF7F7F4,emissive:0x262626}),LL=new THREE.LineBasicMaterial({color:0x8C8A84}),lack=(xa,za)=>{const s=13.75,l=1.9375,t=abox(xa,xa+s,15.75,17.75,za,za+s,0,LK);t.add(new THREE.LineSegments(new THREE.EdgesGeometry(t.geometry),LL));[[0,0],[s-l,0],[0,s-l],[s-l,s-l]].forEach(([a,b])=>{const g=abox(xa+a,xa+a+l,0,15.75,za+b,za+b+l,0,LK);g.add(new THREE.LineSegments(new THREE.EdgesGeometry(g.geometry),LL));});};lack(x1-1-13.75,z2-13.75);lack(x2+1,z2-13.75);label('IKEA LACK side tables 13¾" × 13¾" × 17¾"',cx,26,z2-7,0.24);}}
+{const g=new THREE.Group(),fr=new THREE.Mesh(new THREE.BoxGeometry(15.75,58.5,0.8),new THREE.MeshPhongMaterial({color:0x1A1A1A,shininess:40}));fr.position.set(0,29.5,0);g.add(fr);
+const mg=new THREE.Mesh(new THREE.PlaneGeometry(14.25,57),MIRROR);mg.position.set(0,29.5,0.45);g.add(mg);
+const cr=new THREE.Mesh(new THREE.TorusGeometry(7.2,0.22,8,40,Math.PI),fr.material);cr.position.set(0,58.75,0);cr.scale.y=0.95;g.add(cr);
+[-7.5,7.5].forEach(x=>{const h=new THREE.Mesh(new THREE.TorusGeometry(0.9,0.22,8,16,Math.PI*1.5),fr.material);h.position.set(x,59.6,0);g.add(h);});
+const leg=new THREE.Mesh(new THREE.BoxGeometry(1,56,0.8),fr.material);leg.position.set(0,27,-7.5);leg.rotation.x=-0.3;g.add(leg);
+g.scale.y=83/65.75;g.rotation.order='YXZ';g.rotation.y=-3*Math.PI/4;g.rotation.x=-0.12;g.position.set(ROOM.north-14,0,BS-14);scene.add(g);
+label('Standing mirror 15¾" × 83" (measured), angled across the SE corner',ROOM.north-16,90,BS-16,0.24);}
+{const cx=(BW+ROOM.north)/2,y1=50,y2=69,PF=new THREE.MeshLambertMaterial({color:0x6B4A2E});[['painting-bed-1.jpg',cx+14.75],['painting-bed-2.jpg',cx-14.75]].forEach(([f,a])=>{abox(a-7.5,a+7.5,y1,y2,BS-1,BS,0,PF);const tx=new THREE.TextureLoader().load(f);tx.anisotropy=r.capabilities.getMaxAnisotropy();const m=new THREE.Mesh(new THREE.PlaneGeometry(15,19),new THREE.MeshBasicMaterial({map:tx}));m.position.set(a,(y1+y2)/2,BS-1.05);m.rotation.y=Math.PI;scene.add(m);});
+label('Two paintings 15 × 19, centred over the bed 14½" apart (bottom 50" AFF assumed)',cx,y2+5,BS-3,0.24);}
+/* Bedroom trim face: flat 2¾" × ¾" white band like the window trim, top at 40" AFF (same as the living room trim top); stops at the window and door casings */
+{const E=ROOM.north,N=ROOM.east+T,y1=40-2.75,y2=40,o=0.75,TF=new THREE.MeshLambertMaterial({color:0xFFFFFF,emissive:0x202020}),LMt=new THREE.LineBasicMaterial({color:0x8C8A84}),b=(a1,a2,c1,c2,d1,d2)=>{if(a2-a1<0.01||d2-d1<0.01&&c2-c1<0.01)return;const m=abox(a1,a2,y1,y2,d1,d2,0,TF);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),LMt));};
+b(BW,E,0,0,N,N+o);b(BW,E,0,0,BS-o,BS);
+const w1=N+22.25,w2=BS-36;b(E-o,E,0,0,N+o,w1);b(E-o,E,0,0,w2,BS-o);
+const cd1=BS-3.625-29.75;b(BW,BW+o,0,0,N+o,BD1-2.25);b(BW,BW+o,0,0,BD2+2.25,cd1);b(BW,BW+o,0,0,BS-3.625,BS-o);
+label('Bedroom trim face: flat 2¾" (like the window trim), white, top 40" AFF',(BW+E)/2,44,BS-4,0.24);}
+/* 40" TV on the bedroom north wall, centred on the bed, bottom 44" AFF (trim top 40" + 2" moulding + 2" reveal) */
+{const cx=(BW+ROOM.north)/2,w=35.6,h=20.3,d=3,yb=44,z0=ROOM.east+T;const tv=abox(cx-w/2,cx+w/2,yb,yb+h,z0,z0+d,0,new THREE.MeshPhongMaterial({color:0x121212,shininess:40}));tv.add(new THREE.LineSegments(new THREE.EdgesGeometry(tv.geometry),new THREE.LineBasicMaterial({color:0x555555})));const sc=new THREE.Mesh(new THREE.PlaneGeometry(w-0.8,h-0.8),new THREE.MeshPhongMaterial({color:0x1C2430,shininess:120,specular:0x666666}));sc.position.set(cx,yb+h/2,z0+d+0.02);scene.add(sc);label('40" TV, 35.6" × 20.3" (typical size, assumed), centred on the bed, bottom 44" AFF',cx,yb+h+5,z0+4,0.24);}
+{const SB=25.5,TX=HX+SB,d1=EE+2.25,d2=EE+35.25-2.25;wall(HX,EE,TX,EE,0,1);wall(TX,d2,TX,WE,-1,0);HW(TX,d1,TX,d2,-1,0,WM,82,ROOM.ceiling,0);DR(TX,-1,EE,EE+35.25,false);
+FR(HX,TX,EE,WE,0.05);FR(TX-0.1,TX+4.6,EE,EE+35.25,0.05);DR(TX+4.5,1,EE,EE+35.25,false);
+{const DL=new THREE.MeshLambertMaterial({color:0xF4F4F0,emissive:0x262626});const leaf=(x,z,w)=>{abox(x,x+w,0,80,z,z+1.375,0,DL);const k=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),BRASS);k.position.set(x+w-3,36,z+2.4);scene.add(k);};
+leaf(BW,BD1,BD2-BD1);leaf(TX+4.5,EE+2.25,30.75);
+label('Bedroom door (open; hinge side assumed)',BW+16,84,BD1+3,0.24);label('Theo\'s door (open; hinge side assumed)',TX+20,84,EE+5,0.24);}FR(HE-0.1,BW+0.1,BD1-2.25,BD2+2.25,0.05);
+{const x1=TX+4.5,z1=BS+4.5,z2=EE+35.25+2.25;FR(x1,ROOM.north,z1,z2,0.05);
+{const WMs=new THREE.MeshLambertMaterial({color:WALL,emissive:WALLEM});abox(TX,ROOM.north,0,ROOM.ceiling,z2,z2+4.5,0,WMs);abox(TX,TX+4.5,0,ROOM.ceiling,EE+33,WE-4.5,0,WMs);abox(TX,TX+4.5,82,ROOM.ceiling,EE,EE+33,0,WMs);abox(HX,TX+4.5,0,ROOM.ceiling,EE-4.5,EE,0,WMs);abox(HX,HX+4.5,0,ROOM.ceiling,BS+4.5,EE-4.5,0,WMs);FR(HX+4.5,TX+4.5,BS+4.5,EE-4.5,0.05);}
+{const X2=ROOM.north,X1=X2-0.75,zc=(z1+z2)/2,w1=zc-44.75/2,w2=zc+44.75/2,tt=2.75,yb=32,yt=yb+55;
+abox(X1,X2,yb,yt,w1,w1+tt,0,TR);abox(X1,X2,yb,yt,w2-tt,w2,0,TR);abox(X1,X2,yt-tt,yt,w1,w2,0,TR);abox(X1,X2,yb,yb+tt,w1,w2,0,TR);
+const gl=new THREE.Mesh(new THREE.PlaneGeometry(w2-w1-2*tt,yt-yb-2*tt),new THREE.MeshLambertMaterial({color:GLASS,transparent:true,opacity:0.55}));gl.position.set(X2-0.3,(yb+yt)/2,zc);gl.rotation.y=-Math.PI/2;scene.add(gl);
+const zm=zc,ya=yb+tt,yc=yt-tt,s=1.25;[[w1+tt,zm+0.75,X2-0.9,X2-0.5],[zm-0.75,w2-tt,X2-0.5,X2-0.1]].forEach(([za,zb,xa,xb])=>{abox(xa,xb,ya,yc,za,za+s,0,TR);abox(xa,xb,ya,yc,zb-s,zb,0,TR);abox(xa,xb,yc-s,yc,za,zb,0,TR);abox(xa,xb,ya,ya+s,za,zb,0,TR);});
+label('Theo\'s window 44¾" × 55" (32"–87" AFF; centred on the room: assumed)',X2-6,yt+4,zc,0.24);
+/* Baseboard heater under the window, same style as the living room one (4 3/4"-12 3/4" AFF, 3 1/4" deep); 48" long, centred (length assumed) */
+{const hz1=zc-24,hz2=zc+24,hd=3.25,HM=new THREE.MeshLambertMaterial({color:0xFFFFFF,emissive:0x202020}),SL=new THREE.MeshLambertMaterial({color:0xD3D1C7});const hb=abox(X2-hd,X2,4.75,12.75,hz1,hz2,0,HM);hb.add(new THREE.LineSegments(new THREE.EdgesGeometry(hb.geometry),new THREE.LineBasicMaterial({color:0x8C8A84})));for(let z=hz1+2;z<hz2-1.5;z+=1.5)abox(X2-hd-0.05,X2-hd,6,11.5,z,z+0.6,0,SL);label('Baseboard heater, 48" (length assumed), like the living room one',X2-8,16,zc,0.24);htext('Maybe on at 18–19 °C (may not have woken up)','E',hz1,hz2,5.5,12,3.35);}}
+{const bx2=ROOM.north-3.25,bx1=bx2-75,bz1=z1,bz2=z1+39,FB=new THREE.MeshLambertMaterial({color:0x6E2A30}),MT=new THREE.MeshLambertMaterial({color:0xEDEAE2}),BLt=new THREE.MeshLambertMaterial({color:0x7F8592}),PW=new THREE.MeshLambertMaterial({color:0xF2F2F0});
+abox(bx1,bx2,0,14,bz1,bz2,0,FB);abox(bx1,bx2,14,22,bz1,bz2,0,MT);abox(bx1-0.5,bx2-20,22,23,bz1,bz2+0.5,0,BLt);abox(bx1-0.5,bx1,16,23,bz1,bz2+0.5,0,BLt);abox(bx1-0.5,bx2-20,16,23,bz2,bz2+0.5,0,BLt);abox(bx2-18,bx2-2,22,27,bz1+4,bz2-4,0,PW);
+label('Theo\'s single bed 39 × 75 (standard twin), head on the East Wall',(bx1+bx2)/2,36,(bz1+bz2)/2,0.24);
+/* IKEA LACK side table at the foot of Theo's bed, against the north wall (1" gap assumed) */
+{const LK=new THREE.MeshLambertMaterial({color:0xF7F7F4,emissive:0x262626}),LL=new THREE.LineBasicMaterial({color:0x8C8A84}),s=13.75,l=1.9375,xa=bx1-1-s,za=bz1;const t=abox(xa,xa+s,15.75,17.75,za,za+s,0,LK);t.add(new THREE.LineSegments(new THREE.EdgesGeometry(t.geometry),LL));[[0,0],[s-l,0],[0,s-l],[s-l,s-l]].forEach(([a,b])=>{const g=abox(xa+a,xa+a+l,0,15.75,za+b,za+b+l,0,LK);g.add(new THREE.LineSegments(new THREE.EdgesGeometry(g.geometry),LL));});label('IKEA LACK side table',xa+s/2,24,za+s/2,0.24);}}
+{const fx=TX,c1=z1,c2=EE-4.5,WMc=new THREE.MeshLambertMaterial({color:WALL,emissive:WALLEM}),DPc=new THREE.MeshLambertMaterial({color:0xF4F4F0,emissive:0x262626}),o1=EE-41.25,o2=EE-11.5,tw=2.25,H=80,m=(o1+o2)/2;
+abox(fx,fx+4.5,0,ROOM.ceiling,c1,o1,0,WMc);abox(fx,fx+4.5,0,ROOM.ceiling,o2,c2,0,WMc);abox(fx,fx+4.5,H+tw,ROOM.ceiling,o1,o2,0,WMc);
+abox(fx+4.5,fx+5.25,0,H+tw,o1,o1+tw,0,TR);abox(fx+4.5,fx+5.25,0,H+tw,o2-tw,o2,0,TR);abox(fx+4.5,fx+5.25,H,H+tw,o1,o2,0,TR);
+abox(fx+4.1,fx+4.5,0,H,o1+tw,o2-tw,0,DPc);{const k=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),BRASS);k.position.set(fx+5.6,36,o1+tw+3);scene.add(k);}abox(HX+4.5,fx,0,ROOM.ceiling,c1,c1+10,0,WMc);label('Structural feature: closet 10" shorter',(HX+fx)/2+2,60,c1+5,0.24);
+label('Theo\'s closet door 29¾" trim to trim, 11½" from his doorframe',fx+8,90,(c1+c2)/2,0.24);
+/* Water heater (stated 2026-11-09): tank in Theo's closet. Size and position assumed: 40 gal, 20" dia x 50" tall, against the south end of the closet (south end stated 2026-11-09). */
+{const tx=(HX+4.5+fx)/2,tz=c2-10.25,TK=new THREE.MeshPhongMaterial({color:0xF2F2EE,shininess:50}),t=new THREE.Mesh(new THREE.CylinderGeometry(10,10,49,32),TK);t.position.set(tx,25.5,tz);scene.add(t);t.add(new THREE.LineSegments(new THREE.EdgesGeometry(t.geometry,30),new THREE.LineBasicMaterial({color:0x8C8A84})));const tp=new THREE.Mesh(new THREE.CylinderGeometry(9.6,10,1,32),new THREE.MeshPhongMaterial({color:0x8A8A86,shininess:60}));tp.position.set(tx,50.5,tz);scene.add(tp);[[-3,0xC0392B],[3,0x2E6FD0]].forEach(([dz,c])=>{const p=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.45,ROOM.ceiling-51,12),new THREE.MeshPhongMaterial({color:0xB87333,shininess:80}));p.position.set(tx,51+(ROOM.ceiling-51)/2,tz+dz);scene.add(p);const k=new THREE.Mesh(new THREE.CylinderGeometry(0.6,0.6,0.4,12),new THREE.MeshBasicMaterial({color:c}));k.position.set(tx,53,tz+dz);scene.add(k);});
+label('Water heater in Theo\'s closet (40 gal, 20" × 50": size assumed)',tx,58,tz,0.24);elabel('Water heater, Sept 15–Oct 16 (Hydro): ≈170 kWh, $13.80',tx,66,tz);}}/* Theo's trim face: same flat 2¾" × ¾" white band, top 40" AFF; stops at the window, closet door and doorway casings */
+{const E=ROOM.north,y1=40-2.75,y2=40,o=0.75,TF=new THREE.MeshLambertMaterial({color:0xFFFFFF,emissive:0x202020}),LMt=new THREE.LineBasicMaterial({color:0x8C8A84}),b=(a1,a2,d1,d2)=>{if(a2-a1<0.01||d2-d1<0.01)return;const m=abox(a1,a2,y1,y2,d1,d2,0,TF);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),LMt));};
+b(x1,E,z1,z1+o);b(x1,E,z2-o,z2);
+const zc=(z1+z2)/2,w1=zc-44.75/2,w2=zc+44.75/2;b(E-o,E,z1+o,w1);b(E-o,E,w2,z2-o);
+b(x1,x1+o,z1+o,EE-41.25);b(x1,x1+o,EE-11.5,EE);b(x1,x1+o,EE+35.25,z2-o);
+label('Theo\'s trim face: flat 2¾", white, top 40" AFF',(x1+E)/2,44,z2-4,0.24);}
+label('Theo\'s room',(x1+ROOM.north)/2,40,(z1+z2)/2,0.4);
+/* Washer + dryer (stated 2026-11-09): generic white units on the south wall in the SE corner, facing north. Sizes (24 x 24 x 34) and order assumed. */
+{const WD=new THREE.MeshLambertMaterial({color:0xF7F7F4,emissive:0x262626}),DG=new THREE.MeshPhongMaterial({color:0x2B2E33,shininess:80}),zb=z2-1.25,za=zb-24;
+[[ROOM.north-24,ROOM.north],[ROOM.north-49,ROOM.north-25]].forEach(([a,b])=>{const m=abox(a,b,0,34,za,zb,0,WD);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x8C8A84})));abox(a+1,b-1,30,33,za-0.1,za,0,DG);const d=new THREE.Mesh(new THREE.CircleGeometry(7,32),DG);d.position.set((a+b)/2,16,za-0.06);d.rotation.y=Math.PI;scene.add(d);});
+label('Washer (left) + dryer (corner), 24 × 24 × 34 each (generic; sizes and order assumed)',ROOM.north-24.5,40,za-4,0.24);
+elabel('Laundry, 2 loads/week: dryer 18 kWh + washer 3 kWh = $1.67 per 32 days',ROOM.north-24.5,48,za-4);}}
+label('Theo\'s doorway wall 65" (set back 25½" from the hallway)',TX-3,70,(EE+WE)/2+8,0.24);label('Theo\'s door 35¼" trim to trim',TX-3,90,EE+17.6,0.24);
+{const BX=TX+25.75,BI=BX+4.5,DZ=WE,BN=WE-23,BSo=BN+52,dt=31,AD=12;
+wall(TX,WE,BX,WE,0,1);wall(BX,DZ+dt-2.25,BX,BSo+4.5,-1,0);HW(BX,DZ+2.25,BX,DZ+dt-2.25,-1,0,WM,82,ROOM.ceiling,0);DR(BX,-1,DZ,DZ+dt,false);
+wall(BI,BN,ROOM.north,BN,0,1);wall(BI,DZ+dt-2.25,BI,BSo,1,0);HW(BI,DZ+2.25,BI,DZ+dt-2.25,1,0,WM,82,ROOM.ceiling,0);wall(BI,BN+16.5,BI,DZ+2.25,1,0);
+wall(BI-AD,BN,BI-AD,BN+16.5,1,0);wall(BI-AD,BN,BI,BN,0,1);wall(BI-AD,BN+16.5,BI,BN+16.5,0,-1);abox(TX+4.5,BI-AD,0,ROOM.ceiling,BN-0.01,DZ,0,WM);abox(BI-AD,BI,0,ROOM.ceiling,BN+16.5,DZ,0,WM);
+abox(BX,ROOM.north,0,ROOM.ceiling,BSo,BSo+4.5,0,WM);
+const c=document.createElement('canvas');c.width=c.height=64;const q=c.getContext('2d');q.fillStyle='#F2F1EC';q.fillRect(0,0,64,64);q.strokeStyle='#B9B8B2';q.lineWidth=1;for(let i=0;i<=64;i+=8){q.beginPath();q.moveTo(i,0);q.lineTo(i,64);q.moveTo(0,i);q.lineTo(64,i);q.stroke();}q.fillStyle='#2E3438';[[0,0],[32,32],[16,48],[48,16]].forEach(([x,y])=>q.fillRect(x+1,y+1,6,6));q.fillStyle='#9AA3A0';[[16,16],[48,48]].forEach(([x,y])=>{q.fillRect(x+1,y+1,14,6);});
+const mt=new THREE.CanvasTexture(c);mt.wrapS=mt.wrapT=THREE.RepeatWrapping;mt.repeat.set((ROOM.north-BI)/8,52/8);
+const bf2=new THREE.Mesh(new THREE.PlaneGeometry(ROOM.north-BI,52),new THREE.MeshLambertMaterial({map:mt}));bf2.rotation.x=-Math.PI/2;bf2.position.set((BI+ROOM.north)/2,0.09,(BN+BSo)/2);scene.add(bf2);
+{const t2=mt.clone();t2.repeat.set(AD/8,16.5/8);t2.needsUpdate=true;const a2=new THREE.Mesh(new THREE.PlaneGeometry(AD,16.5),new THREE.MeshLambertMaterial({map:t2}));a2.rotation.x=-Math.PI/2;a2.position.set(BI-AD/2,0.09,BN+8.25);scene.add(a2);label('Alcove 16½" (depth 12" assumed)',BI-AD/2,40,BN+8.25,0.24);
+/* Black open-top wastebin in the alcove (size assumed: 10" top, 8" base, 12" tall) */
+{const BKb=new THREE.MeshPhongMaterial({color:0x151515,shininess:40,side:THREE.DoubleSide}),bx=BI-AD/2,bz=BN+8.25,wb2=new THREE.Mesh(new THREE.CylinderGeometry(5,4,12,28,1,true),BKb);wb2.position.set(bx,6.1,bz);scene.add(wb2);const bt=new THREE.Mesh(new THREE.CircleGeometry(4,28),BKb);bt.rotation.x=-Math.PI/2;bt.position.set(bx,0.15,bz);scene.add(bt);const rm=new THREE.Mesh(new THREE.TorusGeometry(5,0.2,8,28),BKb);rm.rotation.x=Math.PI/2;rm.position.set(bx,12.1,bz);scene.add(rm);label('Black open-top wastebin (size assumed)',bx,18,bz,0.24);}}
+label('Bathroom: 52" N–S inside, '+fmt(ROOM.north-BI)+' E–W (derived), mosaic floor',(BI+ROOM.north)/2,50,(BN+BSo)/2,0.3);label('Bathroom door 31" trim to trim',BX-3,90,DZ+15.5,0.24);label('Thermostat wall 25¾"',(TX+BX)/2,70,WE+3,0.24);
+{const tx1=ROOM.north-31.75,TB=new THREE.MeshPhongMaterial({color:0xF7F7F4,shininess:60}),TI=new THREE.MeshPhongMaterial({color:0xE8E8E4,shininess:80});abox(tx1,ROOM.north,0,15,BN,BSo,0,TB);abox(tx1+3,ROOM.north-2.5,6,15.05,BN+2.5,BSo-2.5,0,TI);label('Bathtub, runs the full 52", 31¾" from the east wall (height 15" assumed)',tx1+15,26,(BN+BSo)/2,0.24);}
+{const E=ROOM.north,TUB=E-31.75,GT=new THREE.MeshLambertMaterial({color:0xB9C8B4,emissive:0x1E241E}),WP=new THREE.MeshPhongMaterial({color:0xFAFAF8,shininess:70}),CH=new THREE.MeshPhongMaterial({color:0xC9CDD0,shininess:120,specular:0xffffff}),BKc=new THREE.MeshPhongMaterial({color:0x151515,shininess:60});
+HW(BI,BN,E,BN,0,1,GT,0,48,0.3);HW(BI,BSo,E,BSo,0,-1,GT,0,48,0.3);HW(BI,BN+16.5,BI,DZ,1,0,GT,0,48,0.3);HW(BI,DZ+dt,BI,BSo,1,0,GT,0,48,0.3);
+HW(TUB,BN,E,BN,0,1,GT,48,72,0.3);HW(TUB,BSo,E,BSo,0,-1,GT,48,72,0.3);HW(E,BN,E,BSo,-1,0,GT,15,50,0.3);
+{const zc=(BN+BSo)/2,w1=zc-16.25,w2=zc+16.25,yb=50,yt=yb+34,X1=E-0.75,t=2.25;abox(X1,E,yb,yt,w1,w1+t,0,TR);abox(X1,E,yb,yt,w2-t,w2,0,TR);abox(X1,E,yt-t,yt,w1,w2,0,TR);abox(E-3.5,E,yb-1.5,yb,w1-1,w2+1,0,GT);
+{const ya=yb+1.5,yc=yt-t-1,m=zc,s=1.1;[[w1+t+0.5,m+0.6,E-1.6,E-1.1],[m-0.6,w2-t-0.5,E-1.1,E-0.6]].forEach(([za,zb,xa,xb])=>{abox(xa,xb,ya,yc,za,za+s,0,TR);abox(xa,xb,ya,yc,zb-s,zb,0,TR);abox(xa,xb,yc-s,yc,za,zb,0,TR);abox(xa,xb,ya,ya+s,za,zb,0,TR);});abox(E-2.4,E-1.6,ya+10,ya+15,w1+t+1.3,w1+t+2.6,0,TR);abox(E-1.9,E-1.1,ya+16,ya+21,w2-t-2.6,w2-t-1.3,0,TR);}
+const fg=new THREE.Mesh(new THREE.PlaneGeometry(w2-w1-2*t-1,yt-yb-t-1.5),new THREE.MeshLambertMaterial({color:0xBFC6CA,transparent:true,opacity:0.85}));fg.position.set(E-0.4,yb+(yt-t-yb)/2,zc);fg.rotation.y=-Math.PI/2;scene.add(fg);}
+abox(86,106,15,30,BN,BN+8,0,WP);abox(88,104,0,15,BN+8,BN+27,0,WP);abox(87.5,104.5,15,16.2,BN+8,BN+28,0,WP);
+abox(109,130,29,34,BN,BN+18,0,WP);abox(117.5,121.5,34,38,BN+1,BN+4,0,CH);[[110,116],[123,129]].forEach(([a,b])=>abox(a,b,48,51,BN,BN+3,0,BKc));
+{const mr=new THREE.Mesh(new THREE.PlaneGeometry(24,30),MIRROR);mr.position.set(119.5,69,BN+0.6);scene.add(mr);abox(107,132,53,85,BN,BN+0.5,0,WP);}
+{const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,BSo-BN,12),CH);rod.rotation.x=Math.PI/2;rod.position.set(TUB,77,(BN+BSo)/2);scene.add(rod);abox(TUB-1.5,TUB+1.5,18,76,BSo-12,BSo-0.5,0,BKc);}
+abox(BI+1,BI+37,0,7.5,BSo-3.25,BSo,0,new THREE.MeshLambertMaterial({color:0xC9CFC0}));{const r2=TUB-15,r1=r2-26.5;abox(r1+1.5,r2-1.5,44,45.25,BSo-3,BSo-1.8,0,BKc);abox(r1,r1+2,42.5,46.5,BSo-3.2,BSo,0,BKc);abox(r2-2,r2,42.5,46.5,BSo-3.2,BSo,0,BKc);abox(r2-6.6-3,r2-6.6+3,25,31,BSo-1.5,BSo,0,BKc);label('Towel bar 26½", 15" from the tub',(r1+r2)/2,49,BSo-4,0.24);}abox(TUB-4,TUB-3,32,46,BSo-3,BSo-2,0,CH);
+label('Bathroom fixtures from photos: sizes and positions estimated',(BI+E)/2,95,(BN+BSo)/2,0.24);}
+wall(HWX,KE,ROOM.north,KE,0,-1);HW(HWX-11,KE+11,ROOM.north+11,KE+11,0,1,new THREE.MeshLambertMaterial({color:0x993C1D}),-6,ROOM.ceiling+1,0);abox(HWX,ROOM.north+11,ROOM.ceiling,ROOM.ceiling+1,KE,KE+11,0x5F5E5A);
+{const k1=BX,k2=BX+33.75,kd=24,kf=KE-kd,tw=2.25,H=80;abox(k1,k2,0,ROOM.ceiling,kf,KE,0,WM);
+const TRm=new THREE.MeshLambertMaterial({color:0xFFFFFF,emissive:0x202020}),DPm=new THREE.MeshLambertMaterial({color:0xF4F4F0,emissive:0x262626});
+abox(k1,k1+tw,0,H+tw,kf-0.75,kf,0,TRm);abox(k2-tw,k2,0,H+tw,kf-0.75,kf,0,TRm);abox(k1,k2,H,H+tw,kf-0.75,kf,0,TRm);abox(k1+tw,k2-tw,0,H,kf-0.4,kf,0,new THREE.MeshLambertMaterial({color:0xBDBEBA,emissive:0x1C1C1C}));
+const kn=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),BRASS);kn.position.set(k2-tw-3,36,kf-1.4);scene.add(kn);
+label('Kitchen closet 33¾" wide, back on the south exterior wall (depth 24" assumed)',(k1+k2)/2,90,kf-3,0.24);
+{const t2=2.75,d2=k1-t2,d1=d2-30,o=0.75;abox(d1-t2,d1,0,84.625,KE-o,KE,0,TRm);abox(d2,d2+t2,0,84.625,KE-o,KE,0,TRm);abox(d1-t2,d2+t2,82.75,84.625,KE-o,KE,0,TRm);abox(d1,d2,0,3,KE-o,KE,0,TRm);const W0=d2-29.5;abox(W0,d2,3,82.75,KE-0.4,KE,0,DPm);abox(d1,W0,3,82.75,KE-0.35,KE,0,new THREE.MeshLambertMaterial({color:0xD3D1C7}));
+{const ST=new THREE.MeshPhongMaterial({color:0xBFC3C7,shininess:90,specular:0xcccccc}),hx=W0+1.875,cyl=(r,d,y,z)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,d,28),ST);m.rotation.x=Math.PI/2;m.position.set(hx,y,z);scene.add(m);};
+const ly=82.75-39.25-1.375;cyl(1.375,0.3,ly,KE-0.55);cyl(1.15,0.2,ly,KE-0.8);{const t=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.45,0.45),ST);t.position.set(hx,ly,KE-1.1);scene.add(t);}
+const ky=82.75-47.25+1.15;cyl(1.3,0.3,ky,KE-0.55);cyl(0.45,1.0,ky,KE-1.1);{const b=new THREE.Mesh(new THREE.SphereGeometry(1.15,20,14),ST);b.position.set(hx,ky,KE-2.2);scene.add(b);}
+{const sp=new THREE.Mesh(new THREE.BoxGeometry(0.4,2.75,0.15),ST);sp.position.set(W0-0.25,ky,KE-0.45);scene.add(sp);}}
+{const a2=d2-3.75,a1=a2-22,c=(a1+a2)/2,y2=82.75-3.75,y1=y2-50,t=1.5,ym=(y1+y2)/2;[[a1,a1+t,y1,y2],[a2-t,a2,y1,y2],[a1,a2,y2-t,y2],[a1,a2,y1,y1+t],[a1+t,a2-t,ym-0.7,ym+0.7]].forEach(([b1,b2,c1,c2])=>abox(b1,b2,c1,c2,KE-0.8,KE-0.4,0,TRm));const g=new THREE.Mesh(new THREE.PlaneGeometry(22-2*t,50-2*t),new THREE.MeshLambertMaterial({color:GLASS,transparent:true,opacity:0.55}));g.position.set(c,(y1+y2)/2,KE-0.45);g.rotation.y=Math.PI;scene.add(g);}
+label('Rear exterior door (south), 30" × 79¾" like the balcony door',(d1+d2)/2,92,KE-3,0.24);
+{const w2=d1-t2-6,w1=w2-36,yb=40,yt=76,tt=2.75,o=0.75;abox(w1,w1+tt,yb,yt,KE-o,KE,0,TRm);abox(w2-tt,w2,yb,yt,KE-o,KE,0,TRm);abox(w1,w2,yt-tt,yt,KE-o,KE,0,TRm);abox(w1,w2,yb,yb+tt,KE-o,KE,0,TRm);abox((w1+w2)/2-0.6,(w1+w2)/2+0.6,yb+tt,yt-tt,KE-0.6,KE-0.3,0,TRm);const g=new THREE.Mesh(new THREE.PlaneGeometry(w2-w1-2*tt,yt-yb-2*tt),new THREE.MeshLambertMaterial({color:GLASS,transparent:true,opacity:0.55}));g.position.set((w1+w2)/2,(yb+yt)/2,KE-0.3);g.rotation.y=Math.PI;scene.add(g);label('Kitchen window (size and height assumed)',(w1+w2)/2,yt+4,KE-3,0.24);}
+{const E=ROOM.north,N0=BSo+4.5,zc=(N0+KE)/2,CB=new THREE.MeshLambertMaterial({color:0xEDEBE4,emissive:0x202020}),CT=new THREE.MeshPhongMaterial({color:0x5B3D2E,shininess:40}),SS=new THREE.MeshPhongMaterial({color:0xC4C8CC,shininess:110});
+abox(E-22.75,E,0,35,N0,KE,0,CB);abox(E-23.5,E,35,36.5,N0,KE,0,CT);
+abox(E-48,E-22.75,0,35,N0,N0+23.125,0,CB);abox(E-48,E-23.5,35,36.5,N0,N0+23.875,0,CT);
+{const LM2=new THREE.LineBasicMaterial({color:0x8C8A84}),UPm=new THREE.MeshLambertMaterial({color:0xBDBEBA,emissive:0x1C1C1C});const uc=abox(E-47,E,53.25,ROOM.ceiling-9.375,N0,N0+12.625,0,UPm);uc.add(new THREE.LineSegments(new THREE.EdgesGeometry(uc.geometry),LM2));for(let x=E-47+47/3;x<E-1;x+=47/3)abox(x-0.1,x+0.1,53.75,ROOM.ceiling-9.875,N0+12.625,N0+12.725,0,new THREE.MeshBasicMaterial({color:0x8C8A84}));
+[[E-47-36,E-47,53.25+10.875,ROOM.ceiling-9.375],[E-105,E-83,53.25,ROOM.ceiling-9.375]].forEach(([a,b,y1,y2])=>{const m=abox(a,b,y1,y2,N0,N0+12.625,0,UPm);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),LM2));for(let x=a+(b-a)/Math.max(1,Math.round((b-a)/16));x<b-1;x+=(b-a)/Math.max(1,Math.round((b-a)/16)))abox(x-0.1,x+0.1,y1+0.5,y2-0.5,N0+12.625,N0+12.725,0,new THREE.MeshBasicMaterial({color:0x8C8A84}));});
+const FB2=new THREE.MeshPhongMaterial({color:0x1F2124,shininess:50});const fx1=BX+2.875,fz2=N0+25.125,fz1=fz2-20.125;const fr2=abox(fx1,fx1+20.25,0,48,fz1,fz2,0,FB2);fr2.add(new THREE.LineSegments(new THREE.EdgesGeometry(fr2.geometry),LM2));abox(fx1+0.15,fx1+20.1,1,47.8,fz2,fz2+0.8,0,SS);abox(fx1+18.4,fx1+19.1,26,42,fz2+0.8,fz2+1.8,0,new THREE.MeshPhongMaterial({color:0x2A2C30}));
+{const WC=new THREE.MeshLambertMaterial({color:0xF4F3EE,emissive:0x262626}),c1=BX,c2=E-105;const dx=c1+1.75;const dv=abox(dx,dx+1,0,35,N0+8.125,N0+8.125+17,0,WC);dv.add(new THREE.LineSegments(new THREE.EdgesGeometry(dv.geometry),LM2));
+const up=abox(dx,dx+1,0,35+24.875,N0,N0+8.125,0,WC);up.add(new THREE.LineSegments(new THREE.EdgesGeometry(up.geometry),LM2));
+[37,50].forEach(y=>{const s=abox(dx-11,dx,y,y+0.75,N0,N0+7.25,0,WC);s.add(new THREE.LineSegments(new THREE.EdgesGeometry(s.geometry),LM2));abox(dx-11,dx,y+0.75,y+1.5,N0+6.75,N0+7.25,0,WC);});
+label('Divider 1" thick: 35" tall, 8⅛" wall section 59⅞" tall (shelf heights assumed)',c2-6,70,N0+11,0.24);}
+label('Upper cabinets along the whole north wall; short ones over the fridge (heights assumed)',E-24,88,N0+8,0.24);label('Hisense mini fridge, internal freezer 20¼" W × 20⅛" D × 48" H, against the divider',fx1+10,54,fz1+10,0.24);elabel('Hisense fridge: 329 kWh/yr if a 4.4 cu ft HRT044 (unconfirmed) = 29 kWh, $2.34 per 32 days',fx1+10,62,fz1+10);}
+abox(E-48,E-22.75,0,35,KE-23.125,KE,0,CB);abox(E-48,E-23.5,35,36.5,KE-23.875,KE,0,CT);
+{const s1=k2,s2=E-48;{const HWm=new THREE.MeshPhongMaterial({color:0xF4F4F2,shininess:60}),UP2=new THREE.MeshLambertMaterial({color:0xBDBEBA,emissive:0x1C1C1C}),L3=new THREE.LineBasicMaterial({color:0x8C8A84});abox(s1+0.25,s2-0.25,61,66,KE-18,KE,0,HWm);abox(s1+1,s2-1,60.6,61,KE-17,KE-1,0,HWm);
+[[s1,s2,66,88.625],[s2,E,53.25,88.625]].forEach(([a,b,y1,y2])=>{const m=abox(a,b,y1,y2,KE-12.625,KE,0,UP2);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),L3));const n=a===s1?2:3;for(let i=1;i<n;i++){const x=a+(b-a)*i/n;abox(x-0.1,x+0.1,y1+0.5,y2-0.5,KE-12.725,KE-12.625,0,new THREE.MeshBasicMaterial({color:0x8C8A84}));}});}
+abox(s1+6,s2-6,60.4,60.6,KE-13,KE-9,0,new THREE.MeshBasicMaterial({color:0xFFF2C8}));label('Stove space '+fmt(s2-s1)+' wide (no stove): hood, fan, light above (hood height assumed)',(s1+s2)/2,74,KE-12,0.24);}
+abox(E-23.25,E-1.25,33,36.6,zc-16.5,zc+16.5,0,SS);abox(E-21.75,E-2.75,33.05,36.62,zc-15,zc+15,0,new THREE.MeshPhongMaterial({color:0x9DA2A7,shininess:80}));
+{const p=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.55,11,14),SS);p.position.set(E-0.75,36.5+5.5,zc);scene.add(p);const gn=new THREE.Mesh(new THREE.TorusGeometry(3.5,0.4,10,24,Math.PI),SS);gn.position.set(E-0.75-3.5,47.5,zc);scene.add(gn);const sp=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,2,12),SS);sp.position.set(E-7.75,46.5,zc);scene.add(sp);
+[[zc-4.5,0xC0392B],[zc+4.5,0x2E6FD0]].forEach(([z,c])=>{const s=new THREE.Mesh(new THREE.CylinderGeometry(0.6,0.75,1.4,14),SS);s.position.set(E-0.9,37.3,z);scene.add(s);const h=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.5,2.4),SS);h.position.set(E-0.9,38.1,z);scene.add(h);const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.35,0.35,0.15,12),new THREE.MeshBasicMaterial({color:c}));cap.position.set(E-0.9,38.4,z);scene.add(cap);});
+label('Stainless sink, gooseneck faucet: hot left, cold right',E-12,52,zc,0.24);}
+{const bh=abox(E-13.25,E,ROOM.ceiling-9.375,ROOM.ceiling,N0,KE,0,new THREE.MeshLambertMaterial({color:WALL,emissive:WALLEM}));bh.add(new THREE.LineSegments(new THREE.EdgesGeometry(bh.geometry),new THREE.LineBasicMaterial({color:0x8C8A84})));label('Bulkhead 13¼" deep × 9⅜" tall',E-7,ROOM.ceiling+2,zc,0.24);}
+{const w1=zc-26,w2=zc+26,yt=ROOM.ceiling-9.375,yb=yt-49.33,tt=2.75,X1=E-0.75;abox(X1,E,yb,yt,w1,w1+tt,0,TRm);abox(X1,E,yb,yt,w2-tt,w2,0,TRm);abox(X1,E,yt-tt,yt,w1,w2,0,TRm);abox(X1,E,yb,yb+tt,w1,w2,0,TRm);abox(E-0.6,E-0.3,yb+tt,yt-tt,zc-0.6,zc+0.6,0,TRm);const g=new THREE.Mesh(new THREE.PlaneGeometry(w2-w1-2*tt,yt-yb-2*tt),new THREE.MeshLambertMaterial({color:GLASS,transparent:true,opacity:0.55}));g.position.set(E-0.3,(yb+yt)/2,zc);g.rotation.y=-Math.PI/2;scene.add(g);}
+label('U counter + sink under the east window (sizes assumed)',E-30,50,zc,0.24);
+{const TW=new THREE.MeshLambertMaterial({color:0x7A4E2E}),x1=HWX,x2=HWX+33.125,z2=KE-51,z1=z2-55.25;abox(x1,x2,28.25,29.5,z1,z2,0,TW);[[x1+1,z1+1],[x2-3,z1+1],[x1+1,z2-3],[x2-3,z2-3]].forEach(([x,z])=>abox(x,x+2,0,28.25,z,z+2,0,TW));abox(x1+2,x2-2,24.5,28.25,z1+2,z1+3,0,TW);abox(x1+2,x2-2,24.5,28.25,z2-3,z2-2,0,TW);label('Dinner table 33⅛" × 55¼" × 29½" high',(x1+x2)/2,36,(z1+z2)/2,0.24);}
+{const bsT=(w,h)=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');g.fillStyle='#C9C9C4';g.fillRect(0,0,64,64);g.fillStyle='#F6F6F2';for(let r=0;r<2;r++)for(let i=-1;i<2;i++){const x=i*64+(r%2)*32,y=r*32;g.fillRect(x+1,y+1,62,30);}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(w/6,h/6);return new THREE.MeshLambertMaterial({map:t,emissive:0x202020});};
+HW(E-48,N0,E,N0,0,1,bsT(48,16.75),36.5,53.25,0.1);HW(k2,KE,E,KE,0,-1,bsT(E-k2,24.5),36.5,61,0.1);
+const w1=zc-26,w2=zc+26,wb=ROOM.ceiling-9.375-49.33;HW(E,N0,E,w1,-1,0,bsT(w1-N0,52.1),36.5,88.6,0.1);HW(E,w2,E,KE,-1,0,bsT(KE-w2,52.1),36.5,88.6,0.1);HW(E,w1,E,w2,-1,0,bsT(52,wb-36.5),36.5,wb,0.1);}}}}}}}
+const bs=new THREE.Shape();[[BW,-BN],[ROOM.north,-BN],[ROOM.north,-BS],[BW,-BS]].forEach((p,i)=>i?bs.lineTo(p[0],p[1]):bs.moveTo(p[0],p[1]));
+const bf=new THREE.Mesh(new THREE.ShapeGeometry(bs),floor.material);bf.rotation.x=-Math.PI/2;bf.position.y=0.05;scene.add(bf);}
+{const ew=HW(ROOM.north,ROOM.east,ROOM.north,WE+132,-1,0,WM,0,ROOM.ceiling,0);ew.add(new THREE.LineSegments(new THREE.EdgesGeometry(ew.geometry),EDGE));HW(ROOM.north+11,-11,ROOM.north+11,WE+132+11,1,0,new THREE.MeshLambertMaterial({color:0x993C1D}),-6,ROOM.ceiling+1,0);abox(ROOM.north,ROOM.north+11,ROOM.ceiling,ROOM.ceiling+1,0,WE+132+11,0x5F5E5A);label('East exterior wall (continues): bedroom, Theo\'s room, bathroom, kitchen',ROOM.north-4,70,(ROOM.east+WE)/2,0.24);}
+const s=new THREE.Shape();[[HE,-ROOM.east],[0,-ROOM.west],[HWX,-JZ],[HWX,-WE],[HX,-WE],[HX,-ST],[HE,-ST]].forEach((p,i)=>i?s.lineTo(p[0],p[1]):s.moveTo(p[0],p[1]));
+const hf=new THREE.Mesh(new THREE.ShapeGeometry(s),floor.material);hf.rotation.x=-Math.PI/2;scene.add(hf);
+{const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0,0.4,ROOM.west),V(-ux*31,0.4,ROOM.west-uz*31)]),new THREE.LineDashedMaterial({color:0xD32F2F,dashSize:1.5,gapSize:1}));l.computeLineDistances();scene.add(l);}
+[['Hallway, 41¼" wide',(HX+HWX)/2,40,ST+60],['Entry area, 66" wide',(HE+HWX)/2,30,ROOM.east+20],['Front door wall 50½" (door position estimated)',HWX/2+4,88,(ROOM.west+JZ)/2],['Bedroom door wall 42¼"',HE-3,70,ROOM.east+8],['Bedroom doorway (width assumed 30")',HE-2,88,(BD1+BD2)/2],['Wall with the iron sconce',(HE+HX)/2,70,ST-3],['Hallway East Wall 151½"',HX-3,60,(ST+EE)/2],['Hallway West Wall (runs 65" past the East Wall)',HWX+3,60,(JZ+WE)/2],['31" line (Brandon) to the La-Z-Boy',-ux*31+4,6,ROOM.west-uz*31]].forEach(([t,x,y,z])=>label(t,x,y,z,0.24));}
+{const LM=new THREE.LineBasicMaterial({color:0x8C8A84});scene.children.slice(HB0).forEach(o=>{if(o.isMesh&&o.geometry.type==='BoxGeometry'&&o.material&&o.material.color&&[0xF4F4F0,0xFFFFFF].includes(o.material.color.getHex()))o.add(new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry),LM));});}
+/* Dark outlines on every full-height wall so wall tops read from above */
+{scene.updateMatrixWorld(true);const TL=new THREE.LineBasicMaterial({color:0x2B2B2B}),bb=new THREE.Box3(),ws=[];scene.traverse(o=>{if(!o.isMesh||!o.geometry||!['BoxGeometry','PlaneGeometry','ShapeGeometry'].includes(o.geometry.type))return;bb.setFromObject(o);if(bb.max.y>=ROOM.ceiling-0.5&&bb.max.y<=ROOM.ceiling+1.5&&bb.max.y-bb.min.y>=60)ws.push(o);});ws.forEach(o=>{o.geometry.computeBoundingBox();const ty=o.geometry.boundingBox.max.y,p=new THREE.EdgesGeometry(o.geometry).attributes.position.array,k=[];for(let i=0;i<p.length;i+=6)if(Math.abs(p[i+1]-ty)<0.01&&Math.abs(p[i+4]-ty)<0.01)k.push(...p.slice(i,i+6));if(!k.length)return;const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(k,3));o.add(new THREE.LineSegments(g,TL));});}
+{const HB=scene.children.slice(HB0);const b=document.createElement('button');b.textContent='Hide hallway + bedroom';document.querySelector('.bar').appendChild(b);b.onclick=()=>{const on=b.textContent.startsWith('Show');HB.forEach(o=>o.visible=on);b.textContent=on?'Hide hallway + bedroom':'Show hallway + bedroom';};}
+label('East',174,108,82);label('South',95,108,170);label('West',-10,108,68);label('Entry',4,92,160);label('Fridge',152.4,FH+6,14,0.4);
+capture(()=>{label('North',82,110,-6);label('Balcony',81,56,-40);label('Heater',106,18,6,0.4);});
+
+/* Junction close-ups at the south wall pilaster between the east and centre bays */
+{const a=bays[0][1]+SWD.pil/2;const jv=(y,d)=>{const c=wpt('S',a-17,y+9,20),t=wpt('S',a-1,y,1.5);return [[c.x,c.y,c.z],[t.x,t.y,t.z]];};
+views.JT=jv(39,0);views.JF=jv(85,0);}
+views.DK=[[95,64,118],[160,55,141]];views.EL=[[80,620,330],[85,0,240]];
+document.getElementById('elec').onclick=e=>{const L=window.ELAB||[];const v=!(L[0]&&L[0].visible);L.forEach(s=>s.visible=v);e.target.textContent=v?'Hide electricity':'Show electricity';e.target.classList.toggle('on',v);};views.DS=[[150,58,92],[155,50,141]];
+document.getElementById('dimb').onclick=e=>{const v=!dims[0].visible;dims.forEach(d=>d.visible=v);e.target.textContent=v?'Hide names + dimensions':'Show names + dimensions';e.target.classList.toggle('on',v);};
+view(...views.S);
+window.addEventListener('resize',()=>{cam.aspect=wrap.clientWidth/wrap.clientHeight;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);});
+(function loop(){requestAnimationFrame(loop);r.render(scene,cam);})();
+</script>
+</body>
+</html>
