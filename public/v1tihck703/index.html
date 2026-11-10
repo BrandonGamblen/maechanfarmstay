@@ -22,6 +22,7 @@ button.on{border-color:#534AB7;color:#534AB7}
 .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid var(--border)}
 .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
 </style>
+<style>main>*:not(#wrap){display:none!important}#wrap{height:96vh!important}</style>
 </head>
 <body>
 <main>
@@ -556,7 +557,7 @@ for(let z=ZR+5;z<ZW;z+=5){abox(BX1+0.6,BX1+1.4,0,RH,z,z+0.75,RC);abox(BX2-1.4,BX
 function elabel(t,x,y,z){const c=document.createElement('canvas');const F='500 40px sans-serif';let g=c.getContext('2d');g.font=F;const w=Math.ceil(g.measureText(t).width)+36;c.width=w;c.height=64;g=c.getContext('2d');g.fillStyle='rgba(255,236,170,0.95)';g.fillRect(2,4,w-4,56);g.strokeStyle='#B07A00';g.lineWidth=3;g.strokeRect(2,4,w-4,56);g.fillStyle='#3A2A00';g.font=F;g.textAlign='center';g.textBaseline='middle';g.fillText(t,w/2,32);
 const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,depthWrite:false,transparent:true}));sp.renderOrder=999;sp.position.set(x,y,z);const k=0.2;sp.scale.set(42*k*w/192,14*k,1);scene.add(sp);(window.ELAB=window.ELAB||[]).push(sp);return sp;}
 /* Text panel lying flat along a wall-mounted unit (heaters): a1-a2 along the wall, y1-y2 up, off = distance out from the wall */
-function htext(t,w,a1,a2,y1,y2,off){const s=24,c=document.createElement('canvas');c.width=Math.round((a2-a1)*s);c.height=Math.round((y2-y1)*s);const g=c.getContext('2d');g.fillStyle='rgba(255,236,170,0.95)';g.fillRect(0,0,c.width,c.height);g.strokeStyle='#B07A00';g.lineWidth=4;g.strokeRect(2,2,c.width-4,c.height-4);let fs=Math.round(c.height*0.5);g.font='500 '+fs+'px sans-serif';while(g.measureText(t).width>c.width*0.94&&fs>8){fs--;g.font='500 '+fs+'px sans-serif';}g.fillStyle='#3A2A00';g.textAlign='center';g.textBaseline='middle';g.fillText(t,c.width/2,c.height/2);
+function htext(t,w,a1,a2,y1,y2,off){return;const s=24,c=document.createElement('canvas');c.width=Math.round((a2-a1)*s);c.height=Math.round((y2-y1)*s);const g=c.getContext('2d');g.fillStyle='rgba(255,236,170,0.95)';g.fillRect(0,0,c.width,c.height);g.strokeStyle='#B07A00';g.lineWidth=4;g.strokeRect(2,2,c.width-4,c.height-4);let fs=Math.round(c.height*0.5);g.font='500 '+fs+'px sans-serif';while(g.measureText(t).width>c.width*0.94&&fs>8){fs--;g.font='500 '+fs+'px sans-serif';}g.fillStyle='#3A2A00';g.textAlign='center';g.textBaseline='middle';g.fillText(t,c.width/2,c.height/2);
 const tx=new THREE.CanvasTexture(c);tx.anisotropy=r.capabilities.getMaxAnisotropy();const m=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),new THREE.MeshBasicMaterial({map:tx,transparent:true}));place(m,w,a1,a2,y1,y2,off);(window.ELAB=window.ELAB||[]).push(m);return m;}
 htext('Heater on, 19 °C · all heating, Sept 15–Oct 16 (Hydro): ≈28 kWh, $2.30','N',64.5,142.5,5.5,12,3.35);
 elabel('Galanz fridge: not running (0 kWh)',152.4,FH+15,14);
@@ -771,6 +772,8 @@ document.getElementById('elec').onclick=e=>{const L=window.ELAB||[];const v=!(L[
 document.getElementById('dimb').onclick=e=>{const v=!dims[0].visible;dims.forEach(d=>d.visible=v);e.target.textContent=v?'Hide names + dimensions':'Show names + dimensions';e.target.classList.toggle('on',v);};
 view(...views.S);
 window.addEventListener('resize',()=>{cam.aspect=wrap.clientWidth/wrap.clientHeight;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);});
+/* Family copy: no labels */
+scene.traverse(o=>{if(o.isSprite)o.visible=false;});
 (function loop(){requestAnimationFrame(loop);r.render(scene,cam);})();
 </script>
 </body>
