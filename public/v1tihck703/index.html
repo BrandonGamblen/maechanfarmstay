@@ -770,7 +770,7 @@ views.JT=jv(39,0);views.JF=jv(85,0);}
 views.DK=[[95,64,118],[160,55,141]];views.EL=[[80,620,330],[85,0,240]];
 document.getElementById('elec').onclick=e=>{const L=window.ELAB||[];const v=!(L[0]&&L[0].visible);L.forEach(s=>s.visible=v);e.target.textContent=v?'Hide electricity':'Show electricity';e.target.classList.toggle('on',v);};views.DS=[[150,58,92],[155,50,141]];
 document.getElementById('dimb').onclick=e=>{const v=!dims[0].visible;dims.forEach(d=>d.visible=v);e.target.textContent=v?'Hide names + dimensions':'Show names + dimensions';e.target.classList.toggle('on',v);};
-view(...views.S);
+view([67,750,263],[67,0,262],"T");
 window.addEventListener('resize',()=>{cam.aspect=wrap.clientWidth/wrap.clientHeight;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);});
 /* Family copy: no labels */
 const noLab=()=>scene.traverse(o=>{if(o.isSprite)o.visible=false;});noLab();{const _v=view;view=function(...a){_v(...a);noLab();};}
