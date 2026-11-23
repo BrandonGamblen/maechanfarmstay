@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta name="robots" content="noindex, nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>Apartment 3D Model</title>
 <style>
 :root{--bg:#F7F6F2;--card:#FFFFFF;--text:#2C2C2A;--muted:#5F5E5A;--border:#D3D1C7;}
@@ -166,7 +166,7 @@ const HUNTER=0x22362B;/* living room greens: forest green 34 54 43 (Brandon, 202
 /* Walls painted white (stated 2026-11-08); the A/C exhaust port is the same white */
 const WALL=0xF8F8F5,WALLEM=0x404040;/* emissive lift so the white reads as white under the scene lights */
 ['N','E','S','W'].forEach(w=>{panel(w,0,walls[w].len,0,ROOM.ceiling,WALL,0).material.emissive.setHex(WALLEM);panel(w,0,walls[w].len,0,ROOM.baseboard,HUNTER,0.3);});
-panel('C',0,L,ROOM.ceiling-ROOM.entryHeader,ROOM.ceiling,0x7F77DD,0);
+panel('C',0,L,ROOM.ceiling-ROOM.entryHeader,ROOM.ceiling,0xECDEBE,0).material.side=THREE.DoubleSide;/* was blue; cream on the hallway side, green + stencil on the living room side added below */
 
 /* North wall exterior: brick face, wall top */
 capture(()=>{
@@ -296,8 +296,8 @@ if(!skipUp.includes(i)){if(hole&&it.kind!=='c'){const ft=hole.y2+FRAME;dim(w,ac,
 if(!skipLow.includes(i))dim(w,ac,(SWD.low[0]+SWD.low[1])/2,fmt(bw)+' × '+fmt(SWD.low[1]-SWD.low[0]));
 if(hole){dim(w,ac,(hole.y1+hole.y2)/2+(it.kind==='c'?-9:0),'opening '+fmt(hole.a2-hole.a1)+' × '+fmt(hole.y2-hole.y1)+' ('+fmt(hole.y1)+'–'+fmt(hole.y2)+' AFF)');
 dim(w,ac,hole.y1-FRAME-1.6,'frame outside '+fmt(hole.a2-hole.a1+2*FRAME)+' × '+fmt(hole.y2-hole.y1+2*FRAME));}
-if(it){frame(w,hole,FRAME,2,it.kind==='m'?WOODF:null);
-if(it.kind==='m')wb(w,ia1,ia2,iy1,iy2,0.3,0.9,MIRROR);else if(it.kind==='c'){/* candle sconce drawn separately */}else if(it.img){wb(w,ia1,ia2,iy1,iy2,0.3,1.5,PAINT);const tx=new THREE.TextureLoader().load(it.img);tx.anisotropy=r.capabilities.getMaxAnisotropy();place(new THREE.Mesh(new THREE.PlaneGeometry(it.w,it.h),new THREE.MeshBasicMaterial({map:tx})),w,ia1,ia2,iy1,iy2,1.52);}else{wb(w,ia1,ia2,iy1,iy2,0.3,1.5,PAINT);wb(w,ia1+2,ia2-2,iy1+2,iy2-2,1.5,1.6,CANVAS);}
+if(it){if(!it.noFrame)frame(w,hole,FRAME,2,it.kind==='m'?WOODF:null);
+if(it.kind==='m'){wb(w,hole.a1,hole.a2,hole.y1,hole.y2,0.26,0.9,MIRROR);/* mirror fills the opening right up to the wood frame (2026-11-22) */}else if(it.kind==='c'){/* candle sconce drawn separately */}else if(it.img){wb(w,ia1,ia2,iy1,iy2,0.3,1.5,PAINT);wb(w,hole.a1,hole.a2,hole.y1,hole.y2,0.26,0.3,new THREE.MeshLambertMaterial({color:0xF8F8F5,emissive:0x323232}));/* plain light border inside the moulding (2026-11-22) */const tx=new THREE.TextureLoader().load(it.img);tx.anisotropy=r.capabilities.getMaxAnisotropy();place(new THREE.Mesh(new THREE.PlaneGeometry(it.w,it.h),new THREE.MeshBasicMaterial({map:tx})),w,ia1,ia2,iy1,iy2,1.52);}else{wb(w,ia1,ia2,iy1,iy2,0.3,1.5,PAINT);wb(w,ia1+2,ia2-2,iy1+2,iy2-2,1.5,1.6,CANVAS);}
 const lp=it.kind==='c'?wpt(w,ac,iy2+REVEAL+FRAME+2.5,4):wpt(w,ac,iy2-3,4);label(it.name,lp.x,lp.y,lp.z,0.3);}
 /* trim: cleat, face, LED strips on the cleat's top and bottom edges */
 wb(w,b1,b2,SWD.cleat[0],SWD.cleat[1],0,1.5,GB);
@@ -327,7 +327,7 @@ return bays;}
 const SB=(ROOM.south-SWD.pil*4-51)/2;
 const bays=buildWall('S',{pils:[0,SWD.pil+SB,2*SWD.pil+SB+51,ROOM.south-SWD.pil],
  items:[{name:'Candle sconce',w:6,h:10,y:53,kind:'c'},{name:'Mirror',w:40,h:28,y:ART_LINE,kind:'m'},{name:'Candle sconce',w:6,h:10,y:53,kind:'c'}],
- skipLow:[0],cuts:[{a1:28.25,a2:31,y1:11.75,y2:16.25}]});
+ skipLow:[0,1,2]/* centre and right bay slats removed 2026-11-22 (Brandon) */,cuts:[{a1:28.25,a2:31,y1:11.75,y2:16.25}]});
 /* Part names on the south wall */
 {const P1=bays[0][1]+SWD.pil/2,P2=bays[1][1]+SWD.pil/2,mid=(bays[1][0]+bays[1][1])/2,w3=(bays[2][0]+bays[2][1])/2,b1=(bays[0][0]+bays[0][1])/2;
 [['Pilaster',P1,62,4],['Plinth',P2,4,5],['Cap',P2,84.75,5],['Cornice',b1,99.5,5],['Frieze (casing on cleat)',w3,87.8,4],
@@ -348,15 +348,15 @@ buildWall('N',{pils:[0,161.5],bays:[[3.5,31.75],[130.25,161.5]],items:[{name:'Ca
 buildWall('E',{pils:[0,40,120,160.5],items:[null,null,null],skipUp:[1,2],skipLow:[0,1,2],cuts:[{a1:9.5,a2:36.5,y1:15,y2:33}]});
 /* East bay 2 lower (decided 2026-11-08): three parts from one Suntrellis sheet: 16" horizontal-slat end pieces (one sheet rectangle each,
    cut at a batten) and a 44 1/2" centre piece turned so its slats run vertical; slat ends sit on the top and bottom frame rails. */
-latPanel('E',43.5,59.5,SWD.low[0],SWD.low[1],'hs',[]);latPanel('E',59.5,104,SWD.low[0],SWD.low[1],'vs',[]);latPanel('E',104,120,SWD.low[0],SWD.low[1],'hs',[]);
-dim('E',51.5,21,'16"');dim('E',81.75,21,'44 1/2" (slats vertical)');dim('E',112,21,'16"');
+/* 16" horizontal-slat side pieces dropped 2026-11-22 (Brandon); only the 44 1/2" vertical-slat centre piece stays */latPanel('E',59.5,104,SWD.low[0],SWD.low[1],'vs',[]);
+dim('E',81.75,21,'44 1/2" (slats vertical)');
 {const a1=81.75-46.75/2,a2=81.75+46.75/2,y1=50,y2=50+30.75;wb('E',a1,a2,y1,y2,0.3,1.5,PAINT);const tx=new THREE.TextureLoader().load('painting-east.jpg');tx.anisotropy=r.capabilities.getMaxAnisotropy();place(new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),new THREE.MeshBasicMaterial({map:tx})),'E',a1,a2,y1,y2,1.52);dim('E',81.75,y2+3,'Painting 46 3/4" × 30 3/4" (50"–80 3/4" AFF)');}
 [['A/C port: no lower lattice','E',23,36,4],
  ['Door/window trim painted hunter green','N',48,76,6]].forEach(([t,w,a,y,o])=>{const p=wpt(w,a,y,o);label(t,p.x,p.y,p.z,0.24);});
 
 /* WEST WALL (a from the south/entry end). Interior pilasters centered on the two sconce boxes (44.25 and 95.75);
    sconces remount on the pilaster faces. Cutouts: switch + thermostat (one opening), Socket 3. No items yet. */
-buildWall('W',{pils:[0,44.25-1.75,95.75-1.75,ROOM.west-SWD.pil],items:[null,{name:'Painting (from photo; about 28¼" × 19⅜", to measure)',w:28.25,h:19.375,y:50,kind:'p',img:'painting-west.jpg'},null],skipLow:[0,1,2],half:[95.75-1.75],
+buildWall('W',{pils:[0,44.25-1.75,95.75-1.75,ROOM.west-SWD.pil],items:[null,{name:'Painting (from photo; about 28¼" × 19⅜", to measure)',w:28.25,h:19.375,y:50,kind:'p',img:'painting-west.jpg',noFrame:true/* moulding dropped 2026-11-22 (Brandon) */},null],skipUp:[1]/* centre bay upper lattice dropped 2026-11-22 (Brandon) */,skipLow:[0,1,2],half:[95.75-1.75],
  cuts:[{a1:7.375,a2:16.25,y1:52.625,y2:62.5},{a1:ROOM.west-43-2.75,a2:ROOM.west-43,y1:11.25,y2:15.75}]});
 /* BANGANMA cage wall sconces (Amazon.ca B0CNHC68WC): 4.72" round black backplate, 0.8" deep; cage head 3.9" wide x 5.5" long;
    8.7" overall height. Each mounts on a 5.5" square block (1x6 offcut) on the pilaster face. Box center drawn at 66" AFF (placeholder). */
@@ -406,8 +406,8 @@ const WPT=[wpTex(0),wpTex(1),wpTex(2),wpTex(3),wpTex(4)],WPN=['emerald velvet','
 const WPM=new THREE.MeshLambertMaterial({map:WPT[0]});
 /* candle-sconce positions: south side bays and north side sections */
 const CANDLES=[['S',(bays[0][0]+bays[0][1])/2],['S',(bays[2][0]+bays[2][1])/2],['N',(3.5+31.75)/2],['N',(130.25+161.5)/2]];
-CANDLES.forEach(([w,a])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(10,14),WPM);place(m,w,a-5,a+5,51,65,0.25);});
-{const m=new THREE.Mesh(new THREE.PlaneGeometry(10.875,11.875),WPM);place(m,'W',6.375,17.25,51.625,63.5,0.25);}
+CANDLES.forEach(([w,a])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(10,14),WPM);place(m,w,a-5,a+5,51,65,0.3);/* in front of the 0.25 leaf stencil (2026-11-22) */});
+{const m=new THREE.Mesh(new THREE.PlaneGeometry(10.875,11.875),WPM);place(m,'W',6.375,17.25,51.625,63.5,0.3);}
 document.getElementById('wp').onclick=e=>{wpk=(wpk+1)%5;WPM.map=WPT[wpk];WPM.needsUpdate=true;e.target.textContent='Wallpaper: '+WPN[wpk];};
 const SCROLL=new THREE.MeshBasicMaterial({map:scrollTex(),transparent:true,alphaTest:0.4,side:THREE.DoubleSide});
 CANDLES.forEach(([w,a])=>{
@@ -795,13 +795,13 @@ if(pistol){const p=g19();p.position.set(cx-6,yb+6.5,zw+2.6);scene.add(p);hook(cx
 label(name,cx,yb+24,zw+4,0.24);};
 /* Theo's board (moved 2026-11-09): east wall, left (north) of his window, on the window wall so it can't be seen from outside.
    That strip is 27" wide, so the 4 panels stand portrait, 2 x 2 = 21" W x 32" H (44"-76" AFF); M4 hangs muzzle up, Glock beside it. */
-{const G=new THREE.Group();G.position.set(ROOM.north,0,299.3);G.rotation.y=-Math.PI/2;scene.add(G);
+{const G=new THREE.Group();G.position.set(ROOM.north,8.5,299.3);/* raised 8 1/2" (2026-11-22): M4 52 1/2"-85 1/2", centred between the stencil rows at 48" and 90" */G.rotation.y=-Math.PI/2;scene.add(G);
 /* pegboard removed 2026-11-22 (Brandon): the M4 hangs vertically on two black steel hooks (hooks not drawn) */if(0)for(let i=0;i<2;i++)for(let j=0;j<2;j++){const t=PB.clone();t.needsUpdate=true;t.repeat.set(10.5/4,16/4);const m=new THREE.Mesh(new THREE.BoxGeometry(10.5,16,0.5),[GUN,GUN,GUN,GUN,new THREE.MeshLambertMaterial({map:t}),GUN]);m.position.set(5.25+10.5*i,52+16*j,0.75);G.add(m);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x444444})));}
 const hk=(x,y)=>{const h=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,3,8),HK);h.rotation.x=Math.PI/2;h.position.set(x,y,2.5);G.add(h);};
 const r=m4();r.rotation.z=-Math.PI/2;r.position.set(7,60.5,3.2);G.add(r);
 const lp=new THREE.Vector3(10.5,82,4).applyMatrix4(G.matrixWorld.compose(G.position,G.quaternion,G.scale));label('Airsoft M4 on two black steel hooks',lp.x,lp.y,lp.z,0.24);}
 /* Brandon's board (moved 2026-11-09): bedroom east wall, right (south) of the window, portrait 21" W x 32" H (44"-76" AFF), 3" from the window trim; M4 muzzle up, no pistol */
-{const G=new THREE.Group();G.position.set(ROOM.north,0,258.75);G.rotation.y=-Math.PI/2;scene.add(G);
+{const G=new THREE.Group();G.position.set(ROOM.north,8.5,258.75);/* raised 8 1/2" (2026-11-22): M4 52 1/2"-85 1/2", centred between the stencil rows at 48" and 90" */G.rotation.y=-Math.PI/2;scene.add(G);
 /* pegboard removed 2026-11-22 (Brandon): the M4 hangs vertically on two black steel hooks (hooks not drawn) */if(0)for(let i=0;i<2;i++)for(let j=0;j<2;j++){const t=PB.clone();t.needsUpdate=true;t.repeat.set(10.5/4,16/4);const m=new THREE.Mesh(new THREE.BoxGeometry(10.5,16,0.5),[GUN,GUN,GUN,GUN,new THREE.MeshLambertMaterial({map:t}),GUN]);m.position.set(5.25+10.5*i,52+16*j,0.75);G.add(m);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x444444})));}
 const hk=(x,y)=>{const h=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,3,8),HK);h.rotation.x=Math.PI/2;h.position.set(x,y,2.5);G.add(h);};
 const r=m4();r.rotation.z=-Math.PI/2;r.position.set(10.5,60.5,3.2);G.add(r);
@@ -874,7 +874,7 @@ const T10=[];{const w=31,g=(X2-X1-3*w)/4;[1,3,4].forEach((m,i)=>{const xc=X1+g+i
 const D={9:{name:'9: repeated framed squares',idx:TI,c:{wall:'#EFE6D2',field:'#EFE6D2',border:'#6B4A2E',mand:'#6B4A2E'}},10:{name:'10: framed rectangles above, framed squares below',idx:T10,c:{wall:'#F8F8F5',field:'#33302C',border:'#C8A774',mand:'#C8A774'}}};
 let dk=10;const wr=document.createElement('span');wr.style.cssText='display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap';const b=document.createElement('button');wr.appendChild(b);const inp={};
 /* Colour schemes (2026-11-22): wall = panel colour, border = mandala colour; the button steps through them, two pickers for custom */
-const SC=[['Charcoal and gold',[51,48,44],[200,167,116],[140,110,70]],['Navy and brass',[31,42,61],[200,167,116],[140,117,81]],['Forest green and cream',[34,54,43],[230,214,180],[161,150,126]],['Oxblood and antique gold',[88,32,36],[214,178,120],[150,125,84]],['Oxblood and white',[88,32,36],[245,242,236],[245,242,236]],['Oxblood and navy',[88,32,36],[30,42,70],[20,29,49]],['Oxblood and cream',[88,32,36],[236,222,190],[236,222,190]]/* navy darkened 2026-11-22 (Brandon) */]/* [name, wall+panel+door, border+mandala+door frame, trim] ; scheme 5 added 2026-11-22 *//* narrowed to schemes 1-4 (Brandon, 2026-11-22) */,h6=a=>'#'+a.map(v=>v.toString(16).padStart(2,'0')).join('');let si=0;const useS=i=>{const s=SC[i];D[dk].c={wall:h6(s[1]),field:h6(s[1]),border:h6(s[2]),mand:h6(s[2]),trim:h6(s[3])};};useS(0);
+const SC=[['Charcoal and gold',[51,48,44],[200,167,116],[140,110,70]],['Navy and brass',[31,42,61],[200,167,116],[140,117,81]],['Forest green and cream',[34,54,43],[230,214,180],[161,150,126]],['Oxblood and antique gold',[88,32,36],[214,178,120],[150,125,84]],['Oxblood and white',[88,32,36],[245,242,236],[245,242,236]],['Oxblood and navy',[88,32,36],[30,42,70],[20,29,49]],['Oxblood and cream',[88,32,36],[236,222,190],[236,222,190]]/* navy darkened 2026-11-22 (Brandon) */]/* [name, wall+panel+door, border+mandala+door frame, trim] ; scheme 5 added 2026-11-22 *//* narrowed to schemes 1-4 (Brandon, 2026-11-22) */,h6=a=>'#'+a.map(v=>v.toString(16).padStart(2,'0')).join('');let si=6/* default: oxblood and cream (Brandon 2026-11-22) */;const useS=i=>{const s=SC[i];D[dk].c={wall:h6(s[1]),field:h6(s[1]),border:h6(s[2]),mand:h6(s[2]),trim:h6(s[3])};};useS(si);
 /* Bedroom east, south and west walls painted the wall colour (Brandon, 2026-11-22); window and door openings left clear; baseboard and trim face unchanged */
 const WC=new THREE.MeshLambertMaterial({color:0xffffff});{const wp=(ax,k,a1,a2,y1,y2,ry)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),WC);if(ax==='x')m.position.set(k,(y1+y2)/2,(a1+a2)/2);else m.position.set((a1+a2)/2,(y1+y2)/2,k);m.rotation.y=ry;scene.add(m);};
 const E=ROOM.north-0.04,H=ROOM.ceiling,ry=-Math.PI/2;[[168.5,190.75,0,H],[255.75,291.75,0,H],[190.75,255.75,0,31.75],[190.75,255.75,86.75,H]].forEach(([a,b,c,d])=>wp('x',E,a,b,c,d,ry));
@@ -887,7 +887,7 @@ const BBM=new THREE.MeshLambertMaterial({color:0xffffff});{const bh=ROOM.baseboa
 {const G=new THREE.Group();G.position.set(29.375+0.01,0,(171.25+202.5)/2);G.rotation.y=Math.PI/2;scene.add(G);const fm=window.DOORF=new THREE.MeshLambertMaterial({color:0x33302C,emissive:0x080707});window.DOORL=[];const f=new THREE.Mesh(new THREE.PlaneGeometry(31.25,80),fm);f.position.set(0,40,0);G.add(f);
 const st=(a1,a2,b1,b2,vert)=>{const t=TL.load('stencil-leaf.png');t.wrapS=t.wrapT=THREE.RepeatWrapping;if(vert){t.center.set(0.5,0.5);t.rotation=Math.PI/2;t.repeat.set((b2-b1)/15,1);}else t.repeat.set((a2-a1)/15,1);const mt=new THREE.MeshLambertMaterial({map:t,transparent:true,alphaTest:0.4,color:0xC8A774});DOORL.push(mt);const m=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,b2-b1),mt);m.position.set((a1+a2)/2,(b1+b2)/2,0.02);G.add(m);};
 const x1=-15.5,x2=15.5,y1=2.5,y2=77.5,bw=8;st(x1,x1+bw,y1,y2,true);st(x2-bw,x2,y1,y2,true);st(x1+bw,x2-bw,y2-bw,y2,false);st(x1+bw,x2-bw,y1,y1+bw,false);}
-const apply=()=>{const d=D[dk],c=d.c,hx=s=>parseInt(s.slice(1),16);inp.wall.value=c.wall;inp.border.value=c.border;C.uw=hx(c.wall);C.uf=hx(c.field);C.ub=hx(c.border);C.um=hx(c.mand);setB(base.L,'uw');setB(base.U,'uw');WC.color.setHex(C.uw);WC.emissive.setHex(C.uw);WC.emissive.multiplyScalar(0.15);[[BBM,hx(c.trim)],[window.BTF,hx(c.trim)],[window.BRZ,hx(c.trim)]].forEach(([m,cc])=>{if(!m)return;m.color.setHex(cc);m.emissive.setHex(cc);m.emissive.multiplyScalar(0.15);});if(window.TRL){const t=hx(c.trim);TRL.color.setRGB(((t>>16)&255)/255*0.6,((t>>8)&255)/255*0.6,(t&255)/255*0.6);}if(window.DOORSL){DOORSL.color.setHex(C.uw);DOORSL.emissive.setHex(C.uw);DOORSL.emissive.multiplyScalar(0.15);}if(window.DOORF){DOORF.color.setHex(C.uw);DOORF.emissive.setHex(C.uw);DOORF.emissive.multiplyScalar(0.15);DOORL.forEach(m=>m.color.setHex(C.ub));}/* trim and door follow the scheme (Brandon, 2026-11-22) *//* trim unified in deep bronze 140 110 70 (Brandon, 2026-11-22): baseboard and trim face; frames and mandalas follow the border colour */setL(leaf.L,null);setL(leaf.U,null);md.forEach(m=>setL(m,null));PG.forEach(p=>p.G.visible=false);d.idx.forEach(i=>{PG[i].G.visible=true;PG[i].set('ub','uf','um');});b.textContent='Bedroom N wall colours: '+(si<0?'custom':SC[si][0]+' ('+(si+1)+'/'+SC.length+')');};
+const apply=()=>{const d=D[dk],c=d.c,hx=s=>parseInt(s.slice(1),16);inp.wall.value=c.wall;inp.border.value=c.border;C.uw=hx(c.wall);C.uf=hx(c.field);C.ub=hx(c.border);C.um=hx(c.mand);setB(base.L,'uw');setB(base.U,'uw');WC.color.setHex(C.uw);WC.emissive.setHex(C.uw);WC.emissive.multiplyScalar(0.15);[[BBM,hx(c.trim)],[window.BTF,hx(c.trim)],[window.BRZ,hx(c.trim)]].forEach(([m,cc])=>{if(!m)return;m.color.setHex(cc);m.emissive.setHex(cc);m.emissive.multiplyScalar(0.15);});if(window.TRL){const t=hx(c.trim);TRL.color.setRGB(((t>>16)&255)/255*0.6,((t>>8)&255)/255*0.6,(t&255)/255*0.6);}if(window.DOORSL){DOORSL.color.setHex(C.uw);DOORSL.emissive.setHex(C.uw);DOORSL.emissive.multiplyScalar(0.15);}if(window.DOORF){DOORF.color.setHex(C.uw);DOORF.emissive.setHex(C.uw);DOORF.emissive.multiplyScalar(0.15);DOORL.forEach(m=>m.color.setHex(C.ub));}/* trim and door follow the scheme (Brandon, 2026-11-22) *//* trim unified in deep bronze 140 110 70 (Brandon, 2026-11-22): baseboard and trim face; frames and mandalas follow the border colour */setL(leaf.L,null);setL(leaf.U,null);md.forEach(m=>setL(m,null));PG.forEach(p=>p.G.visible=false);d.idx.forEach(i=>{PG[i].G.visible=true;PG[i].set('ub','uf','um');});b.textContent='Bedroom N wall colours: '+(si<0?'custom':SC[si][0]+' ('+(si+1)+'/'+SC.length+')');window.BLC=C.ub;window.BPG=PG;if(window.BLINES)BLINES(C.ub,PG);};
 [['wall','Wall + panel'],['border','Border + mandala']].forEach(([k,t])=>{const l=document.createElement('label');l.style.cssText='font-size:12px;display:inline-flex;align-items:center;gap:3px';l.textContent=t;const i=document.createElement('input');i.type='color';i.oninput=()=>{const c=D[dk].c;if(k==='wall'){c.wall=c.field=i.value;}else{c.border=c.mand=i.value;const v=parseInt(i.value.slice(1),16);c.trim=h6([v>>16&255,v>>8&255,v&255].map(x=>Math.round(x*0.7)));}si=-1;apply();};l.appendChild(i);wr.appendChild(l);inp[k]=i;});
 b.onclick=()=>{si=(si+1)%SC.length;useS(si);apply();};document.querySelector('.bar').appendChild(wr);window.BAPPLY=apply;apply();}
 {const tb=document.createElement('button');const st=v=>{TVO.forEach(o=>o.visible=v);tb.textContent=v?'Hide bedroom TV':'Show bedroom TV';};tb.onclick=()=>st(!TVO[0].visible);document.querySelector('.bar').appendChild(tb);st(false);}
@@ -905,6 +905,191 @@ PW('N',0,31.75,B,H);PW('N',130.25,ROOM.north,B,H);PW('N',31.75,130.25,87.375,H);
 /* 2026-11-22: edge lines on the bedroom trim drawn in a darker shade of the trim (were light grey and read as a white edge); door slab edges take the door colour, hallway face stays white */
 window.TRL=new THREE.LineBasicMaterial({color:0x000000});window.DOORSL=new THREE.MeshLambertMaterial({color:0xffffff});if(window.BDOOR)BDOOR.material=DOORSL;scene.traverse(o=>{if(o.isMesh&&(o.material===window.BTF||o.material===BRZ||o.material===DOORSL))o.children.forEach(ch=>{if(ch.isLineSegments)ch.material=TRL;});});
 if(window.BAPPLY)BAPPLY();}
+/* Hallway (Brandon, 2026-11-22): cream walls (236 222 190), forest-green trim (baseboard + hallway-side door casings), and one row of the leaf stencil
+   in forest green at trim height (36"-44"). Theo's room: colour button, navy and brass or forest green and cream (walls + trim). */
+{const hp=(ax,k,a1,a2,y1,y2,ry,mat,rep)=>{let m2=mat;if(rep){const t=new THREE.TextureLoader().load('stencil-leaf.png');t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set((a2-a1)/15,1);m2=new THREE.MeshLambertMaterial({map:t,transparent:true,alphaTest:0.4,color:0x22362B});}const m=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),m2);if(ax==='x')m.position.set(k,(y1+y2)/2,(a1+a2)/2);else m.position.set((a1+a2)/2,(y1+y2)/2,k);m.rotation.y=ry;scene.add(m);return m;};
+const CRM=new THREE.MeshLambertMaterial({color:0xECDEBE,emissive:0x231F1C}),FG=new THREE.MeshLambertMaterial({color:0x22362B,emissive:0x050806}),B=ROOM.baseboard,H=ROOM.ceiling,P=Math.PI;
+const HWXv=24.875-66,JZv=166.06,STv=206.25,EEv=357.75,WEv=422.75,TXv=25.625,HEv=24.875,HXv=0.125;
+/* [axis, plane coord, from, to, facing rotation, openings [[a1,a2,top]]] */
+const HL=[['x',HWXv+0.03,JZv,WEv,P/2,[]],['x',HEv-0.03,164,STv,-P/2,[[169,204.75,82.25]]],['z',STv-0.03,HXv,HEv,P,[]],['x',HXv-0.03,STv,EEv,-P/2,[[212.875,242.375,82.25]]],['z',EEv+0.03,HXv,TXv,0,[]],['x',TXv-0.03,EEv,WEv,-P/2,[[357.75,393,82.25]]]];
+HL.forEach(([ax,k,a1,a2,ry,op])=>{const cuts=[a1];op.forEach(o=>cuts.push(o[0],o[1]));cuts.push(a2);for(let i=0;i<cuts.length-1;i++){const s1=cuts[i],s2=cuts[i+1];if(s2-s1<0.05)continue;const o=op.find(q=>q[0]===s1);const y0=o?o[2]:B;hp(ax,k,s1,s2,y0,H,ry,CRM);if(!o)hp(ax,(ax==='x'?k+(ry>0?0.02:-0.02):k+(ry===0?0.02:-0.02)),s1,s2,36,44,ry,null,true);hp(ax,(ax==='x'?k+(ry>0?0.02:-0.02):k+(ry===0?0.02:-0.02)),s1,s2,H-8,H,ry,null,true);/* second leaf row along the top of the hallway walls */hp(ax,(ax==='x'?k+(ry>0?0.02:-0.02):k+(ry===0?0.02:-0.02)),s1,s2,H-8,H,ry,null,true);/* top row under the ceiling (2026-11-22) */
+if(!o){const d=0.75,bx=ax==='x'?[Math.min(k,k+(ry>0?d:-d)),Math.max(k,k+(ry>0?d:-d))]:null;if(ax==='x')abox(bx[0],bx[1],0,B,s1,s2,0,FG);else{const zz=ry===0?[k,k+d]:[k-d,k];abox(s1,s2,0,B,zz[0],zz[1],0,FG);}}}});
+/* hallway-side door casings (white trim) to forest green */
+{const bb=new THREE.Box3();scene.updateMatrixWorld(true);const hit=[];scene.traverse(o=>{if(!o.isMesh||!o.material||Array.isArray(o.material)||!o.material.color||!o.material.emissive)return;if(o.material.color.getHex()!==0xFFFFFF||o.material.emissive.getHex()!==0x202020)return;bb.setFromObject(o);if(bb.min.x>=-41.3&&bb.max.x<=25.7&&bb.min.z>=130&&bb.max.z<=WEv+0.1&&bb.max.y>13)hit.push(o);});hit.forEach(o=>o.material=FG);}
+/* Theo's room walls + trim with a colour button */
+const TW=new THREE.MeshLambertMaterial({color:0xffffff}),TT=new THREE.MeshLambertMaterial({color:0xffffff}),x1=30.125,E=ROOM.north,z1=296.25,z2=395.25;
+const TWL=[['z',z1+0.03,x1,E,0,[]],['z',z2-0.03,x1,E,P,[]],['x',E-0.03,z1,z2,-P/2,[[323.375,368.125,0]]],['x',x1+0.03,z1,z2,P/2,[[316.5,346.25,82.25],[357.75,393,82.25]]]];
+const TSM=[],st=(ax,k,a1,a2,y1,y2,ry)=>{const t=new THREE.TextureLoader().load('stencil-leaf.png');t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set((a2-a1)/15,(y2-y1)/8);const m=new THREE.MeshLambertMaterial({map:t,transparent:true,alphaTest:0.4,color:0xffffff});TSM.push(m);const d=ax==='z'?(ry===0?0.02:-0.02):(ry>0?0.02:-0.02);hp(ax,k+d,a1,a2,y1,y2,ry,m);};
+/* leaf stencil all over Theo's walls in the trim colour (brass or cream), like the living room */
+TWL.forEach(([ax,k,a1,a2,ry,op])=>{const cuts=[a1];op.forEach(o=>cuts.push(o[0],o[1]));cuts.push(a2);for(let i=0;i<cuts.length-1;i++){const s1=cuts[i],s2=cuts[i+1];const o=op.find(q=>q[0]===s1);if(o&&o[2]===0){hp(ax,k,s1,s2,0,32,ry,TW);hp(ax,k,s1,s2,87,H,ry,TW);st(ax,k,s1,s2,B,32,ry);st(ax,k,s1,s2,87,H,ry);}else{hp(ax,k,s1,s2,o?o[2]:0,H,ry,TW);st(ax,k,s1,s2,o?o[2]:B,H,ry);}if(!o){const d=0.75;if(ax==='x'){const xa=ry>0?k:k-d;abox(xa,xa+d,0,B,s1,s2,0,TT);}else{const zz=ry===0?[k,k+d]:[k-d,k];abox(s1,s2,0,B,zz[0],zz[1],0,TT);}}}});
+{const bb=new THREE.Box3();const hit=[];scene.traverse(o=>{if(!o.isMesh||!o.material||Array.isArray(o.material)||!o.material.color||!o.material.emissive)return;if(o.material.color.getHex()!==0xFFFFFF||o.material.emissive.getHex()!==0x202020)return;bb.setFromObject(o);if(bb.min.x>=29.9&&bb.max.x<=165.05&&bb.min.z>=296.2&&bb.max.z<=395.3&&bb.max.y>13)hit.push(o);});hit.forEach(o=>o.material=TT);}
+const TS=[['navy and brass',[31,42,61],[140,117,81]],['forest green and cream',[34,54,43],[161,150,126]]];let ti=0;const tb=document.createElement('button');const tap=()=>{const s=TS[ti],f=(m,c)=>{m.color.setRGB(c[0]/255,c[1]/255,c[2]/255);m.emissive.setRGB(c[0]/255*0.15,c[1]/255*0.15,c[2]/255*0.15);};f(TW,s[1]);f(TT,s[2]);TSM.forEach(m=>m.color.setRGB(s[2][0]/255,s[2][1]/255,s[2][2]/255));window.TLC=s[2];window.TSMS=TSM;if(window.TLINES)TLINES(s[2],TSM);tb.textContent='Theo\'s room colours: '+s[0]+' ('+(ti+1)+'/'+TS.length+')';};tb.onclick=()=>{ti=(ti+1)%TS.length;tap();};document.querySelector('.bar').appendChild(tb);tap();}
+/* 2026-11-22 (Brandon): living room entry header like the other walls; iron accent toggle left of the bedroom window;
+   double candle sconce on the hallway wall facing the entry (from his photo, size and height estimated: 9" x 10", 41"-51" AFF);
+   black + sheer curtains on the bedroom and Theo windows (same rod and finials as the living room; rod 95" AFF and brackets 3 1/4" past the trim, estimated from his photo; curtains to the bottom of the window trim). */
+{const P=Math.PI,LT=new THREE.TextureLoader();
+/* header: forest green with the white leaf stencil on the living room side */
+{const y1=ROOM.ceiling-ROOM.entryHeader,y2=ROOM.ceiling;const g=new THREE.Mesh(new THREE.PlaneGeometry(L,y2-y1),new THREE.MeshLambertMaterial({color:0x22362B,emissive:0x050806}));place(g,'C',0,L,y1,y2,0.23);const t=LT.load('stencil-leaf.png');t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(L/15,(y2-y1)/8);place(new THREE.Mesh(new THREE.PlaneGeometry(L,y2-y1),new THREE.MeshLambertMaterial({map:t,transparent:true,alphaTest:0.4,color:0xF8F8F5})),'C',0,L,y1,y2,0.25);const t2=LT.load('stencil-leaf.png');t2.wrapS=t2.wrapT=THREE.RepeatWrapping;t2.repeat.set(L/15,1);const hb=place(new THREE.Mesh(new THREE.PlaneGeometry(L,8),new THREE.MeshLambertMaterial({map:t2,transparent:true,alphaTest:0.4,color:0x22362B})),'C',0,L,y2-8,y2,-0.03);hb.rotateY(P);}
+/* iron accent left of the bedroom window: east wall strip from the north wall (z 168.5) to the window trim (z 190.75), centred on the window height */
+{const zc=(168.5+190.75)/2,yc=66.5/* level with the top-row mandalas (panels 44-89 AFF) */,X=ROOM.north-0.6;const OPT=[['Nuvo Iron oval 17" x 13", $68.99','iron-oval.png',13,17],['Nuvo Iron round 15", $70.49','iron-round.png',15,15],['none',null,0,0]];
+const ms=OPT.map(o=>{if(!o[1])return null;const m=new THREE.Mesh(new THREE.PlaneGeometry(o[2],o[3]),new THREE.MeshLambertMaterial({map:LT.load(o[1]),transparent:true,alphaTest:0.35,side:THREE.DoubleSide}));m.position.set(X,yc,zc);m.rotation.y=-P/2;scene.add(m);m.visible=false;return m;});
+let k=0;const b=document.createElement('button');const ap=()=>{ms.forEach((m,i)=>{if(m)m.visible=i===k;});b.textContent='Iron accent (left of bedroom window): '+OPT[k][0];};b.onclick=()=>{k=(k+1)%OPT.length;ap();};document.querySelector('.bar').appendChild(b);ap();}
+/* double candle sconce on the hallway wall facing the entry */
+{const c=document.createElement('canvas');c.width=360;c.height=400;const g=c.getContext('2d');g.strokeStyle='#1E1E1E';g.fillStyle='#1E1E1E';g.lineWidth=12;g.lineCap='round';
+const half=f=>{g.save();f();g.restore();g.save();g.translate(360,0);g.scale(-1,1);f();g.restore();};
+half(()=>{/* heart lobe: from the fleur base up and out, over the top, curling in */g.beginPath();g.moveTo(176,150);g.bezierCurveTo(120,120,95,40,135,22);g.bezierCurveTo(170,8,185,55,158,62);g.bezierCurveTo(142,66,140,45,152,42);g.stroke();
+/* outer curl at the shoulder */g.beginPath();g.moveTo(170,165);g.bezierCurveTo(120,150,70,135,62,105);g.bezierCurveTo(55,80,90,78,92,98);g.stroke();
+/* arm to the tray */g.beginPath();g.moveTo(178,205);g.bezierCurveTo(140,205,90,200,45,185);g.stroke();
+/* lower scroll under the tray */g.beginPath();g.moveTo(178,215);g.bezierCurveTo(140,250,80,250,72,215);g.bezierCurveTo(68,195,95,192,98,208);g.stroke();
+/* side petal of the fleur */g.beginPath();g.moveTo(178,175);g.bezierCurveTo(150,165,140,135,158,128);g.stroke();});
+/* fleur-de-lis centre petal and collar */g.beginPath();g.moveTo(180,95);g.bezierCurveTo(158,130,162,165,180,190);g.bezierCurveTo(198,165,202,130,180,95);g.fill();
+g.fillRect(156,188,48,14);g.beginPath();g.moveTo(180,202);g.lineTo(180,245);g.stroke();
+const m=new THREE.Mesh(new THREE.PlaneGeometry(9,10),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,alphaTest:0.4,side:THREE.DoubleSide}));const xc=(0.125+24.875)/2,Z=206.25-0.35;m.position.set(xc,46,Z);m.rotation.y=P;scene.add(m);
+[-1,1].forEach(s=>{const t=new THREE.Mesh(new THREE.CylinderGeometry(1.7,1.5,0.2,24),BLK);t.scale.z=0.8;t.position.set(xc+s*3.5,46.3,Z-1.6);scene.add(t);});}
+/* curtains on the bedroom and Theo windows: X = window wall face, z1-z2 = trim, yb = trim bottom */
+const CS=(X,z1,z2,yb)=>{const RY=95,RO=3.5,a1=z1-3.25,a2=z2+3.25,x=X-RO,add=o=>{scene.add(o);curtains.push(o);return o;};
+const rod=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,a2-a1+3,16),BLK);rod.rotation.x=P/2;rod.position.set(x,RY,(a1+a2)/2);add(rod);
+[a1,a2].forEach(a=>{const br=new THREE.Mesh(new THREE.BoxGeometry(RO,0.4,0.8),BLK);br.position.set(X-RO/2,RY-0.4,a);add(br);const dn=new THREE.Mesh(new THREE.BoxGeometry(0.2,1.9,0.8),BLK);dn.position.set(X-0.1,RY-1,a);add(dn);});
+[[a1-1.5-FIN,a1-1.5,1],[a2+1.5,a2+1.5+FIN,-1]].forEach(([p,q,f])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(FIN,FIN*0.75),FINM);m.position.set(x,RY,(p+q)/2);m.rotation.y=-P/2;m.scale.x=f;add(m);});
+const SHM=new THREE.MeshLambertMaterial({map:sheerTex(),transparent:true,opacity:0.55,side:THREE.DoubleSide,depthWrite:false}),DKM=new THREE.MeshLambertMaterial({color:0x2B2E33,side:THREE.DoubleSide}),RIB=new THREE.MeshPhongMaterial({color:0xF6F4EE,shininess:90});
+/* sheer across the middle, black panel on each side, white satin ribbon tie on each black panel */
+const sh=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,RY-yb),SHM);sh.position.set(x+0.3,(RY+yb)/2,(a1+a2)/2);sh.rotation.y=-P/2;add(sh);
+/* each black panel is gathered toward the outer edge by a satin ribbon tie: full 14" width at the rod, pinched to 4" at the tie, flaring to 8" at the hem */
+const yT=yb+(RY-yb)*0.35;[[a1,1],[a2,-1]].forEach(([o,d])=>{const S=new THREE.Shape();S.moveTo(o,yb);S.lineTo(o+d*8,yb);S.quadraticCurveTo(o+d*4.5,yb+(yT-yb)*0.5,o+d*4,yT);S.quadraticCurveTo(o+d*5,yT+(RY-yT)*0.55,o+d*14,RY+0.5);S.lineTo(o,RY+0.5);S.lineTo(o,yb);
+const dk=new THREE.Mesh(new THREE.ShapeGeometry(S,24),DKM);dk.position.set(x-0.3,0,0);dk.rotation.y=-P/2;add(dk);
+const zc=o+d*2;const ring=new THREE.Mesh(new THREE.TorusGeometry(1,0.18,10,32),RIB);ring.rotation.x=P/2;ring.scale.set(2.5,0.9,1);ring.position.set(x-0.3,yT,zc);ring.rotation.z=P/2;add(ring);
+[-1,1].forEach(sd=>{const lp=new THREE.Mesh(new THREE.TorusGeometry(0.9,0.22,10,24),RIB);lp.scale.set(1.3,0.7,0.4);lp.position.set(x-1.1,yT+0.3,zc+sd*1.2);lp.rotation.y=-P/2;add(lp);
+const tl=new THREE.Mesh(new THREE.PlaneGeometry(0.7,6),RIB);tl.position.set(x-1.1,yT-3,zc+sd*0.9);tl.rotation.y=-P/2;tl.rotation.z=sd*0.18;add(tl);});
+const kn=new THREE.Mesh(new THREE.SphereGeometry(0.45,12,10),RIB);kn.position.set(x-1.2,yT+0.2,zc);add(kn);});};
+
+CS(ROOM.north,190.75,255.75,31.75);CS(ROOM.north,323.375,368.125,32);}
+
+/* Bedroom stencil redesign (Brandon, 2026-11-22): both bedrooms, leaf stencil as lines in the room's scheme colour:
+   one row along the top of every wall (90"-98"), one row on top of the trim face (40"-48") and one under it (29 1/4"-37 1/4"), following the trim face.
+   His north wall keeps the mandalas and has verticals between the rows, with a button: 6 verticals 8" wide (where the panel sides were) or 2 verticals 16" wide (between the columns). */
+{const P=Math.PI,TL2=new THREE.TextureLoader(),H=ROOM.ceiling,B=ROOM.baseboard,BM=[],TM=[],
+lt=(len,wid,vert)=>{const t=TL2.load('stencil-leaf.png');t.wrapS=t.wrapT=THREE.RepeatWrapping;if(vert){t.center.set(0.5,0.5);t.rotation=P/2;t.repeat.set(len/15,wid/8);}else t.repeat.set(len/15,wid/8);return t;},
+band=(arr,ax,k,a1,a2,y1,y2,ry,vert)=>{const m=new THREE.MeshLambertMaterial({map:vert?lt(y2-y1,a2-a1,true):lt(a2-a1,y2-y1,false),transparent:true,alphaTest:0.4,color:0xffffff});arr.push(m);const me=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),m);if(ax==='x')me.position.set(k,(y1+y2)/2,(a1+a2)/2);else me.position.set((a1+a2)/2,(y1+y2)/2,k);me.rotation.y=ry;scene.add(me);return me;};
+const off=0.12,rooms=[{arr:BM,x1:29.375,x2:ROOM.north,z1:168.5,z2:291.75},{arr:TM,x1:30.125,x2:ROOM.north,z1:296.25,z2:395.25}];
+rooms.forEach(R=>{const cx=(R.x1+R.x2)/2,cz=(R.z1+R.z2)/2;
+band(R.arr,'z',R.z1+off,R.x1,R.x2,H-8,H,0);band(R.arr,'z',R.z2-off,R.x1,R.x2,H-8,H,P);band(R.arr,'x',R.x1+off,R.z1,R.z2,H-8,H,P/2);band(R.arr,'x',R.x2-off,R.z1,R.z2,H-8,H,-P/2);
+const bb=new THREE.Box3(),hit=[];scene.updateMatrixWorld(true);scene.traverse(o=>{if(!o.isMesh||!o.geometry||o.geometry.type!=='BoxGeometry')return;bb.setFromObject(o);if(Math.abs(bb.min.y-37.25)>0.05||Math.abs(bb.max.y-40)>0.05)return;if(bb.min.x<R.x1-0.5||bb.max.x>R.x2+0.5||bb.min.z<R.z1-0.5||bb.max.z>R.z2+0.5)return;hit.push(bb.clone());});
+hit.forEach(b=>{if(b.max.x-b.min.x<1.01){const wx=Math.abs(b.min.x-cx)>Math.abs(b.max.x-cx)?b.min.x:b.max.x,s=wx<cx?1:-1;[[40,48],[29.25,37.25]].forEach(([y1,y2])=>band(R.arr,'x',wx+s*off,b.min.z,b.max.z,y1,y2,s>0?P/2:-P/2));}
+else{const wz=Math.abs(b.min.z-cz)>Math.abs(b.max.z-cz)?b.min.z:b.max.z,s=wz<cz?1:-1;[[40,48],[29.25,37.25]].forEach(([y1,y2])=>band(R.arr,'z',wz+s*off,b.min.x,b.max.x,y1,y2,s>0?0:P));}});});
+/* his north wall: mandalas where the panel centres were, verticals between the rows */
+const Zn=168.5+off+0.01,X1=29.375,X2=ROOM.north,w=31,g=(X2-X1-3*w)/4,cs=[0,1,2].map(i=>X1+g+i*(w+g)+w/2),MM=[];
+cs.forEach((c,i)=>{[[[1,3,4][i],66.5],[2,21]].forEach(([n,y])=>{const m=new THREE.MeshLambertMaterial({map:TL2.load('stencil-mandala'+n+'.png'),transparent:true,alphaTest:0.4,color:0xffffff});MM.push(m);const me=new THREE.Mesh(new THREE.PlaneGeometry(11.8,11.8),m);me.position.set(c,y,Zn);scene.add(me);});});
+const VA=[],VB=[],vt=(arr,a1,a2)=>[[48,H-8],[B,29.25]].forEach(([y1,y2])=>arr.push(band(BM,'z',Zn,a1,a2,y1,y2,0,true)));
+cs.forEach(c=>{vt(VA,c-w/2,c-w/2+8);vt(VA,c+w/2-8,c+w/2);});[(cs[0]+cs[1])/2,(cs[1]+cs[2])/2].forEach(c=>vt(VB,c-8,c+8));
+const VO=[['6 verticals 8" wide',VA],['2 verticals 16" wide',VB]];let vk=0;const vb=document.createElement('button');const va=()=>{VO.forEach(([n,a],i)=>a.forEach(m=>m.visible=i===vk));vb.textContent='Bedroom verticals: '+VO[vk][0];};vb.onclick=()=>{vk=(vk+1)%VO.length;va();};document.querySelector('.bar').appendChild(vb);va();
+window.BLINES=(hex,PG)=>{[...BM,...MM].forEach(m=>m.color.setHex(hex));if(PG)PG.forEach(p=>p.G.visible=false);};
+window.TLINES=(rgb,TSM)=>{TM.forEach(m=>m.color.setRGB(rgb[0]/255,rgb[1]/255,rgb[2]/255));if(TSM)TSM.forEach(m=>m.visible=false);};
+if(window.BLC!==undefined)BLINES(window.BLC,window.BPG);if(window.TLC)TLINES(window.TLC,window.TSMS);}
+/* Bedroom west wall, between the closet door and the bedroom door (Brandon's photo, 2026-11-22; positions and sizes estimated from the photo):
+   thermostat 5" x 5 1/2", centre about 55 1/2" AFF, z 221; light switch plate 2 3/4" x 4 1/2", centre about 50" AFF, z 213 */
+{const X=29.375,WH=new THREE.MeshLambertMaterial({color:0xF4F2EC,emissive:0x262524}),bx=(zc,yc,w,h,d,m)=>abox(X,X+d,yc-h/2,yc+h/2,zc-w/2,zc+w/2,0,m);
+const th=bx(221,55.5,5,5.5,1,WH);th.add(new THREE.LineSegments(new THREE.EdgesGeometry(th.geometry),new THREE.LineBasicMaterial({color:0xB8B6B0})));
+abox(X+1,X+1.02,56.2,57.3,221.45,222.85,0,new THREE.MeshBasicMaterial({color:0x7FB59A}));[54.2,53.4].forEach(y=>{const k=new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.28,0.15,16),WH);k.rotation.z=Math.PI/2;k.position.set(X+1.05,y,222.15);scene.add(k);});
+const sw=bx(213,50,2.75,4.5,0.25,WH);sw.add(new THREE.LineSegments(new THREE.EdgesGeometry(sw.geometry),new THREE.LineBasicMaterial({color:0xB8B6B0})));abox(X+0.25,X+0.6,49.6,50.6,212.8,213.2,0,WH);}
+/* Front door wall (entry, 50 1/2" diagonal wall): hallway cream, with the forest-green leaf rows carried across it: top row 90"-98" over the door header,
+   and the 36"-44" row beside the door (2026-11-22) */
+{const ux=(-41.125-0)/50.5,G=new THREE.Group();G.position.set(0,0,ROOM.west);const dz=Math.sqrt(50.5*50.5-41.125*41.125);G.rotation.y=Math.atan2(-dz/50.5,ux);scene.add(G);
+const L=50.5,H=ROOM.ceiling,d2=L-2-2.25,d1=d2-36,tw=2.25,pl=(a1,a2,y1,y2,z,m)=>{const p=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),m);p.position.set((a1+a2)/2,(y1+y2)/2,z);p.rotation.y=Math.PI;G.add(p);return p;},
+CR=new THREE.MeshLambertMaterial({color:0xECDEBE,emissive:0x231F1C,side:THREE.DoubleSide}),lf=(a1,a2,y1,y2)=>{const t=new THREE.TextureLoader().load('stencil-leaf.png');t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set((a2-a1)/15,(y2-y1)/8);pl(a1,a2,y1,y2,-0.06,new THREE.MeshLambertMaterial({map:t,transparent:true,alphaTest:0.4,color:0x22362B,side:THREE.DoubleSide}));};
+pl(0,d1-tw,0,H,-0.03,CR);pl(d2+tw,L,0,H,-0.03,CR);pl(d1-tw,d2+tw,80+tw,H,-0.03,CR);
+lf(0,L,H-8,H);lf(0,d1-tw,36,44);lf(d2+tw,L,36,44);}
+/* Viking-style spear (Brandon, 2026-11-22): 56" overall, 10 3/4" steel head (socket + leaf blade), wooden shaft 1 1/8" (diameter assumed), on two black brackets 2" off the bedroom south wall.
+   Button: vertical above the east side table, beside the standing mirror (34"-90" AFF, tip up, top at the stencil row); or horizontal above the two paintings over the bed (centred at 79 1/2", between the paintings and the top row). */
+{const P=Math.PI,BSw=291.75,G=new THREE.Group(),WD=new THREE.MeshPhongMaterial({color:0x7A5230,shininess:25}),STL=new THREE.MeshPhongMaterial({color:0x9DA1A6,shininess:90,specular:0xbbbbbb}),BK=new THREE.MeshLambertMaterial({color:0x1A1A1A});
+const sh=new THREE.Mesh(new THREE.CylinderGeometry(0.5625,0.5625,45.25,16),WD);sh.position.y=45.25/2;G.add(sh);
+const so=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.66,3.5,16),STL);so.position.y=45.25+1.75;G.add(so);
+const bs=new THREE.Shape();bs.moveTo(0,0);bs.bezierCurveTo(1.1,1.2,1.0,4.6,0,7.25);bs.bezierCurveTo(-1.0,4.6,-1.1,1.2,0,0);const bl=new THREE.Mesh(new THREE.ExtrudeGeometry(bs,{depth:0.18,bevelEnabled:true,bevelThickness:0.08,bevelSize:0.08,bevelSegments:1}),STL);bl.position.set(0,45.25+3.5,-0.13);G.add(bl);
+const rib=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.22,6.6,8),STL);rib.position.set(0,45.25+3.5+3.3,0);G.add(rib);
+const brk=[];[12,40].forEach(y=>{const b=new THREE.Group();const arm=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.4,2),BK);arm.position.z=1;b.add(arm);const hk=new THREE.Mesh(new THREE.TorusGeometry(0.8,0.15,8,16,P),BK);hk.rotation.x=P/2;hk.position.set(0,0,0);b.add(hk);b.position.set(0,y,0);G.add(b);});
+scene.add(G);/* horizontal only (Brandon, 2026-11-22): above the paintings over the bed, centred, 79 1/2" AFF */G.rotation.set(0,0,-P/2);G.position.set(97.19-28,79.5,BSw-2);}
+/* Bedroom closet door like the bedroom door (Brandon, 2026-11-22): face painted the wall colour, leaf stencil frame in the border colour (both follow the scheme), steel knob.
+   Slab 25 1/4" x 80"; frame 22 3/4" x 75", 1 1/4" side margins, 2 1/2" top and bottom; sides 5 upright stencils, top and bottom bands 6 3/4" (stencil cut to fit). */
+{const G=new THREE.Group();G.position.set(29.375+0.41,0,273.25);G.rotation.y=Math.PI/2;scene.add(G);const fm=window.DOORF||new THREE.MeshLambertMaterial({color:0x33302C});const f=new THREE.Mesh(new THREE.PlaneGeometry(25.25,80),fm);f.position.set(0,40,0);G.add(f);
+const bc=(window.DOORL&&DOORL[0])?DOORL[0].color.getHex():0xC8A774,st=(a1,a2,b1,b2,vert)=>{const t=new THREE.TextureLoader().load('stencil-leaf.png');t.wrapS=t.wrapT=THREE.RepeatWrapping;if(vert){t.center.set(0.5,0.5);t.rotation=Math.PI/2;t.repeat.set((b2-b1)/15,1);}else t.repeat.set((a2-a1)/15,1);const mt=new THREE.MeshLambertMaterial({map:t,transparent:true,alphaTest:0.4,color:bc});if(window.DOORL)DOORL.push(mt);const m=new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,b2-b1),mt);m.position.set((a1+a2)/2,(b1+b2)/2,0.02);G.add(m);};
+const x1=-11.375,x2=11.375,y1=2.5,y2=77.5,bw=8;st(x1,x1+bw,y1,y2,true);st(x2-bw,x2,y1,y2,true);st(x1+bw,x2-bw,y2-bw,y2,false);st(x1+bw,x2-bw,y1,y1+bw,false);
+const SK=new THREE.MeshPhongMaterial({color:0xBFC3C7,shininess:90,specular:0xcccccc});scene.traverse(o=>{if(o.isMesh&&o.geometry&&o.geometry.type==='SphereGeometry'&&Math.abs(o.position.x-(29.375+1.3))<0.05&&Math.abs(o.position.z-(285.875-3))<0.05&&Math.abs(o.position.y-36)<0.05)o.material=SK;});}
+/* Living room south wall, centre bay below the trim (Brandon, 2026-11-22): slats taken out; plain forest green field with two white mandalas (11.8" stencils), at the quarter points, centred between baseboard and trim */
+{const b1=bays[1][0],b2=bays[1][1],y1=SWD.low[0],y2=SWD.low[1],yc=(y1+y2)/2,TLm=new THREE.TextureLoader();place(new THREE.Mesh(new THREE.PlaneGeometry(b2-b1,y2-y1),new THREE.MeshLambertMaterial({color:0x22362B,emissive:0x050806})),'S',b1,b2,y1,y2,0.27);
+[[b1+(b2-b1)/4,2],[b2-(b2-b1)/4,2]].forEach(([a,n])=>place(new THREE.Mesh(new THREE.PlaneGeometry(11.8,11.8),new THREE.MeshLambertMaterial({map:TLm.load('stencil-mandala'+n+'.png'),transparent:true,alphaTest:0.4,color:0xF8F8F5})),'S',a-5.9,a+5.9,yc-5.9,yc+5.9,0.29));}
+/* Living room east wall, bay 2 below the trim, behind the vertical-slat piece (59 1/2"-104"; Brandon, 2026-11-22): the leaf stencil swapped for the mandala stencil on plain forest green.
+   Button: one mandala centred, or six (3 across x 2 down). White, 11.8" stencils (no. 2). */
+{const a1=59.5,a2=104,y1=SWD.low[0],y2=SWD.low[1],TLe=new THREE.TextureLoader(),MT=new THREE.MeshLambertMaterial({map:TLe.load('stencil-mandala2.png'),transparent:true,alphaTest:0.4,color:0xF8F8F5});
+place(new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),new THREE.MeshLambertMaterial({color:0x22362B,emissive:0x050806})),'E',a1,a2,y1,y2,0.27);
+/* revised 2026-11-22 (Brandon): two mandalas side by side, vertically centred, equal gaps (about 7") */
+const mk=(a,y)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(11.8,11.8),MT);place(m,'E',a-5.9,a+5.9,y-5.9,y+5.9,0.29);return m;},yc=(y1+y2)/2,g=(a2-a1-2*11.8)/3;
+[a1+g+5.9,a2-g-5.9].forEach(a=>mk(a,yc));}
+/* Living room north wall, west section below the trim, behind the slats (3 1/2"-31 3/4"; Brandon, 2026-11-22): leaf stencil swapped for mandalas on plain forest green:
+   4 white 11.8" mandalas (no. 2), 2 across x 2 down, the most that fit in 28 1/4" x 33 1/8" */
+{const a1=3.5,a2=31.75,y1=SWD.low[0],y2=SWD.low[1],MT=new THREE.MeshLambertMaterial({map:new THREE.TextureLoader().load('stencil-mandala2.png'),transparent:true,alphaTest:0.4,color:0xF8F8F5});
+place(new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,y2-y1),new THREE.MeshLambertMaterial({color:0x22362B,emissive:0x050806})),'N',a1,a2,y1,y2,0.27);
+[a1+(a2-a1)/4,a2-(a2-a1)/4].forEach(a=>[y1+(y2-y1)/4,y2-(y2-y1)/4].forEach(y=>place(new THREE.Mesh(new THREE.PlaneGeometry(11.8,11.8),MT),'N',a-5.9,a+5.9,y-5.9,y+5.9,0.29)));}
+/* A/C port cover, living room east wall (9 1/2"-36 1/2" from the NE corner, 15"-33" AFF; Brandon, 2026-11-22): painted solid forest green with one cream 11.8" mandala (no. 2) centred */
+place(new THREE.Mesh(new THREE.PlaneGeometry(27,18),new THREE.MeshLambertMaterial({color:0x22362B,emissive:0x050806})),'E',9.5,36.5,15,33,0.55);
+place(new THREE.Mesh(new THREE.PlaneGeometry(11.8,11.8),new THREE.MeshLambertMaterial({map:new THREE.TextureLoader().load('stencil-mandala2.png'),transparent:true,alphaTest:0.4,color:0xECDEBE})),'E',23-5.9,23+5.9,24-5.9,24+5.9,0.57);
+/* Living room details from Brandon's photos (2026-11-22): GALANZ chrome lettering on the fridge door; US flag hung over the balcony door; the wooden Windsor armchair.
+   Sizes and positions estimated from the photos. */
+{const P=Math.PI;
+/* GALANZ: chrome letters about 1" tall, 10 1/4" long, about 4" below the top of the door, on the fridge front (faces west, x 141.5) */
+{const c=document.createElement('canvas');c.width=1024;c.height=100;const g=c.getContext('2d');g.font='bold 78px Arial, Helvetica, sans-serif';g.textAlign='center';g.textBaseline='middle';
+const tx='G A L A N Z',gr=g.createLinearGradient(0,10,0,90);gr.addColorStop(0,'#F4F5F7');gr.addColorStop(0.5,'#8E9297');gr.addColorStop(1,'#E2E4E7');g.lineWidth=5;g.strokeStyle='#3A3C40';g.strokeText(tx,512,52);g.fillStyle=gr;g.fillText(tx,512,52);
+const m=new THREE.Mesh(new THREE.PlaneGeometry(11,1.07),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,alphaTest:0.3}));m.position.set(141.5-0.04,30,15.6);m.rotation.y=-P/2;scene.add(m);}
+/* US flag on the balcony door: about 28 1/2" x 71", hung vertically, stripes running up and down, union at the top right as seen from the room (from the photo), 8 1/4"-79 1/4" AFF */
+{const W=28.5,Hh=71,c=document.createElement('canvas'),k=12;c.width=W*k;c.height=Hh*k;const g=c.getContext('2d');
+for(let i=0;i<13;i++){g.fillStyle=i%2?'#F4F2EE':'#C8323C';g.fillRect(c.width*(i/13),0,c.width/13+1,c.height);}
+const uw=c.width*7/13,uh=c.height*0.42,ux=c.width-uw;g.fillStyle='#22305F';g.fillRect(ux,0,uw,uh);g.fillStyle='#F4F2EE';
+const star=(x,y,r)=>{g.beginPath();for(let i=0;i<10;i++){const a=-P/2+i*P/5,rr=i%2?r*0.4:r;g.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a));}g.closePath();g.fill();};
+for(let r=0;r<11;r++){const n=r%2?4:5;for(let j=0;j<n;j++){const x=ux+uw*((r%2?1:0.5)+j*1.0+0.5)/5.5*0.98+uw*0.01,y=uh*(r+0.6)/11.2;star(x,y,uw*0.045);}}
+const t=new THREE.CanvasTexture(c);const fl=new THREE.Mesh(new THREE.PlaneGeometry(W,Hh,24,1),new THREE.MeshLambertMaterial({map:t,side:THREE.DoubleSide}));
+const pos=fl.geometry.attributes.position;for(let i=0;i<pos.count;i++){pos.setZ(i,0.25*Math.sin(pos.getX(i)*0.9));}pos.needsUpdate=true;fl.geometry.computeVertexNormals();
+fl.position.set(47.5,8.25+Hh/2,3.8);/* in front of the door's blind */scene.add(fl);}
+/* Wooden Windsor armchair, dark walnut, in front of the heater on the rug's north edge, facing south: seat 19 1/2" x 17", 18 1/2" high; arms 26"; back 39" with turned posts and knob finials, curved top rail, 4 flat slats (sizes typical, estimated) */
+{const WD=new THREE.MeshPhongMaterial({color:0x5B3A22,shininess:35}),G=new THREE.Group(),cyl=(r1,r2,h,x,y,z,par)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,14),WD);m.position.set(x,y,z);(par||G).add(m);return m;},bx=(w,h,d,x,y,z,par)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),WD);m.position.set(x,y,z);(par||G).add(m);return m;};
+const ss=new THREE.Shape();ss.moveTo(-9.75,0);ss.lineTo(9.75,0);ss.lineTo(9.75,13);ss.quadraticCurveTo(9.5,17,5,17.3);ss.quadraticCurveTo(0,17.8,-5,17.3);ss.quadraticCurveTo(-9.5,17,-9.75,13);ss.lineTo(-9.75,0);
+const seat=new THREE.Mesh(new THREE.ExtrudeGeometry(ss,{depth:1.25,bevelEnabled:true,bevelThickness:0.2,bevelSize:0.3,bevelSegments:2}),WD);seat.rotation.x=P/2;seat.position.set(0,18.5,0);G.add(seat);
+[[-8,15.5],[8,15.5],[-7.5,2],[7.5,2]].forEach(([x,z])=>{const l=cyl(0.7,0.55,17.3,x,8.65,z);l.rotation.z=x>0?-0.05:0.05;l.rotation.x=z>8?-0.05:0.05;[4,11].forEach(y=>{const b=new THREE.Mesh(new THREE.SphereGeometry(0.85,12,8),WD);b.scale.y=0.6;b.position.set(x*(1+0.003*(y-9)),y,z);G.add(b);});});
+const st1=cyl(0.45,0.45,13.5,-7.75,6,8.75);st1.rotation.x=P/2;const st2=cyl(0.45,0.45,13.5,7.75,6,8.75);st2.rotation.x=P/2;const st3=cyl(0.5,0.5,15.5,0,6.5,8.75);st3.rotation.z=P/2;
+const BK=new THREE.Group();BK.position.set(0,18.5,1.2);BK.rotation.x=-0.14;G.add(BK);
+[-8.5,8.5].forEach(x=>{cyl(0.6,0.75,20,x,10,0,BK);[4,12,18].forEach(y=>{const r=new THREE.Mesh(new THREE.SphereGeometry(0.85,12,8),WD);r.scale.y=0.7;r.position.set(x,y,0);BK.add(r);});const f=new THREE.Mesh(new THREE.SphereGeometry(0.95,14,10),WD);f.scale.y=1.2;f.position.set(x,21.2,0);BK.add(f);cyl(0.55,0.8,0.8,x,20.2,0,BK);});
+const tr=new THREE.Shape();tr.moveTo(-8.3,0);tr.lineTo(8.3,0);tr.lineTo(8.3,3.2);tr.quadraticCurveTo(4,4.4,0,3.6);tr.quadraticCurveTo(-4,4.4,-8.3,3.2);tr.lineTo(-8.3,0);
+const rail=new THREE.Mesh(new THREE.ExtrudeGeometry(tr,{depth:0.9,bevelEnabled:false}),WD);rail.position.set(0,15.4,-0.45);BK.add(rail);
+[-4.6,-1.55,1.55,4.6].forEach(x=>{const s2=new THREE.Shape();s2.moveTo(-0.55,0);s2.lineTo(0.55,0);s2.lineTo(0.75,8);s2.lineTo(0.6,15.6);s2.lineTo(-0.6,15.6);s2.lineTo(-0.75,8);s2.lineTo(-0.55,0);const sl=new THREE.Mesh(new THREE.ExtrudeGeometry(s2,{depth:0.4,bevelEnabled:false}),WD);sl.position.set(x,0,-0.2);BK.add(sl);});
+[-1,1].forEach(sd=>{const arm=new THREE.Shape();arm.moveTo(-1.1,0);arm.lineTo(1.1,0);arm.lineTo(1.4,13);arm.quadraticCurveTo(1.6,15.5,0,15.8);arm.quadraticCurveTo(-1.6,15.5,-1.4,13);arm.lineTo(-1.1,0);
+const am=new THREE.Mesh(new THREE.ExtrudeGeometry(arm,{depth:0.9,bevelEnabled:true,bevelThickness:0.15,bevelSize:0.15,bevelSegments:1}),WD);am.rotation.x=P/2;am.position.set(sd*9.3,26.4,1.2);G.add(am);
+cyl(0.5,0.6,7.6,sd*9.3,22.4,14.5);[21,24].forEach(y=>{const r=new THREE.Mesh(new THREE.SphereGeometry(0.7,12,8),WD);r.scale.y=0.7;r.position.set(sd*9.3,y,14.5);G.add(r);});});
+G.position.set(106,0,6.5);scene.add(G);}}
+/* Living room south wall, lower side bays (east and west; revised by Brandon 2026-11-22): plain forest green, the leaf stencil as a white 8" border band around a white 11.8" mandala (no. 2).
+   Frame 31" x 30" in whole stencils (sides 2 upright, top and bottom 1 each), centred in the 37 9/16" x 33 1/8" bay: 3 9/32" margins at the sides, 1 9/16" top and bottom. */
+{const TLs=new THREE.TextureLoader(),WH=0xF8F8F5,y1=SWD.low[0],y2=SWD.low[1],yc=(y1+y2)/2,ML=new THREE.MeshLambertMaterial({map:TLs.load('stencil-mandala2.png'),transparent:true,alphaTest:0.4,color:WH}),
+st=(a1,a2,b1,b2,vert)=>{const t=TLs.load('stencil-leaf.png');t.wrapS=t.wrapT=THREE.RepeatWrapping;if(vert){t.center.set(0.5,0.5);t.rotation=Math.PI/2;t.repeat.set((b2-b1)/15,1);}else t.repeat.set((a2-a1)/15,1);place(new THREE.Mesh(new THREE.PlaneGeometry(a2-a1,b2-b1),new THREE.MeshLambertMaterial({map:t,transparent:true,alphaTest:0.4,color:WH})),'S',a1,a2,b1,b2,0.28);};
+[bays[0],bays[2]].forEach(([b1,b2])=>{place(new THREE.Mesh(new THREE.PlaneGeometry(b2-b1,y2-y1),new THREE.MeshLambertMaterial({color:0x22362B,emissive:0x050806})),'S',b1,b2,y1,y2,0.27);
+const ac=(b1+b2)/2,x1=ac-15.5,x2=ac+15.5,f1=yc-15,f2=yc+15;st(x1,x1+8,f1,f2,true);st(x2-8,x2,f1,f2,true);st(x1+8,x2-8,f2-8,f2,false);st(x1+8,x2-8,f1,f1+8,false);
+place(new THREE.Mesh(new THREE.PlaneGeometry(11.8,11.8),ML),'S',ac-5.9,ac+5.9,yc-5.9,yc+5.9,0.29);});}
+/* Drinks corner on top of the fridge (Brandon's photo of the top, 2026-11-22; sizes estimated): an ornate silver tray (grape-vine rim, engraved centre; about 11") at the back
+   carrying, north to south, an empty Aperol bottle (750 ml, clear glass), a steel cocktail shaker with a copper cap, and a Bombay Sapphire bottle (blue glass);
+   a matching small silver plate (about 7") in front of it. Tray and plate textures and the two labels are taken from the photo. */
+{const T=35.5,TL3=new THREE.TextureLoader(),P=Math.PI,PT=TL3.load('fridge-plate.jpg'),RIM=new THREE.MeshPhongMaterial({color:0x8E8A82,shininess:50}),TOP=new THREE.MeshPhongMaterial({map:PT,shininess:40}),
+dish=(d,h,x,z)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(d/2,d/2,h,48),[RIM,TOP,RIM]);m.position.set(x,T+0.03+h/2,z);m.rotation.y=P/2;scene.add(m);return m;};
+/* revised 2026-11-22 (Brandon): tray 11 1/2" with all three on it, centred on the flat of the top; plate 7" in front */
+dish(11.5,0.4,154.2,15.6);dish(7,0.3,144.9,15.6);const T2=T+0.43;
+const GL=new THREE.MeshPhongMaterial({color:0xEEF3F2,transparent:true,opacity:0.35,shininess:110,specular:0xffffff,depthWrite:false}),NV=new THREE.MeshPhongMaterial({color:0x1C2340,shininess:60});
+/* Aperol: empty, clear glass, 11 3/4" tall, 3.1" body; front label (photo) */
+{const x=156.0,z=12.4;const pts=[[0,0],[1.55,0],[1.55,6.9],[1.35,7.9],[0.62,8.9],[0.55,10.9],[0,10.9]].map(([r,h])=>new THREE.Vector2(r,h));const b=new THREE.Mesh(new THREE.LatheGeometry(pts,28),GL);b.position.set(x,T2,z);scene.add(b);
+const L=2.74/1.57;const lb=new THREE.Mesh(new THREE.CylinderGeometry(1.57,1.57,3.8,28,1,true,-P/2-L/2,L),new THREE.MeshLambertMaterial({map:TL3.load('label-aperol.jpg')}));lb.position.set(x,T2+4.6,z);scene.add(lb);
+const cp=new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.62,0.9,16),NV);cp.position.set(x,T2+11.3,z);scene.add(cp);}
+/* shaker: steel body 3.2" across, copper cap, 8 3/4" tall, a little forward of the bottles */
+{const x=152.3,z=15.6,ST=new THREE.MeshPhongMaterial({color:0xC6C8CB,shininess:130,specular:0xffffff}),CU=new THREE.MeshPhongMaterial({color:0xC99A7C,shininess:120,specular:0xffe2cc});
+const bd=new THREE.Mesh(new THREE.LatheGeometry([[0,0],[1.5,0],[1.62,4.9],[0,4.9]].map(([r,h])=>new THREE.Vector2(r,h)),28),ST);bd.position.set(x,T2,z);scene.add(bd);
+const cap=new THREE.Mesh(new THREE.LatheGeometry([[0,0],[1.66,0],[1.62,1.9],[1.3,2.7],[0.95,2.9],[0.95,3.9],[0,3.9]].map(([r,h])=>new THREE.Vector2(r,h)),28),CU);cap.position.set(x,T2+4.85,z);scene.add(cap);}
+/* Bombay Sapphire: blue glass, flat-sided 2.9" x 2.4" body, 10 1/2" tall; front label (photo) */
+{const x=155.5,z=18.6,BL=new THREE.MeshPhongMaterial({color:0x48B9D6,transparent:true,opacity:0.78,shininess:110,specular:0xffffff});const bd=new THREE.Mesh(new THREE.BoxGeometry(2.4,7.3,2.9),BL);bd.position.set(x,T2+3.65,z);scene.add(bd);
+const sd=new THREE.Mesh(new THREE.CylinderGeometry(0.62,1.9,1.1,4),BL);sd.rotation.y=P/4;sd.scale.set(1,1,1.15);sd.position.set(x,T2+7.85,z);scene.add(sd);const nk=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.62,1.5,16),BL);nk.position.set(x,T2+9.15,z);scene.add(nk);
+const cp=new THREE.Mesh(new THREE.CylinderGeometry(0.63,0.63,0.7,16),NV);cp.position.set(x,T2+10.25,z);scene.add(cp);
+const lb=new THREE.Mesh(new THREE.PlaneGeometry(2.0,4.5),new THREE.MeshLambertMaterial({map:TL3.load('label-bombay.jpg')}));lb.position.set(x-1.22,T2+3.9,z);lb.rotation.y=-P/2;scene.add(lb);}}
 scene.traverse(o=>{if(o.isSprite&&!dims.includes(o))dims.push(o);});dims.forEach(d=>d.visible=document.getElementById('dimb').classList.contains('on'));
 (function loop(){requestAnimationFrame(loop);r.render(scene,cam);})();
 </script>
