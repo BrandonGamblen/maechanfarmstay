@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Apartment 3D Model</title>
 <style>
 :root{--bg:#F7F6F2;--card:#FFFFFF;--text:#2C2C2A;--muted:#5F5E5A;--border:#D3D1C7;}
@@ -22,17 +22,17 @@ button.on{border-color:#534AB7;color:#534AB7}
 .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid var(--border)}
 .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
 </style>
-<style>main>*:not(#wrap){display:none!important}main{padding:0!important}body{overflow:hidden}#wrap{height:100vh!important;height:100dvh!important;border:0!important;border-radius:0!important}@media (orientation:portrait){#wrap{position:fixed!important;top:0;left:0;width:100vh!important;width:100dvh!important;height:100vw!important;min-height:0!important;transform-origin:top left;transform:rotate(90deg) translateY(-100%)}}</style>
+<style>main>*:not(#wrap):not(.bar){display:none!important}main{padding:8px!important}.bar>*:not(button){display:none!important}.bar button:not([data-v="D"]):not([data-v="W"]):not([data-v="NW"]):not([data-v="EW"]):not(.bv){display:none!important}#wrap{height:78vh!important;height:78dvh!important}</style>
 </head>
 <body>
 <main>
 <h1>Living room, 3D model</h1>
 <p class="sub">Brandon's Montreal apartment. Units: inches. Source of truth: the project doc "living-room.md". Last updated 2026-11-09.</p>
 <div class="bar">
-<button data-v="D">South wall</button>
-<button data-v="W">West wall</button>
-<button data-v="NW">North wall</button>
-<button data-v="EW">East wall</button>
+<button data-v="D">Living room: South wall</button>
+<button data-v="W">Living room: West wall</button>
+<button data-v="NW">Living room: North wall</button>
+<button data-v="EW">Living room: East wall</button>
 <button data-v="S">View from south</button>
 <button data-v="N">View balcony</button>
 <button data-v="T">Top down</button>
@@ -993,6 +993,8 @@ band(BM,'z',Zn,X1,XL,B,H,0,true);band(BM,'z',Zn,XR,X2,B,H,0,true);
 {const Zs=291.75-off-0.01;const kill=[];scene.children.forEach(o=>{if(o.isMesh&&BM.includes(o.material)&&Math.abs(o.position.z-(291.75-off))<0.02&&Math.abs(Math.abs(o.rotation.y)-P)<0.01)kill.push(o);});kill.forEach(o=>scene.remove(o));
 const XLs=X1+8,XRs=X2-8;band(BM,'z',Zs,X1,XLs,B,H,P,true);band(BM,'z',Zs,XRs,X2,B,H,P,true);[[H-8,H],[40,48],[29.25,37.25]].forEach(([y1,y2])=>band(BM,'z',Zs,XLs,XRs,y1,y2,P));
 const pc=(X1+X2)/2,pl=pc-14.75-7.5,pr=pc+14.75+7.5,yc=(62.625+81.625)/2;[[(XLs+pl)/2,1],[(pr+XRs)/2,4]].forEach(([c,n])=>{const m=new THREE.MeshLambertMaterial({map:TL2.load('stencil-mandala'+n+'.png'),transparent:true,alphaTest:0.4,color:0xffffff});MM.push(m);const me=new THREE.Mesh(new THREE.PlaneGeometry(11.8,11.8),m);me.position.set(c,yc,Zs-0.01);me.rotation.y=P;scene.add(me);});}
+/* his east wall (Brandon, 2026-11-22): the row under the trim face (29 1/4"-37 1/4") continues under the window as a 2 1/2" strip, 29 1/4"-31 3/4", across the window trim (190 3/4"-255 3/4"), painted with the edge of the stencil */
+band(BM,'x',ROOM.north-off,190.75,255.75,29.25,31.75,-P/2);
 window.BLINES=(hex,PG)=>{[...BM,...MM].forEach(m=>m.color.setHex(hex));if(PG)PG.forEach(p=>p.G.visible=false);};
 window.TLINES=(rgb,TSM)=>{TM.forEach(m=>m.color.setRGB(rgb[0]/255,rgb[1]/255,rgb[2]/255));if(TSM)TSM.forEach(m=>m.visible=false);};
 if(window.BLC!==undefined)BLINES(window.BLC,window.BPG);if(window.TLC)TLINES(window.TLC,window.TSMS);}
@@ -1145,39 +1147,11 @@ scene.traverse(o=>{if(o.isSprite&&!dims.includes(o))dims.push(o);});dims.forEach
 (function loop(){requestAnimationFrame(loop);r.render(scene,cam);})();
 </script>
 <script>
-/* Family view: auto-playing tour of the living room and Brandon's bedroom. No controls; tap or click pauses and resumes. */
-(function(){const wrap=document.getElementById('wrap');ctl.enabled=false;
+/* Family view: living room wall buttons (from the model) plus bedroom wall buttons; the model can be turned and zoomed by hand. */
+(function(){const bar=document.querySelector('.bar');const V=[['Bedroom: North wall',[97,52,285],[97,50,168]],['Bedroom: East wall',[45,52,230],[165,48,230]],['Bedroom: South wall',[97,55,176],[97,55,291]],['Bedroom: West wall',[135,50,230],[29,45,230]]];
+V.forEach(([n,p,t])=>{const b=document.createElement('button');b.className='bv';b.textContent=n;b.onclick=()=>view(p,t,'X');bar.appendChild(b);});
 try{dims.forEach(d=>d.visible=false);}catch(e){}
-const K=[ /* [camera position, look-at target, hold seconds] */
-[[97,330,380],[97,0,150],2],
-[[22,62,140],[110,48,30],3],
-[[82,56,128],[82,48,0],4],
-[[118,46,58],[156,40,16],3],
-[[36,56,82],[165,44,82],4],
-[[82,56,34],[82,48,164],4],
-[[128,56,70],[0,54,70],4],
-[[97,250,80],[97,0,90],1],
-[[97,250,235],[97,0,232],1],
-[[97,56,284],[97,50,168],4],
-[[48,56,232],[165,50,226],4],
-[[97,56,178],[97,56,291],4],
-[[132,52,232],[29,46,232],4],
-[[97,330,380],[97,0,150],1]];
-const MOVE=4.5;K.forEach(k=>k[2]*=0.5);/* holds halved (Brandon, 2026-11-23) */const seg=K.map(k=>k[2]+MOVE),TOT=seg.reduce((a,b)=>a+b,0);
-const A=new THREE.Vector3(),B=new THREE.Vector3(),T=new THREE.Vector3(),U=new THREE.Vector3();
-const ease=x=>x<0.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
-const fit=()=>{const a=wrap.clientWidth/wrap.clientHeight;cam.fov=a<0.8?78:a<1.2?62:48;cam.aspect=a;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);};
-window.addEventListener('resize',fit);fit();
-let t=0,last=performance.now(),paused=false;
-/* landscape: on a portrait screen the view is turned 90 degrees (CSS above); the first tap also asks for full screen locked to landscape where the browser allows it (Android), later taps pause and resume */
-let first=true;const goFull=()=>{const d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen;if(!rq)return;try{const p=rq.call(d);const lk=()=>{try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape').catch(()=>{});}catch(e){}};if(p&&p.then)p.then(lk).catch(()=>{});else lk();}catch(e){}};
-const tap=()=>{if(first){first=false;if(!document.fullscreenElement&&!document.webkitFullscreenElement&&(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)){goFull();return;}}paused=!paused;};wrap.addEventListener('pointerup',tap);
-['fullscreenchange','webkitfullscreenchange','orientationchange'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(fit,250)));
-try{goFull();}catch(e){}
-(function step(now){requestAnimationFrame(step);const dt=Math.min((now-last)/1000,0.1);last=now;if(!paused)t=(t+dt)%TOT;
-let u=t,i=0;while(u>=seg[i]){u-=seg[i];i++;}const k=K[i],n=K[(i+1)%K.length];
-if(u<k[2]){A.set(...k[0]);T.set(...k[1]);}else{const f=ease((u-k[2])/MOVE);A.set(...k[0]).lerp(B.set(...n[0]),f);T.set(...k[1]).lerp(U.set(...n[1]),f);}
-cam.position.copy(A);cam.lookAt(T);})(last);})();
+/* wider lens on narrow (phone) screens so a whole wall fits */const w=document.getElementById('wrap'),fit=()=>{const a=w.clientWidth/w.clientHeight;cam.fov=a<0.8?78:a<1.2?62:45;cam.updateProjectionMatrix();};window.addEventListener('resize',fit);fit();})();
 </script>
 </body>
 </html>
