@@ -22,7 +22,7 @@ button.on{border-color:#534AB7;color:#534AB7}
 .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid var(--border)}
 .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
 </style>
-<style>main>*:not(#wrap){display:none!important}main{padding:0!important}body{overflow:hidden}#wrap{height:100vh!important;height:100dvh!important;border:0!important;border-radius:0!important}</style>
+<style>main>*:not(#wrap){display:none!important}main{padding:0!important}body{overflow:hidden}#wrap{height:100vh!important;height:100dvh!important;border:0!important;border-radius:0!important}@media (orientation:portrait){#wrap{position:fixed!important;top:0;left:0;width:100vh!important;width:100dvh!important;height:100vw!important;min-height:0!important;transform-origin:top left;transform:rotate(90deg) translateY(-100%)}}</style>
 </head>
 <body>
 <main>
@@ -1169,7 +1169,11 @@ const ease=x=>x<0.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const fit=()=>{const a=wrap.clientWidth/wrap.clientHeight;cam.fov=a<0.8?78:a<1.2?62:48;cam.aspect=a;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);};
 window.addEventListener('resize',fit);fit();
 let t=0,last=performance.now(),paused=false;
-const tap=()=>{paused=!paused;};wrap.addEventListener('pointerup',tap);
+/* landscape: on a portrait screen the view is turned 90 degrees (CSS above); the first tap also asks for full screen locked to landscape where the browser allows it (Android), later taps pause and resume */
+let first=true;const goFull=()=>{const d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen;if(!rq)return;try{const p=rq.call(d);const lk=()=>{try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape').catch(()=>{});}catch(e){}};if(p&&p.then)p.then(lk).catch(()=>{});else lk();}catch(e){}};
+const tap=()=>{if(first){first=false;if(!document.fullscreenElement&&!document.webkitFullscreenElement&&(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)){goFull();return;}}paused=!paused;};wrap.addEventListener('pointerup',tap);
+['fullscreenchange','webkitfullscreenchange','orientationchange'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(fit,250)));
+try{goFull();}catch(e){}
 (function step(now){requestAnimationFrame(step);const dt=Math.min((now-last)/1000,0.1);last=now;if(!paused)t=(t+dt)%TOT;
 let u=t,i=0;while(u>=seg[i]){u-=seg[i];i++;}const k=K[i],n=K[(i+1)%K.length];
 if(u<k[2]){A.set(...k[0]);T.set(...k[1]);}else{const f=ease((u-k[2])/MOVE);A.set(...k[0]).lerp(B.set(...n[0]),f);T.set(...k[1]).lerp(U.set(...n[1]),f);}
