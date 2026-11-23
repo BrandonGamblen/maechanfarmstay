@@ -22,7 +22,7 @@ button.on{border-color:#534AB7;color:#534AB7}
 .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid var(--border)}
 .note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
 </style>
-<style>main>*:not(#wrap):not(.bar){display:none!important}.bar>*:not(button){display:none!important}.bar button:not([data-v="D"]):not([data-v="W"]):not([data-v="NW"]):not([data-v="EW"]){display:none!important}#wrap{height:90vh!important}</style>
+<style>main>*:not(#wrap){display:none!important}main{padding:0!important}body{overflow:hidden}#wrap{height:100vh!important;height:100dvh!important;border:0!important;border-radius:0!important}</style>
 </head>
 <body>
 <main>
@@ -1143,6 +1143,37 @@ strip(W,-hw,-Hh/2,0);strip(Hh,hw,-Hh/2,P/2);strip(W,hw,Hh/2,P);strip(Hh,-hw,Hh/2
 strip(W,-hw,-hh,0);strip(Hh,hw,-hh,P/2);strip(W,hw,hh,P);strip(Hh,-hw,hh,-P/2);const pl=new THREE.Mesh(new THREE.PlaneGeometry(W,Hh),new THREE.MeshBasicMaterial({visible:false}));place(pl,'W',70-hw,70+hw,48,71.375,0.32);G.position.copy(pl.position);G.quaternion.copy(pl.quaternion);scene.add(G);}}
 scene.traverse(o=>{if(o.isSprite&&!dims.includes(o))dims.push(o);});dims.forEach(d=>d.visible=document.getElementById('dimb').classList.contains('on'));
 (function loop(){requestAnimationFrame(loop);r.render(scene,cam);})();
+</script>
+<script>
+/* Family view: auto-playing tour of the living room and Brandon's bedroom. No controls; tap or click pauses and resumes. */
+(function(){const wrap=document.getElementById('wrap');ctl.enabled=false;
+try{dims.forEach(d=>d.visible=false);}catch(e){}
+const K=[ /* [camera position, look-at target, hold seconds] */
+[[97,330,380],[97,0,150],2],
+[[22,62,140],[110,48,30],3],
+[[82,56,128],[82,48,0],4],
+[[118,46,58],[156,40,16],3],
+[[36,56,82],[165,44,82],4],
+[[82,56,34],[82,48,164],4],
+[[128,56,70],[0,54,70],4],
+[[97,250,80],[97,0,90],1],
+[[97,250,235],[97,0,232],1],
+[[97,56,284],[97,50,168],4],
+[[48,56,232],[165,50,226],4],
+[[97,56,178],[97,56,291],4],
+[[132,52,232],[29,46,232],4],
+[[97,330,380],[97,0,150],1]];
+const MOVE=4.5,seg=K.map(k=>k[2]+MOVE),TOT=seg.reduce((a,b)=>a+b,0);
+const A=new THREE.Vector3(),B=new THREE.Vector3(),T=new THREE.Vector3(),U=new THREE.Vector3();
+const ease=x=>x<0.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const fit=()=>{const a=wrap.clientWidth/wrap.clientHeight;cam.fov=a<0.8?78:a<1.2?62:48;cam.aspect=a;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);};
+window.addEventListener('resize',fit);fit();
+let t=0,last=performance.now(),paused=false;
+const tap=()=>{paused=!paused;};wrap.addEventListener('pointerup',tap);
+(function step(now){requestAnimationFrame(step);const dt=Math.min((now-last)/1000,0.1);last=now;if(!paused)t=(t+dt)%TOT;
+let u=t,i=0;while(u>=seg[i]){u-=seg[i];i++;}const k=K[i],n=K[(i+1)%K.length];
+if(u<k[2]){A.set(...k[0]);T.set(...k[1]);}else{const f=ease((u-k[2])/MOVE);A.set(...k[0]).lerp(B.set(...n[0]),f);T.set(...k[1]).lerp(U.set(...n[1]),f);}
+cam.position.copy(A);cam.lookAt(T);})(last);})();
 </script>
 </body>
 </html>
