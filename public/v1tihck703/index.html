@@ -1163,7 +1163,7 @@ const K=[ /* [camera position, look-at target, hold seconds] */
 [[97,56,178],[97,56,291],4],
 [[132,52,232],[29,46,232],4],
 [[97,330,380],[97,0,150],1]];
-const MOVE=4.5,seg=K.map(k=>k[2]+MOVE),TOT=seg.reduce((a,b)=>a+b,0);
+const MOVE=4.5;K.forEach(k=>k[2]*=0.5);/* holds halved (Brandon, 2026-11-23) */const seg=K.map(k=>k[2]+MOVE),TOT=seg.reduce((a,b)=>a+b,0);
 const A=new THREE.Vector3(),B=new THREE.Vector3(),T=new THREE.Vector3(),U=new THREE.Vector3();
 const ease=x=>x<0.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const fit=()=>{const a=wrap.clientWidth/wrap.clientHeight;cam.fov=a<0.8?78:a<1.2?62:48;cam.aspect=a;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);};
