@@ -1147,40 +1147,46 @@ scene.traverse(o=>{if(o.isSprite&&!dims.includes(o))dims.push(o);});dims.forEach
 (function loop(){requestAnimationFrame(loop);r.render(scene,cam);})();
 </script>
 <script>
-/* Family view: the tour plays once (no controls; tap pauses and resumes), then the model unlocks: drag to turn, zoom, and the wall buttons appear. */
+/* Family view: the tour plays once (no controls; tap pauses and resumes), then the model unlocks: drag to turn, zoom, and the wall buttons appear.
+   Revised 2026-11-23 (Brandon): one smooth curved camera path (Catmull-Rom) along the way you would walk, living room to the entry, down the hallway and through the bedroom door;
+   camera raised to about 66" and tilted down a little; it eases to a stop at each wall. */
 (function(){const wrap=document.getElementById('wrap');ctl.enabled=false;document.body.classList.add('tour');
 try{dims.forEach(d=>d.visible=false);}catch(e){}
-const K=[ /* [camera position, look-at target, hold seconds] */
-[[97,330,380],[97,0,150],2],
-[[22,62,140],[110,48,30],3],
-[[82,56,128],[82,48,0],4],
-[[118,46,58],[156,40,16],3],
-[[36,56,82],[165,44,82],4],
-[[82,56,34],[82,48,164],4],
-[[128,56,70],[0,54,70],4],
-[[97,250,80],[97,0,90],1],
-[[97,250,235],[97,0,232],1],
-[[97,56,284],[97,50,168],4],
-[[48,56,232],[165,50,226],4],
-[[97,56,178],[97,56,291],4],
-[[132,52,232],[29,46,232],4],
-[[97,330,380],[97,0,150],1]];
-const MOVE=4.5;K.forEach(k=>k[2]*=0.5);/* holds halved (Brandon, 2026-11-23) */const seg=K.map(k=>k[2]+MOVE),TOT=seg.reduce((a,b)=>a+b,0);
-const A=new THREE.Vector3(),B=new THREE.Vector3(),T=new THREE.Vector3(),U=new THREE.Vector3();
-const ease=x=>x<0.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const K=[ /* [camera, look-at, hold seconds at this point (0 = walk through), seconds to reach the next point] */
+[[97,330,380],[97,0,150],1,5],
+[[22,66,140],[110,44,30],1.5,4],
+[[82,66,128],[82,46,0],2,3.5],
+[[118,58,60],[156,40,16],1.5,3.5],
+[[36,66,82],[165,42,82],2,4],
+[[82,66,34],[82,46,164],2,4],
+[[128,66,70],[0,50,70],2,3],
+[[52,66,118],[8,58,160],0,2.5],
+[[14,66,152],[12,58,205],0,2.5],
+[[12,66,184],[60,56,188],0,2.2],
+[[44,66,192],[120,52,235],0,3],
+[[97,66,280],[97,46,168],2,4],
+[[48,66,232],[165,46,226],2,4],
+[[97,66,178],[97,52,291],2,4],
+[[132,64,232],[29,44,232],2,5],
+[[97,330,380],[97,0,150],0,0]];
+const PC=new THREE.CatmullRomCurve3(K.map(k=>new THREE.Vector3(...k[0])),false,'centripetal'),TC=new THREE.CatmullRomCurve3(K.map(k=>new THREE.Vector3(...k[1])),false,'centripetal'),N=K.length-1;
+const seg=K.slice(0,N).map(k=>k[2]+k[3]),TOT=seg.reduce((a,b)=>a+b,0);
+const sm=x=>x*x*(3-2*x),ein=x=>x*x,eout=x=>1-(1-x)*(1-x);
 const fit=()=>{const a=wrap.clientWidth/wrap.clientHeight;cam.fov=a<0.8?78:a<1.2?62:48;cam.aspect=a;cam.updateProjectionMatrix();r.setSize(wrap.clientWidth,wrap.clientHeight);};
 window.addEventListener('resize',fit);fit();
 let t=0,last=performance.now(),paused=false;
-/* landscape: on a portrait screen the view is turned 90 degrees (CSS above); the first tap also asks for full screen locked to landscape where the browser allows it (Android), later taps pause and resume */
 let first=true;const goFull=()=>{const d=document.documentElement,rq=d.requestFullscreen||d.webkitRequestFullscreen;if(!rq)return;try{const p=rq.call(d);const lk=()=>{try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape').catch(()=>{});}catch(e){}};if(p&&p.then)p.then(lk).catch(()=>{});else lk();}catch(e){}};
 const tap=()=>{if(first){first=false;if(!document.fullscreenElement&&!document.webkitFullscreenElement&&(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen)){goFull();return;}}paused=!paused;};wrap.addEventListener('pointerup',tap);
 ['fullscreenchange','webkitfullscreenchange','orientationchange'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(fit,250)));
 try{goFull();}catch(e){}
-let raf=0;const done=()=>{cancelAnimationFrame(raf);wrap.removeEventListener('pointerup',tap);document.body.classList.remove('tour');try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen();if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}setTimeout(()=>{fit();const k=K[K.length-1];cam.position.set(...k[0]);ctl.target.set(...k[1]);ctl.enabled=true;ctl.update();},60);};
-(function step(now){raf=requestAnimationFrame(step);const dt=Math.min((now-last)/1000,0.1);last=now;if(!paused)t=t+dt;if(t>=TOT){done();return;}
-let u=t,i=0;while(u>=seg[i]){u-=seg[i];i++;}const k=K[i],n=K[(i+1)%K.length];
-if(u<k[2]){A.set(...k[0]);T.set(...k[1]);}else{const f=ease((u-k[2])/MOVE);A.set(...k[0]).lerp(B.set(...n[0]),f);T.set(...k[1]).lerp(U.set(...n[1]),f);}
-cam.position.copy(A);cam.lookAt(T);})(last);})();
+const A=new THREE.Vector3(),T=new THREE.Vector3();
+/* the bedroom door stands open while the camera walks through it */const DOOR=[];{const bb=new THREE.Box3();scene.updateMatrixWorld(true);scene.children.forEach(o=>{bb.setFromObject(o);if(!bb.isEmpty()&&bb.min.x>27.8&&bb.max.x<29.9&&bb.min.z>170.9&&bb.max.z<202.9&&bb.max.y<80.3)DOOR.push(o);});}
+const doorOpen=v=>DOOR.forEach(o=>o.visible=!v);
+let raf=0;const done=()=>{cancelAnimationFrame(raf);doorOpen(false);wrap.removeEventListener('pointerup',tap);document.body.classList.remove('tour');try{if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen();if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}setTimeout(()=>{fit();const k=K[N];cam.position.set(...k[0]);ctl.target.set(...k[1]);ctl.enabled=true;ctl.update();},60);};
+(function step(now){raf=requestAnimationFrame(step);const dt=Math.min((now-last)/1000,0.1);last=now;if(!paused)t+=dt;if(t>=TOT){done();return;}
+let u=t,i=0;while(u>=seg[i]){u-=seg[i];i++;}const k=K[i],n=K[i+1];let f=0;
+if(u>=k[2]){const x=(u-k[2])/k[3],s0=k[2]>0||i===0,s1=n[2]>0||i+1===N;f=s0&&s1?sm(x):s0?ein(x):s1?eout(x):x;}
+doorOpen(t>39&&t<49.5);const q=(i+f)/N;PC.getPoint(q,A);TC.getPoint(q,T);cam.position.copy(A);cam.lookAt(T);})(last);})();
 </script>
 <script>
 /* Family view: living room wall buttons (from the model) plus bedroom wall buttons; the model can be turned and zoomed by hand. */
